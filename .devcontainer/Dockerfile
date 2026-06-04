@@ -81,7 +81,6 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
 # Install Claude
 RUN npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}
 
-
 # Copy and set up firewall script
 COPY init-firewall.sh /usr/local/bin/
 USER root
@@ -91,9 +90,15 @@ RUN chmod +x /usr/local/bin/init-firewall.sh && \
 USER node
 
 # --- INJEÇÃO DO CRUSH E DEPENDÊNCIAS DO RALPH ---
+# Viramos Root temporariamente para ter permissão de instalar pacotes de sistema
+USER root
+
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends jq curl ca-certificates apt-transport-https \
     && curl -fsSL https://repo.charm.sh/apt/gpg.key | gpg --dearmor -o /etc/apt/keyrings/charm.gpg \
     && echo "deb [signed-by=/etc/apt/keyrings/charm.gpg] https://repo.charm.sh/apt/ * *" | tee /etc/apt/sources.list.d/charm.list \
     && apt-get update \
     && apt-get install -y crush
+
+# Voltamos para o usuário seguro (node) para rodar o container
+USER node

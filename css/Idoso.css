@@ -1,0 +1,403 @@
+*{margin: 0;
+    padding: 0;
+    
+}
+
+.cabecalho{
+    background-color: rgba(52,103,125);
+    position:fixed;
+    width:100%;
+    height: 15%;
+    top:0;
+    left:0;
+    z-index:7;
+   
+}
+
+.logo{ 
+    cursor: pointer;
+    width: 250px;
+    height: 100px;
+    float: left;
+    background: url(../img/infocare%20branco.png) center center/250px no-repeat;
+    font-size:0;
+    margin-top: 1.0%;
+    margin-left: 5%;
+}
+
+h2{
+    margin-left: 7%;
+}
+
+.form{
+    margin-top: 5%;
+}
+
+.menu ul {
+    padding: 45px;
+    list-style:none;
+    margin-left: 70%;
+}
+
+.menu ul li { display: inline; }
+
+.menu ul li a {
+    color: white;
+    font-family: 'Comfortaa';
+    font-size: 22px;
+    padding: 2px 20px;
+    display: inline-block;
+    text-decoration: none;
+}
+
+.menu ul li a:hover {
+   color: rgba(205, 223, 239);
+    font-family: 'Comfortaa';
+    font-size: 22px;
+    padding: 2px 20px;
+    display: inline-block;
+    text-decoration: none;
+}
+
+
+
+.h3 {
+    padding-left: 50px;
+}
+
+.enviar{
+    padding-top: 1%;
+    padding-left: 38%;
+}
+
+.enviarM{
+    padding-top: 1%;
+    padding-left: 24%;
+}
+
+.login100-form-btn:hover{
+    cursor:pointer;
+    border: 0;
+    background: none;
+    display: block;
+    margin-left: 40%;
+    margin-top: 2%;
+    text-align: center;
+    border: 2px solid rgba(52,103,125);
+    padding: 20px 10px;
+    width: 180px;
+    outline: none;
+    border-radius: 5px;
+    font-family: 'Amaranth';
+    font-size: 30px;
+    color:rgba(52,103,125);   
+    transition: 0.60s;
+}
+
+.login200-form-btn{
+    cursor:pointer;
+    border: 0;
+    background: none;
+    display: block;
+    margin-left: 38%;
+    margin-top: 2%;
+    text-align: center;
+    background-color: rgba(52,103,125);
+    padding: 20px 10px;
+    width: 290px;
+    outline: none;
+    border-radius: 5px;
+    font-family: 'Amaranth';
+    font-size: 30px;
+    color:#fff; 
+    text-decoration: none;
+}
+
+a{
+    text-decoration: none;
+}
+
+.login200-form-btn:hover{
+    cursor:pointer;
+    border: 0;
+    background: none;
+    display: block;
+    margin-left: 38%;
+    margin-top: 2%;
+    text-align: center;
+    border: 2px solid rgba(52,103,125);
+    padding: 20px 10px;
+    width: 290px;
+    outline: none;
+    border-radius: 5px;
+    font-family: 'Amaranth';
+    font-size: 30px;
+    color:rgba(52,103,125);   
+    transition: 0.60s;
+    text-decoration: none;
+}
+
+.login100-form-btn{
+    cursor:pointer;
+    border: 0;
+    background: none;
+    display: block;
+    margin-left: 40%;
+    margin-top: 2%;
+    text-align: center;
+    background-color: rgba(52,103,125);
+    padding: 20px 10px;
+    width: 180px;
+    outline: none;
+    border-radius: 5px;
+    font-family: 'Amaranth';
+    font-size: 30px;
+    color:#fff;    
+}
+
+.lixo{
+    padding-top: 200px;
+    width:24%;
+    height:600px;
+    float: left;
+}
+
+
+#lixo h3{
+    padding: 10px;
+    font-family: 'Ubuntu', sans-serif;
+}
+
+.loginbox{
+   
+    width: 340px;
+    height: 790px;
+    background-color: rgba(52,103,125,0.2);
+    margin-top: 260px;
+    margin-left: 60%;
+    transform: translate(-50%,-50%);
+    box-sizing: border-box;
+    padding: 8px 60px;
+    float: left;
+    z-index:7;
+    border-radius: 2%;
+    
+}
+
+.avatar{
+    width: 150px;
+    height: 155px;
+    border-radius: 50%;
+    position: absolute;
+    top: 40px;
+    left: calc(50% - 70px);
+}
+
+.loginbox h1{
+    text-align: center;
+    font-family: 'Bebas Neue', sans-serif;
+}
+
+.loginbox h4 a{
+    margin: 0;
+    font-family: 'Bebas Neue', sans-serif;
+    float: center;
+    color: #979A97;
+    padding-left: 30px;
+}
+
+.loginbox p{
+    margin: 0;
+    padding: 0;
+}
+
+
+.loginbox a{
+    padding: 2px 5px;
+    text-decoration: none;
+    line-height: 34px;
+    color: black;
+    float: left;
+    font-size: 20px;
+    font-family: 'Comfortaa', sans-serif;
+    
+}
+
+.loginbox li a:hover{
+    padding: 2px 5px;
+    text-decoration: none;
+    line-height: 34px;
+    color: white;
+    float: left;
+    font-size: 20px;
+    font-family: 'Comfortaa', sans-serif;
+    transition: 0.40s;
+    border-radius: 5px;
+    background-color: rgba(52,103,125,0.7);
+    
+}
+
+.loginbox ul{
+    padding-left: 0px;
+    list-style: none;
+    float: left;
+    text-align: left;
+}
+.loginbox ul li{
+    padding: 10px;
+
+}
+
+
+
+.form-row{
+    margin-left: 10%;
+}
+
+h3{
+    margin-left: 7%;
+    font-family: 'Heavitas';
+    font-size: 35px;
+    margin-top: 3%;
+  
+}
+
+.btn-primaryM{
+    font-family: 'amaranth';
+    font-size: 15px;
+    background-color: rgba(52,103,125);
+    border: 0;
+    color: #fff;
+}
+
+.btn-primaryM:hover{
+    font-family: 'amaranth';
+    font-size: 15px;
+    background-color: rgba(52,103,125,0.8);
+    border: 0;
+    color: #fff;
+}
+
+.btn-danger{
+    font-family: 'amaranth';
+    font-size: 15px;
+    background-color: red;
+    border: 0;
+    color: #fff;
+}
+
+.btn-warning{
+    font-family: 'amaranth';
+    font-size: 15px;
+    background-color: orange;
+    border: 0;
+    color: #fff;
+}
+
+.btn-primary{
+    font-family: 'amaranth';
+    font-size: 25px;
+    background-color: rgba(52,103,125);
+    border: 0;
+}
+
+.btn-primary:hover{
+    font-family: 'amaranth';
+    font-size: 25px;
+    background-color: rgba(52,103,125, 0.8);
+    border: 0;
+}
+
+.form-group{
+    left: 0%;
+}
+
+.form-check{
+ left: 10%;
+}
+
+#containerM {
+  width: 60%;
+  padding-top: 80px;    
+  padding-right: 15px;
+  margin-right: auto;
+  margin-left: 33%;
+}
+
+.boxCad{
+    margin-bottom: 50px;    
+    width: 51%;
+    height: 325px;
+    margin-top: 10%;
+    margin-left: 4%;
+    background-color: aliceblue;
+    border-radius: 4%;
+    padding: 50px 40px;
+}
+
+
+
+.botaoCad{
+    padding: 4%;
+    width: 210px;
+    height: 210px;
+    color: #fff;
+    background-color: rgba(52,103,125);
+    border-radius: 4%;
+}
+
+.botaoCad img{
+    width: 125px;
+    height: 125px;
+    padding-bottom: 7px;
+}
+
+.avatarCad{
+    font-family: 'Heavitas', sans-serif;
+    font-size: 50px;
+    position: absolute;
+    top: 880px;
+    color: #000;
+    left: calc(35% - 150px);
+}
+
+.page-header h1{
+    font-family: 'Heavitas';
+    font-size: 35px;
+}
+
+th{
+    font-family: 'Amaranth';
+    font-size: 22px;
+}
+
+td{
+    font-family: 'Amaranth';
+    font-size: 20px;
+}
+
+li h5{
+    font-family: 'Amaranth';
+    font-size: 20px;
+    margin-left: 10%;
+}
+
+.modal-body{
+  font-family: 'Amaranth';
+  font-size: 25px;
+  
+}
+
+h4{
+  font-family: 'Amaranth';
+  font-size: 25px;
+  margin-left: 10%;
+}
+
+.indicador p{
+    font-family: 'Comfortaa';
+    font-size: 20px;
+    margin-left: 30%;
+    
+}
+

@@ -1,0 +1,23 @@
+# Arquivos de configuração com senhas
+config.php
+*.env
+
+# Dependências (se usar Composer)
+vendor/
+
+# Arquivos de log e temporários
+*.log
+*.tmp
+*.swp
+
+# Cache e sessões
+cache/
+sessions/
+
+# Arquivos do sistema operacional
+.DS_Store
+Thumbs.db
+
+# Uploads (se houver pasta com imagens enviadas)
+uploads/
+fotos/

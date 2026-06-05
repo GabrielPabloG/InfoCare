@@ -6,6 +6,7 @@ class Idoso {
     private $sexoIdoso;
     private $cpfIdoso;
     private $nascIdoso;
+    private $prontuarioFixoId;
     private $codResponsavel;
     
     public function getCodIdoso() {
@@ -37,10 +38,10 @@ class Idoso {
     }
     
     public function getNascIdoso() {
-        return $this->idadeIdoso;
+        return $this->nascIdoso;
     }
-    public function setNascIdoso($idadeIdoso) {
-        $this->idadeIdoso = $idadeIdoso;
+    public function setNascIdoso($nascIdoso) {
+        $this->nascIdoso = $nascIdoso;
     }
     
     public function getCodResponsavel() {
@@ -48,5 +49,13 @@ class Idoso {
     }
     public function setCodResponsavel($codResponsavel) {
         $this->codResponsavel = $codResponsavel;
+    }
+
+    public function getProntuarioFixoId() {
+        return $this->prontuarioFixoId;
+    }
+
+    public function setProntuarioFixoId($prontuarioFixoId) {
+        $this->prontuarioFixoId = $prontuarioFixoId;
     }
 }

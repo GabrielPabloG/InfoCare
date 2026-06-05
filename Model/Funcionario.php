@@ -1,7 +1,6 @@
 <?php
 	class Funcionario {
         private $codFuncionario;
-        private $cargoFuncionario;
         private $salarioFuncionario;
         
         public function getCodFuncionario() {
@@ -9,13 +8,6 @@
         }
         public function setCodFuncionario($codFuncionario) {
             $this->codFuncionario = $codFuncionario;
-        }
-        
-        public function getCargoFuncionario() {
-            return $this->cargoFuncionario;
-        }
-        public function setCargoFuncionario($cargoFuncionario) {
-            $this->cargoFuncionario = $cargoFuncionario;
         }
         
         public function getSalarioFuncionario() {

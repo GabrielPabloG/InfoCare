@@ -7,9 +7,11 @@
         private $salarioGerente;
         private $emailGerente;
         private $senhaGerente;
-        private $codEnderecoGerente;
-        private $codTelefoneGerente;
-        private $codCelularGerente;
+
+        private $rua;
+        private $bairro;
+        private $cep;
+        private $numero_casa;
 		
 		public function getNomeGerente(){
             return $this->nomeGerente;
@@ -60,24 +62,28 @@
             $this->senhaGerente = $senhaGerente;
         }
         
-        public function getCodEnderecoGerente(){
-            return $this->codEnderecoGerente;
+        public function getRua() {
+            return $this->rua;
         }
-        public function setCodEnderecoGerente($codEnderecoGerente){
-            $this->codEnderecoGerente = $codEnderecoGerente;
+        public function setRua($rua) {
+            $this->rua = $rua;
         }
-        
-        public function getCodTelefoneGerente(){
-            return $this->codTelefoneGerente;
+        public function getBairro() {
+            return $this->bairro;
         }
-        public function setCodTelefoneGerent($codTelefoneGerente){
-            $this->codTelefoneGerente = $codTelefoneGerente;
+        public function setBairro($bairro) {
+            $this->bairro = $bairro;
         }
-        
-        public function getCodCelularGerente(){
-            return $this->codCelularGerente;
+        public function getCep() {
+            return $this->cep;
         }
-        public function setCodCelularGerente($codCelularGerente){
-            $this->codCelularGerente = $codCelularGerente;
+        public function setCep($cep) {
+            $this->cep = $cep;
+        }
+        public function getNumeroCasa() {
+            return $this->numero_casa;
+        }
+        public function setNumeroCasa($numero_casa) {
+            $this->numero_casa = $numero_casa;
         }
 	}

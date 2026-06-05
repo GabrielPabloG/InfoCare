@@ -1,0 +1,92 @@
+<?
+class Responsavel {
+
+    private $id;
+    private $nome;
+    private $cpf;
+    private $sexo;
+    private $nascimento;
+    private $email;
+    private $senha;
+    private $rua;
+    private $bairro;
+    private $cep;
+    private $numero_casa;
+
+    public function getId() {
+        return $this->id;
+    }
+    public function setId($id) {
+        $this->id = $id;
+    }
+
+    public function getNome() {
+        return $this->nome;
+    }
+    public function setNome($nome) {
+        $this->nome = $nome;
+    }
+
+    public function getCpf() {
+        return $this->cpf;
+    }
+    public function setCpf($cpf) {
+        $this->cpf = $cpf;
+    }
+
+    public function getSexo() {
+        return $this->sexo;
+    }
+    public function setSexo($sexo) {
+        $this->sexo = $sexo;
+    }
+
+    public function getNascimento() {
+        return $this->nascimento;
+    }
+    public function setNascimento($nascimento) {
+        $this->nascimento = $nascimento;
+    }
+
+    public function getEmail() {
+        return $this->email;
+    }
+    public function setEmail($email) {
+        $this->email = $email;
+    }
+
+    public function getSenha() {
+        return $this->senha;
+    }
+    public function setSenha($senha) {
+        $this->senha = $senha;
+    }
+
+    public function getRua() {
+        return $this->rua;
+    }
+    public function setRua($rua) {
+        $this->rua = $rua;
+    }
+
+    public function getBairro() {
+        return $this->bairro;
+    }
+    public function setBairro($bairro) {
+        $this->bairro = $bairro;
+    }
+
+    public function getCep() {
+        return $this->cep;
+    }
+    public function setCep($cep) {
+        $this->cep = $cep;
+    }
+
+    public function getNumeroCasa() {
+        return $this->numero_casa;
+    }
+    public function setNumeroCasa($numero_casa) {
+        $this->numero_casa = $numero_casa;
+    }
+}

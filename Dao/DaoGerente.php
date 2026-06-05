@@ -1,48 +1,149 @@
-<html>
-	<head>
-		<meta charset="UTF-8">
-		<title>Bem-Vindo</title>
-	</head>
-	<body style="background-color: #728CA6;">
-	
-	</body>
-</html>
-
 <?php
-    require_once 'Pessoa.php';
-    include_once 'conexao.php';
+require_once 'conexao.php';
+require_once '../Model/Gerente.php';
 
-    class DaoPessoa{
-        //rotina de cadastro do usuário no banco de dados
-        public function cadastrarPessoa($pessoa){
-            $conexao = abrirconexao();
+class DaoGerente {
+    
+    public function insert(Gerente $gerente) {
+        try {
+            $conn = Conexao::getConexao();
             
-            /*if($funcionario->getCargo == "Gerente") {
-                
-            }*/
-        
-
-                $queryInsert2 = "insert into tbFuncionario(nomePessoa, cpfGerente,  sexoGerente , nascGerente, salarioGerente, emailGerente, senhaGerente)
-            values ('".$gerente->getNomeGerente()."', '".$gerente->getCpfGerente()."', '".$gerente->getSexoGerente()."', '".$gerente->getNascGerente()."', '".$gerente->getSalarioGerente()."', '".$gerente->getEmailGerente()."', '"$gerente->getSenhaGerente()"')";
-
+            $sql = "INSERT INTO gerente (nome, cpf, sexo, nascimento, salario, email, senha, rua, bairro, cep, numero_casa) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             
-            $queryInsert1 = "";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([
+                $gerente->getNome(),
+                $gerente->getCpf(),
+                $gerente->getSexo(),
+                $gerente->getNascimento(),
+                $gerente->getSalario(),
+                $gerente->getEmail(),
+                $gerente->getSenha(),
+                $gerente->getRua(),
+                $gerente->getBairro(),
+                $gerente->getCep(),
+                $gerente->getNumeroCasa()
+            ]);
             
+            // Retorna o ID gerado para podermos usar no DaoTelefone ou DaoFoto lá no Controller
+            return $conn->lastInsertId(); 
             
-            echo($queryInsert2);
-            
-            $resultadoInsert = $conexao->query($queryInsert2);
-            //retorna a quantidade de inserções no banco
-            
-            if($resultadoInsert > 0 ){
-                echo("<br> Cadastro realizado com sucesso.");
-				 header("Location: ../View/homeGerente.php");   
-				$conexao->close();
-            }else 
-                echo("<br> Cadastro não concluiu com sucesso, tente novamente.");
-			
-			}
-			
+        } catch (PDOException $e) {
+            echo "Erro ao cadastrar gerente: " . $e->getMessage();
+            return false;
         }
-		
-?>
+    }
+
+    public function update(Gerente $gerente) {
+        try {
+            $conn = Conexao::getConexao();
+            
+            $sql = "UPDATE gerente SET nome = ?, cpf = ?, sexo = ?, nascimento = ?, salario = ?, email = ?, senha = ?, rua = ?, bairro = ?, cep = ?, numero_casa = ? 
+                    WHERE id = ?";
+            
+            $stmt = $conn->prepare($sql);
+            return $stmt->execute([
+                $gerente->getNome(),
+                $gerente->getCpf(),
+                $gerente->getSexo(),
+                $gerente->getNascimento(),
+                $gerente->getSalario(),
+                $gerente->getEmail(),
+                $gerente->getSenha(),
+                $gerente->getRua(),
+                $gerente->getBairro(),
+                $gerente->getCep(),
+                $gerente->getNumeroCasa(),
+                $gerente->getId()
+            ]);
+            
+        } catch (PDOException $e) {
+            echo "Erro ao atualizar gerente: " . $e->getMessage();
+            return false;
+        }
+    }
+
+    public function delete($id) {
+        try {
+            $conn = Conexao::getConexao();
+            
+            $sql = "DELETE FROM gerente WHERE id = ?";
+            $stmt = $conn->prepare($sql);
+            return $stmt->execute([$id]);
+            
+        } catch (PDOException $e) {
+            echo "Erro ao deletar gerente: " . $e->getMessage();
+            return false;
+        }
+    }
+
+    public function listAll() {
+        try {
+            $conn = Conexao::getConexao();
+            
+            $sql = "SELECT * FROM gerente";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute();
+            
+            $gerentes = [];
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $gerente = new Gerente();
+                $gerente->setId($row['id']);
+                $gerente->setNome($row['nome']);
+                $gerente->setCpf($row['cpf']);
+                $gerente->setSexo($row['sexo']);
+                $gerente->setNascimento($row['nascimento']);
+                $gerente->setSalario($row['salario']);
+                $gerente->setEmail($row['email']);
+                $gerente->setSenha($row['senha']);
+                $gerente->setRua($row['rua']);
+                $gerente->setBairro($row['bairro']);
+                $gerente->setCep($row['cep']);
+                $gerente->setNumeroCasa($row['numero_casa']);
+                
+                $gerentes[] = $gerente;
+            }
+            
+            return $gerentes;
+            
+        } catch (PDOException $e) {
+            echo "Erro ao listar gerentes: " . $e->getMessage();
+            return [];
+        }
+    }
+
+    public function getById($id) {
+        try {
+            $conn = Conexao::getConexao();
+            
+            $sql = "SELECT * FROM gerente WHERE id = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([$id]);
+            
+            if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $gerente = new Gerente();
+                $gerente->setId($row['id']);
+                $gerente->setNome($row['nome']);
+                $gerente->setCpf($row['cpf']);
+                $gerente->setSexo($row['sexo']);
+                $gerente->setNascimento($row['nascimento']);
+                $gerente->setSalario($row['salario']);
+                $gerente->setEmail($row['email']);
+                $gerente->setSenha($row['senha']);
+                $gerente->setRua($row['rua']);
+                $gerente->setBairro($row['bairro']);
+                $gerente->setCep($row['cep']);
+                $gerente->setNumeroCasa($row['numero_casa']);
+                
+                return $gerente;
+            }
+            
+            return null;
+            
+        } catch (PDOException $e) {
+            echo "Erro ao buscar gerente: " . $e->getMessage();
+            return null;
+        }
+    }
+}

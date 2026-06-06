@@ -17,6 +17,7 @@ $gerente->setBairro($_POST['bairro']);
 $gerente->setCep($_POST['cep']);
 $gerente->setSexo($_POST['sexo']);
 $gerente->setNascimento($_POST['nascimento']);
+$gerente->setSalario($_POST['salario']);
 
 // 2. Salva o Gerente e pega o ID gerado
 $daoGerente = new DaoGerente();
@@ -31,7 +32,7 @@ if ($idGerente) {
     }
     
     // Redireciona para o sucesso
-    header("Location: ../View/listarRes.php?sucesso=1");
+    header("Location: ../View/homeAdm.php?sucesso=1");
     exit();
 } else {
     echo "Erro ao cadastrar gerente.";

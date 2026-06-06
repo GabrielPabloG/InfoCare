@@ -1,60 +1,59 @@
 <?php
 
 class Idoso {
-    private $codIdoso;
-    private $nomeIdoso;
-    private $sexoIdoso;
-    private $cpfIdoso;
-    private $nascIdoso;
+    private $id;
+    private $nome;
+    private $cpf;
+    private $sexo;
+    private $nascimento;
+    private $responsavelId;
     private $prontuarioFixoId;
-    private $codResponsavel;
-    
-    public function getCodIdoso() {
-        return $this->codIdoso;
+
+    public function getId() {
+        return $this->id;
     }
-    public function setCodIdoso($codIdoso) {
-        $this->codIdoso = $codIdoso;
+    public function setId($id) {
+        $this->id = $id;
     }
-    
-    public function getNomeIdoso() {
-        return $this->nomeIdoso;
+
+    public function getNome() {
+        return $this->nome;
     }
-    public function setNomeIdoso($nomeIdoso) {
-        $this->nomeIdoso = $nomeIdoso;
+    public function setNome($nome) {
+        $this->nome = $nome;
     }
-    
-    public function getSexoIdoso() {
-        return $this->sexoIdoso;
+
+    public function getCpf() {
+        return $this->cpf;
     }
-    public function setSexoIdoso($sexoIdoso) {
-        $this->sexoIdoso = $sexoIdoso;
+    public function setCpf($cpf) {
+        $this->cpf = $cpf;
     }
-    
-    public function getCpfIdoso() {
-        return $this->cpfIdoso;
+
+    public function getSexo() {
+        return $this->sexo;
     }
-    public function setCpfIdoso($cpfIdoso) {
-        $this->cpfIdoso = $cpfIdoso;
+    public function setSexo($sexo) {
+        $this->sexo = $sexo;
     }
-    
-    public function getNascIdoso() {
-        return $this->nascIdoso;
+
+    public function getNascimento() {
+        return $this->nascimento;
     }
-    public function setNascIdoso($nascIdoso) {
-        $this->nascIdoso = $nascIdoso;
+    public function setNascimento($nascimento) {
+        $this->nascimento = $nascimento;
     }
-    
-    public function getCodResponsavel() {
-        return $this->codResponsavel;
+
+    public function getResponsavelId() {
+        return $this->responsavelId;
     }
-    public function setCodResponsavel($codResponsavel) {
-        $this->codResponsavel = $codResponsavel;
+    public function setResponsavelId($responsavelId) {
+        $this->responsavelId = $responsavelId;
     }
 
     public function getProntuarioFixoId() {
         return $this->prontuarioFixoId;
     }
-
     public function setProntuarioFixoId($prontuarioFixoId) {
         $this->prontuarioFixoId = $prontuarioFixoId;
     }

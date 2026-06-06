@@ -1,20 +1,30 @@
 <?php
-include_once '../Dao/conexao.php';
-$id = $_POST['idGerente'];
-if(!empty($id)){
-	$result_idoso = "DELETE FROM tbGerente WHERE codGerente='$id'";
-	$resultado_idoso = mysqli_query($conn, $result_idoso);
-	if(mysqli_affected_rows($conn)){
-		header("Location: ../view/homeAdm.php");
-        
-    }
+session_start();
+require_once '../Dao/conexao.php';
+require_once '../Dao/DaoGerente.php';
+
+// 1. TRAVA DE SEGURANÇA (Autorização)
+// Verifica se alguém está logado e se esse alguém é um Administrador.
+// Ajuste 'admin' caso a regra do seu sistema permita que outros cargos apaguem gerentes.
+if (!isset($_SESSION['user_tipo']) || $_SESSION['user_tipo'] !== 'admin') {
+    die("Erro de Acesso: Você não tem permissão para realizar esta ação.");
 }
-    else{	
-	$_SESSION['msg'] = "<p style='color:red;'>Necessário selecionar um usuário</p>";
-	//header("Location: ../view/homeGerente.php");
-        echo('teste');
-} 
-    
 
+// 2. VALIDAÇÃO DO PARÂMETRO
+// Garante que o ID foi enviado e é estritamente numérico
+if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+    die("Erro: ID inválido ou não fornecido.");
+}
 
+$id = $_GET['id']; 
+
+// 3. EXECUÇÃO
+$daoGerente = new DaoGerente();
+
+if ($daoGerente->delete($id)) {
+        header("Location: ../View/homeGerente.php?excluido=1");
+    exit(); // Sempre coloque exit() após um header de redirecionamento
+} else {
+    echo "Erro ao tentar excluir o gerente do banco de dados.";
+}
 ?>

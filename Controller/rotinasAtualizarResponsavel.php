@@ -18,30 +18,27 @@ $responsavel->setEmail($_POST['email']);
 $senhaSegura = password_hash($_POST['senha'], PASSWORD_DEFAULT);
 $responsavel->setSenha($senhaSegura);
 
-// 4. Recebe os dados de endereço direto no Responsável
+// 4. Recebe os dados de endereço direto no Funcionário
 $responsavel->setRua($_POST['rua']);
 $responsavel->setBairro($_POST['bairro']);
 $responsavel->setCep($_POST['cep']);
 $responsavel->setNumeroCasa($_POST['numero_casa']);
 
-// 5. Dados específicos do Responsável (Cargo foi removido do BD, mantemos só salário)
-
-
-// 6. Salva o Responsável e pega o ID gerado
+// 6. Salva o Funcionário e pega o ID gerado
 $daoResponsavel = new DaoResponsavel();
 $idResponsavel = $daoResponsavel->insert($responsavel);
 
 if ($idResponsavel) {
-    // 7. Salva o telefone associando ao ID do Responsável (Polimorfismo)
+    // 7. Salva o telefone associando ao ID do funcionário (Polimorfismo)
     if (!empty($_POST['telefone'])) {
         $daoTelefone = new DaoTelefone();
         $daoTelefone->insert($_POST['telefone'], 'CELULAR', 'responsavel', $idResponsavel);
     }
     
     // Redireciona para a tela de listagem
-    header("Location: ../View/listRes.php?sucesso=1");
+    header("Location: ../View/listCuidador.php?sucesso=1");
     exit();
 } else {
-    echo "Erro ao cadastrar responsável.";
+    echo "Erro ao cadastrar funcionário.";
 }
 ?>

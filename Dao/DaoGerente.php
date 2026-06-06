@@ -36,30 +36,38 @@ class DaoGerente {
     }
 
     public function update(Gerente $gerente) {
-        try {
+            try {
             $conn = Conexao::getConexao();
             
-            $sql = "UPDATE gerente SET nome = ?, cpf = ?, sexo = ?, nascimento = ?, salario = ?, email = ?, senha = ?, rua = ?, bairro = ?, cep = ?, numero_casa = ? 
-                    WHERE id = ?";
+            // Monta a base da query (tudo MENOS a senha)
+            $sql = "UPDATE gerente SET 
+                    nome = ?, cpf = ?, sexo = ?, nascimento = ?, 
+                    email = ?, salario = ?, rua = ?, bairro = ?, 
+                    cep = ?, numero_casa = ?";
             
+            // Array com os valores correspondentes
+            $valores = [
+                $gerente->getNome(), $gerente->getCpf(), $gerente->getSexo(),
+                $gerente->getNascimento(), $gerente->getEmail(), $gerente->getSalario(),
+                $gerente->getRua(), $gerente->getBairro(), $gerente->getCep(),
+                $gerente->getNumeroCasa()
+            ];
+
+            // Se a senha NÃO for nula, adicionamos ela na query
+            if ($gerente->getSenha() !== null) {
+                $sql .= ", senha = ?";
+                $valores[] = $gerente->getSenha(); // Adiciona o hash na lista de valores
+            }
+
+            // Finaliza a query com o WHERE e adiciona o ID na lista de valores
+            $sql .= " WHERE id = ?";
+            $valores[] = $gerente->getId();
+
             $stmt = $conn->prepare($sql);
-            return $stmt->execute([
-                $gerente->getNome(),
-                $gerente->getCpf(),
-                $gerente->getSexo(),
-                $gerente->getNascimento(),
-                $gerente->getSalario(),
-                $gerente->getEmail(),
-                $gerente->getSenha(),
-                $gerente->getRua(),
-                $gerente->getBairro(),
-                $gerente->getCep(),
-                $gerente->getNumeroCasa(),
-                $gerente->getId()
-            ]);
+            return $stmt->execute($valores);
             
         } catch (PDOException $e) {
-            echo "Erro ao atualizar gerente: " . $e->getMessage();
+            echo "Erro ao atualizar: " . $e->getMessage();
             return false;
         }
     }

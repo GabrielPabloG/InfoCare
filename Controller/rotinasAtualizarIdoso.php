@@ -7,10 +7,10 @@
     $pessoa = new Pessoa();
 	$daoIdoso = new DaoIdoso();
 	
-	$idoso->setNomeIdoso($_POST['nomeIdoso']);
-    $idoso->setCpfIdoso($_POST['cpfIdoso']);
-    $idoso->setSexoIdoso($_POST['sexoIdoso']);
-    $idoso->setNascIdoso($_POST['nascIdoso']);
+	$idoso->setNome($_POST['nomeIdoso']);
+	$idoso->setCpf($_POST['cpfIdoso']);
+	$idoso->setSexo($_POST['sexoIdoso']);
+	$idoso->setNascimento($_POST['nascIdoso']);
     $pessoa->setCpfPessoa($_POST['cpfPessoa']);
     
 

@@ -21,7 +21,7 @@
             $conexao = abrirconexao();
             
             $consulta1 = "SELECT codIdoso, nomeIdoso, sexoIdoso, cpfIdoso FROM tbIdoso".
-            " WHERE cpfIdoso = '".$idoso->getCpfIdoso()."'";
+            " WHERE cpfIdoso = '".$idoso->getCpf()."'";
     
             $resultado1 = $conexao->query($consulta1);
   
@@ -179,7 +179,7 @@
             //values ('".."', '".."', '".."', '".."', '".."', '".."', '".."', '".."', '".."', '".."', '".."', '".."' , '".."' , '".."' )";
                 
                 $queryInsert1 = "insert into tbIdoso(nomeIdoso, sexoIdoso, cpfIdoso, nascIdoso, codResponsavel, codProntuarioFixo)
-            values ('".$idoso->getNomeIdoso()."', '".$idoso->getSexoIdoso()."', '".$idoso->getCpfIdoso()."', '".$idoso->getNascIdoso()."', '".$id."', ".$codigo.")";
+            values ('".$idoso->getNome()."', '".$idoso->getSexo()."', '".$idoso->getCpf()."', '".$idoso->getNascimento()."', '".$id."', ".$codigo.")";
             
             echo($queryInsert2);
             
@@ -275,7 +275,7 @@
             
                 
                 
-                    $novosDados = "UPDATE tbIdoso INNER JOIN tbResponsavel ON tbIdoso.codResponsavel = tbResponsavel.codResponsavel SET tbIdoso.nomeIdoso = '".$idoso->getNomeIdoso()."', tbIdoso.cpfIdoso = '".$idoso->getCpfIdoso()."', tbIdoso.sexoIdoso = '".$idoso->getSexoIdoso()."', tbIdoso.nascIdoso = '".$idoso->getNascIdoso()."' WHERE tbIdoso.cpfIdoso = '".$idoso->getCpfIdoso()."' ";
+                    $novosDados = "UPDATE tbIdoso INNER JOIN tbResponsavel ON tbIdoso.codResponsavel = tbResponsavel.codResponsavel SET tbIdoso.nomeIdoso = '".$idoso->getNome()."', tbIdoso.cpfIdoso = '".$idoso->getCpf()."', tbIdoso.sexoIdoso = '".$idoso->getSexo()."', tbIdoso.nascIdoso = '".$idoso->getNascimento()."' WHERE tbIdoso.cpfIdoso = '".$idoso->getCpf()."' ";
                 
                     $resultado = $conexao->query($novosDados);
                 

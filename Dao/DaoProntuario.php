@@ -18,7 +18,7 @@
             $conexao = abrirconexao();
             
             $queryInsert = "insert into tbProntuarioDiario(descProntuario, dataProntuario, codIdoso)
-            values ('".$prontuario->getDescProntuario()."', CURDATE(), ".$idoso->getCodIdoso().")";
+            values ('".$prontuario->getDescProntuario()."', CURDATE(), ".$idoso->getId().")";
             
             echo($queryInsert);
             

@@ -292,13 +292,15 @@ CREATE TABLE idoso (
 -- ---------------------------------------------------
 -- Prontuário Diário (evoluções)
 -- ---------------------------------------------------
-CREATE TABLE prontuario_diario (
+CREATE TABLE IF NOT EXISTS prontuario_diario (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    descricao VARCHAR(50) NOT NULL,
-    data DATE NOT NULL,
     idoso_id INT NOT NULL,
-    FOREIGN KEY (idoso_id) REFERENCES idoso(id) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB;
+    funcionario_id INT NOT NULL,
+    observacao TEXT NOT NULL,
+    data_registro DATETIME NOT NULL,
+    FOREIGN KEY (idoso_id) REFERENCES idoso(id) ON DELETE CASCADE,
+    FOREIGN KEY (funcionario_id) REFERENCES funcionario(id) ON DELETE CASCADE
+);
 
 -- ---------------------------------------------------
 -- Diagnósticos e Prescrições de Enfermagem

@@ -7,14 +7,14 @@ $conn = Conexao::getConexao();
 $idGerente = $_SESSION['user_id'];
 
 try {
-    // 1. Busca os dados do funcionário
+    // Busca os dados do gerente no banco refatorado
     $sql = "SELECT nome, cpf, sexo, nascimento, email, salario, rua, bairro, cep, numero_casa 
             FROM gerente WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->execute([$idGerente]);
-    $gerente = $stmt->fetch(PDO::FETCH_ASSOC);
+    $func = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // 2. Busca o telefone principal dele
+    // Busca o telefone principal dele
     $sqlTel = "SELECT numero FROM telefone WHERE entidade_tipo = 'gerente' AND entidade_id = ? LIMIT 1";
     $stmtTel = $conn->prepare($sqlTel);
     $stmtTel->execute([$idGerente]);
@@ -33,7 +33,7 @@ try {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>InfoCare - Atualizar Perfil</title>
+        <title>InfoCare - Atualizar Perfil Gerente</title>
         
         <link href="../cssCadastro/css/bootstrap.css" type="text/css" rel="stylesheet">
         <link href="../css/Func.css" type="text/css" rel="stylesheet">
@@ -108,18 +108,19 @@ try {
         <div class="box" style="margin-top: 1em;">
             <form action="../Controller/rotinasAtualizarGerente.php" method="post" class="container">
                 
-                <h3>Edite seus dados:</h3>
+                <h3>Edite seus dados (Gerente):</h3>
                 <br>
                 
                 <input type="hidden" name="id" value="<?php echo $idGerente; ?>">
+
                 <div class="form-row">
                     <div class="form-group col-md-3 col-sm-4">
                         <label>Nome</label>
-                        <input type="text" class="form-control" id="nome" name="nome" value="<?php echo htmlspecialchars($gerente['nome']); ?>" required placeholder="Nome">
+                        <input type="text" class="form-control" id="nome" name="nome" value="<?php echo htmlspecialchars($func['nome']); ?>" required placeholder="Nome">
                     </div>
                     <div class="form-group col-md-3 col-sm-4 ">
                         <label>E-mail</label>
-                        <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($gerente['email']); ?>" required placeholder="E-mail">
+                        <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($func['email']); ?>" required placeholder="E-mail">
                     </div>
                     <div class="form-group col-md-3 col-sm-4">
                         <label>Nova Senha</label>
@@ -127,7 +128,7 @@ try {
                     </div>
                     <div class="form-group col-md-3 col-sm-4">
                         <label>CPF</label>
-                        <input type="text" class="form-control" id="cpf" name="cpf" value="<?php echo htmlspecialchars($gerente['cpf']); ?>" required placeholder="CPF" onblur="TestaCPF(this.value);">
+                        <input type="text" class="form-control" id="cpf" name="cpf" value="<?php echo htmlspecialchars($func['cpf']); ?>" required placeholder="CPF" onblur="TestaCPF(this.value);">
                     </div>
                     <script type="text/javascript">$("#cpf").mask("000.000.000-00");</script>
                 </div>
@@ -136,22 +137,22 @@ try {
                     <div class="form-group col-md-3 col-sm-4">   
                         <label>Sexo</label>
                         <select class="form-control" id="sexo" name="sexo" required>
-                            <option value="Masculino" <?php if($gerente['sexo'] == 'Masculino') echo 'selected'; ?>>Masculino</option>
-                            <option value="Feminino" <?php if($gerente['sexo'] == 'Feminino') echo 'selected'; ?>>Feminino</option>
+                            <option value="Masculino" <?php if($func['sexo'] == 'Masculino') echo 'selected'; ?>>Masculino</option>
+                            <option value="Feminino" <?php if($func['sexo'] == 'Feminino') echo 'selected'; ?>>Feminino</option>
                         </select>
                     </div>
                     <div class="form-group col-md-3 col-sm-4">
                         <label>Data Nascimento</label>
-                        <input type="date" class="form-control" id="nascimento" name="nascimento" value="<?php echo htmlspecialchars($gerente['nascimento']); ?>" required>
+                        <input type="date" class="form-control" id="nascimento" name="nascimento" value="<?php echo htmlspecialchars($func['nascimento']); ?>" required>
                     </div>     
                     <div class="form-group col-md-3 col-sm-4">
                         <label>CEP</label>
-                        <input type="text" class="form-control" id="cep" name="cep" value="<?php echo htmlspecialchars($gerente['cep']); ?>" required placeholder="CEP" onblur="pesquisacep(this.value);">
+                        <input type="text" class="form-control" id="cep" name="cep" value="<?php echo htmlspecialchars($func['cep']); ?>" required placeholder="CEP" onblur="pesquisacep(this.value);">
                     </div>
                     <script type="text/javascript">$("#cep").mask("00000-000");</script>
                     <div class="form-group col-md-3 col-sm-4">
                         <label>Rua</label>
-                        <input type="text" class="form-control" id="rua" name="rua" value="<?php echo htmlspecialchars($gerente['rua']); ?>" required placeholder="Rua">
+                        <input type="text" class="form-control" id="rua" name="rua" value="<?php echo htmlspecialchars($func['rua']); ?>" required placeholder="Rua">
                     </div>
                 </div>
             
@@ -167,7 +168,7 @@ try {
                     
                     <div class="form-group col-md-3 col-sm-3">
                         <label>Salário</label>
-                        <input type="number" step="0.01" class="form-control" id="salario" name="salario" value="<?php echo htmlspecialchars($func['salario']); ?>" required placeholder="Salário (Ex: 2500.00)">
+                        <input type="number" step="0.01" class="form-control" id="salario" name="salario" value="<?php echo htmlspecialchars($func['salario']); ?>" required placeholder="Salário">
                     </div>
 
                     <div id="divTelefones" class="form-group col-md-4 col-sm-3">

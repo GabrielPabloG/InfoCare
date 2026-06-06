@@ -1,158 +1,116 @@
-<!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
-<html>
+<?php 
+session_start();
+require_once 'verificacao.php';
+require_once '../Dao/conexao.php';
 
+// Proteção: Se não recebeu o CPF do paciente via POST, manda de volta para a Home
+if (!isset($_POST['cpfIdoso']) || empty($_POST['cpfIdoso'])) {
+    header("Location: homeFuncionario.php");
+    exit();
+}
+
+$cpfIdoso = $_POST['cpfIdoso'];
+$conn = Conexao::getConexao();
+
+try {
+    // 1. Buscar os dados do Idoso pelo CPF
+    $sql = "SELECT id, nome, cpf, sexo, nascimento FROM idoso WHERE cpf = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([$cpfIdoso]);
+    $idoso = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$idoso) {
+        die("<h2>Erro: Paciente não encontrado no sistema.</h2> <a href='homeFuncionario.php'>Voltar</a>");
+    }
+
+    // 2. Buscar a foto do Idoso (Polimorfismo)
+    $img = 'user.png';
+    $sqlFoto = "SELECT nomeFoto FROM foto WHERE entidade_tipo = 'idoso' AND entidade_id = ? ORDER BY dataFoto DESC LIMIT 1";
+    $stmtFoto = $conn->prepare($sqlFoto);
+    $stmtFoto->execute([$idoso['id']]);
+    
+    if ($fotoDb = $stmtFoto->fetch(PDO::FETCH_ASSOC)) {
+        $img = $fotoDb['nomeFoto'];
+    }
+
+} catch (PDOException $e) {
+    die("Erro ao buscar dados do paciente: " . $e->getMessage());
+}
+?>
+
+<!DOCTYPE html>
+<html>
 <head>
     <meta charset="UTF-8">
-    <title>InfoCare</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InfoCare - Prontuário Diário</title>
+    
     <link href="../cssCadastro/css/bootstrap.css" type="text/css" rel="stylesheet">
     <link href="../css/home.css" type="text/css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="../css/cssStyle.css">
-    <script type="text/javascript" src="prototype.js"></script>
-        
-    <script type="text/javascript"></script>
+    
     <script src="../js/jquery.min.js"></script>
-    <script src="../js/jquery.mask.min.js"></script>
-
-    <link href="css/style.css" type="text/css" rel="stylesheet">
     <link rel="shortcut icon" type="image/x-icon" href="imagens/favicon.ico">
+    
+    <style>
+        .perfil-paciente {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .avatar-paciente {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid #34677D;
+        }
+    </style>
 </head>
 
 <body class="fundo" id="fundoCadastro">
 
-
     <header class="cabecalho">
-        <a href="../index.php">
-            <h1 class="logo"></h1>
-        </a>
-        <div class="menu">
-            <nav>
-                <ul>
-
-                </ul>
-            </nav>
-        </div>
+        <a href="homeFuncionario.php"><h1 class="logo"></h1></a>
+        <div class="menu"><nav><ul></ul></nav></div>
     </header>
-    <h1>Registro de prontuário: </h1>
 
-
-
-    <div class="box" style="margin-top: 1em;">
-
-        <!--<form action='criarProntuario.php' method='post'>
-            <div class="form-row">
-                <div class="form-group col-md-3 col-sm-6 col-15">
-                    <input type='text' class="form-control" id='cpfIdoso' name='cpfIdoso' required='' placeholder='CPF do Idoso' value="<?php $cpfIdoso = $_POST['cpfIdoso'];?>">
+    <div class="container" style="margin-top: 4em;">
+        <h2 style="color: white; text-shadow: 1px 1px 2px black;">Registro de Prontuário Diário</h2>
+        <br>
+        
+        <div class="perfil-paciente">
+            <div class="row">
+                <div class="col-md-3 text-center">
+                    <img src="../upload/<?php echo $img; ?>" class="avatar-paciente" alt="Foto do Paciente">
                 </div>
-
-                <script type="text/javascript">$("#cpfIdoso").mask("999.999.999-99");</script>
-
-                <div class="form-group col-md-2 col-sm-5 col-5">
-                    <input type='submit' class="btn btn-primary" value='Procurar'>
-                </div>
-                <div class="enviarM">
-                    <div class="enviarM">
-                    <a href="homeFuncionario.php" id="registerUser">Voltar</a>
-                    
-                </div>
-                    
+                <div class="col-md-9" style="padding-top: 15px;">
+                    <h3 style="color: #34677D;"><b><?php echo htmlspecialchars($idoso['nome']); ?></b></h3>
+                    <p><b>CPF:</b> <?php echo htmlspecialchars($idoso['cpf']); ?> &nbsp; | &nbsp; <b>Gênero:</b> <?php echo htmlspecialchars($idoso['sexo']); ?></p>
+                    <p><b>Nascimento:</b> <?php echo date('d/m/Y', strtotime($idoso['nascimento'])); ?></p>
                 </div>
             </div>
-        </form>-->
-
-        <?php 
-            include_once ("verificacao.php");
-            include_once '../Dao/conexao.php';
-            include_once '../Model/Idoso.php';
-                
-            $cpfIdoso = $_POST['cpfIdoso'];
-    
-            $conexao = abrirConexao();
             
-            $prontuario = "SELECT tbIdoso.codIdoso, tbIdoso.nomeIdoso, tbIdoso.sexoIdoso, tbIdoso.cpfIdoso, tbIdoso.nascIdoso
-            FROM tbIdoso
-            WHERE tbIdoso.cpfIdoso = '".$cpfIdoso."'";
-            //echo($prontuario);
+            <hr>
             
-            $resultado = $conexao->query($prontuario);
-            
-            $numresultado = mysqli_num_rows($resultado);
-            
-            if($numresultado > 0) {
-                 while($linharesultado = mysqli_fetch_array($resultado)){
-                    $nome = $linharesultado['nomeIdoso'];
-                    $cpf = $linharesultado['cpfIdoso'];
-                    $sexo = $linharesultado['sexoIdoso'];
-                    $nasc = date_create($linharesultado['nascIdoso']);
-                    $cod = $linharesultado['codIdoso'];
-                }
+            <form action="../Controller/rotinasCadastroProntuarioDiario.php" method="post">
                 
-                $consulta = "SELECT nomeFoto FROM foto WHERE codIdoso = ".$cod;
-    
-                $resultado = $conexao->query($consulta);
+                <input type="hidden" name="idoso_id" value="<?php echo $idoso['id']; ?>">
                 
-                $numresultado = mysqli_num_rows($resultado);
-                if($numresultado > 0) {
-                    while($linharesultado = mysqli_fetch_array($resultado)){
-                        $img = $linharesultado['nomeFoto'];
-                    }
-                }
-                
-            echo'
-                <div>
-                <img src="../upload/'.$img.'" class="avatar"> 
-                <h1>Nome: '.$nome.'</h1> 
-                <h2>CPF: '.$cpf.'</h2> 
-                <h4>Género: '.$sexo.'</h4> 
-                <h4>Nascimento: '.date_format($nasc, 'd-m-Y').'</h4> 
+                <div class="form-group">
+                    <label style="font-size: 18px; color: #34677D;"><b>Observações do dia:</b></label>
+                    <textarea class="form-control" id="observacao" name="observacao" rows="5" required placeholder="Escreva como o paciente passou o dia, se tomou as medicações, como foi a alimentação, pressão arterial, etc."></textarea>
                 </div>
                 
-                <form action="../Controller/rotinasCadastroProntuario.php" method="post">
-
-            <div class="form-row">
-                <div class="form-group col-md-2 col-sm-4">
-                    <label>Código: </label><input type="text" class="form-control" id="codIdoso" name="codIdoso" required="" placeholder="código Idoso" value='.$cod.' readonly=“true”>
+                <div class="text-right mt-4 mb-2">
+                    <a href="homeFuncionario.php" class="btn btn-secondary">Voltar</a>
+                    <input type="submit" class="btn btn-primary" style="background-color: #34677D; border: none;" value="Registrar Prontuário">
                 </div>
-                
-                <div class="form-group col-md-2 col-sm-4">
-                    <label>Observações: </label><input type="text" class="form-control" id="descProntuario" name="descProntuario" required="" placeholder="Observações do dia">
-                </div>
-                
-                <!--<fieldset class="form-group">
-                    <label>Tomou Remedio?</label>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="tomouRemedio" id="tomouRemedio" value="Sim">
-                        <label class="form-check-label" for="tomouRemedio">
-                            Sim
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="tomouRemedio" id="tomouRemedio" value="Nao">
-                        <label class="form-check-label" for="tomouRemedio">
-                            Não
-                        </label>
-                        </div>
-              </fieldset>-->
-              <div class="enviarM">
-                    <a href="homeFuncionario.php" id="registerUser">Voltar</a>
-                    <input type="submit" class="btn btn-primary" id="loginUser" name="login" value="Registrar">
-                </div>
-            </div>
-        </form>
-            ';
-            } 
-        ?>
-
+            </form>
+        </div>
     </div>
-    <?php
-           include_once ("verificacao.php");
-       ?>
-
-
+    
 </body>
-
 </html>

@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once '../Dao/conexao.php';
-require_once '../Dao/DaoGerente.php';
+require_once '../Dao/DaoResponsavel.php';
 
 // 1. TRAVA DE SEGURANÇA (Autorização)
 // Verifica se alguém está logado e se esse alguém é um Administrador.

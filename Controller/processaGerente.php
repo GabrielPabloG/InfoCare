@@ -13,7 +13,10 @@ $senhaSegura = password_hash($_POST['senha'], PASSWORD_DEFAULT);
 $gerente->setSenha($senhaSegura);
 $gerente->setRua($_POST['rua']);
 $gerente->setNumeroCasa($_POST['numero_casa']);
-// ...
+$gerente->setBairro($_POST['bairro']);
+$gerente->setCep($_POST['cep']);
+$gerente->setSexo($_POST['sexo']);
+$gerente->setNascimento($_POST['nascimento']);
 
 // 2. Salva o Gerente e pega o ID gerado
 $daoGerente = new DaoGerente();

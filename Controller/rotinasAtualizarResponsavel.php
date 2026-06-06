@@ -1,44 +1,63 @@
 <?php
+session_start();
 require_once '../Dao/conexao.php';
 require_once '../Model/Responsavel.php';
-require_once '../Dao/DaoResponsavel.php'; // Certifique-se de que este DAO foi criado na Fase 3
+require_once '../Dao/DaoResponsavel.php';
 require_once '../Dao/DaoTelefone.php';
 
-// 1. Instancia o novo Model
-$responsavel = new Responsavel();
-
-// 2. Recebe os dados pessoais (removi os sufixos "Pessoa" para padronizar com o Gerente)
-$responsavel->setNome($_POST['nome']);
-$responsavel->setCpf($_POST['cpf']);
-$responsavel->setSexo($_POST['sexo']);
-$responsavel->setNascimento($_POST['nascimento']);
-$responsavel->setEmail($_POST['email']);
-
-// 3. Aplica o HASH na senha.
-$senhaSegura = password_hash($_POST['senha'], PASSWORD_DEFAULT);
-$responsavel->setSenha($senhaSegura);
-
-// 4. Recebe os dados de endereço direto no Funcionário
-$responsavel->setRua($_POST['rua']);
-$responsavel->setBairro($_POST['bairro']);
-$responsavel->setCep($_POST['cep']);
-$responsavel->setNumeroCasa($_POST['numero_casa']);
-
-// 6. Salva o Funcionário e pega o ID gerado
-$daoResponsavel = new DaoResponsavel();
-$idResponsavel = $daoResponsavel->insert($responsavel);
-
-if ($idResponsavel) {
-    // 7. Salva o telefone associando ao ID do funcionário (Polimorfismo)
-    if (!empty($_POST['telefone'])) {
-        $daoTelefone = new DaoTelefone();
-        $daoTelefone->insert($_POST['telefone'], 'CELULAR', 'responsavel', $idResponsavel);
-    }
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
-    // Redireciona para a tela de listagem
-    header("Location: ../View/listCuidador.php?sucesso=1");
-    exit();
-} else {
-    echo "Erro ao cadastrar funcionário.";
+    $responsavel = new Responsavel();
+
+    // 1. O ID é OBRIGATÓRIO para a atualização (geralmente vem de um <input type="hidden"> no formulário)
+    if (empty($_POST['id'])) {
+        die("Erro: ID do funcionário não foi fornecido para a atualização.");
+    }
+    $responsavel->setId($_POST['id']);
+
+    // 2. Recebe os dados básicos atualizados
+    $responsavel->setNome($_POST['nome']);
+    $responsavel->setCpf($_POST['cpf']);
+    $responsavel->setSexo($_POST['sexo']);
+    $responsavel->setNascimento($_POST['nascimento']);
+    $responsavel->setEmail($_POST['email']);
+    $responsavel->setSalario($_POST['salario']);
+
+    // 3. Recebe os dados de endereço atualizados
+    $responsavel->setRua($_POST['rua']);
+    $responsavel->setBairro($_POST['bairro']);
+    $responsavel->setCep($_POST['cep']);
+    $responsavel->setNumeroCasa($_POST['numero_casa']);
+
+    // 4. A REGRA DE OURO DA SENHA:
+    if (!empty($_POST['senha'])) {
+        // O usuário digitou uma senha nova no formulário de edição
+        $senhaSegura = password_hash($_POST['senha'], PASSWORD_DEFAULT);
+        $responsavel->setSenha($senhaSegura);
+    } else {
+        // O usuário deixou o campo de senha em branco (não quer mudar a senha)
+        // Setamos como null para que o DAO saiba que NÃO deve atualizar essa coluna
+        $responsavel->setSenha(null); 
+    }
+
+    // 5. Executa a atualização no Banco
+    $daoResponsavel = new DaoResponsavel();
+    $atualizou = $daoResponsavel->update($responsavel);
+
+    if ($atualizou) {
+        // 6. Atualização do Telefone (Polimorfismo)
+        if (!empty($_POST['telefone'])) {
+            $daoTelefone = new DaoTelefone();
+            // A abordagem mais limpa em atualizações N:1 é apagar os antigos e inserir os novos,
+            // ou ter um método no DAO que faça um "Upsert" (Update se existir, Insert se não existir).
+            // Exemplo apagando os antigos daquele funcionário antes de inserir o novo:
+            $daoTelefone->deletarPorEntidade('responsavel', $responsavel->getId());
+            $daoTelefone->insert($_POST['telefone'], 'CELULAR', 'responsavel', $responsavel->getId());
+        }
+
+        header("Location: ../View/listReponsavel.php?atualizado=1");
+        exit();
+    } else {
+        echo "Erro ao atualizar responsavel. Por favor, tente novamente.";
+    }
 }
-?>

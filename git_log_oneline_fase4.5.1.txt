@@ -1,0 +1,602 @@
+1017e19 refactor(Medicamento): rename getCodMedicamento() to getId() and adjust internal attribute
+ Dao/DaoMedicacaoProntuario.php |  26 ++++++---
+ Dao/DaoMedicamento.php         | 118 +++++++++++++++++++++--------------------
+ Model/Medicamento.php          |  63 +++++++---------------
+ 3 files changed, 99 insertions(+), 108 deletions(-)
+f760b50 feat(rotinasCadastroProntuario): link medical record to elderly person at end of flow
+ Controller/rotinasCadastroProntuario.php | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+ec4a17a feat(DaoTelefone): add deletarPorEntidade() method
+ Dao/DaoTelefone.php | 16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
+96f5636 fix: correct three bugs breaking existing flows
+ Controller/apagarRes.php                   |      2 +-
+ Controller/processaGerente.php             |      5 +-
+ Controller/processaRes.php                 |     13 +-
+ Controller/rotinasAtualizarResponsavel.php |     95 +-
+ git_log_full.txt                           | 226030 ++++++++++++++++++++++++++
+ refactor-process.md                        |    134 +
+ refactor-process1.md                       |     90 +
+ 7 files changed, 226321 insertions(+), 48 deletions(-)
+0e797ab refactor(controllers): parameter cleanup, password hashing, polymorphism and security locks aligned with MVC
+ Controller/apagarGerente.php               |  40 +--
+ Controller/apagarIdoso.php                 |  46 ++--
+ Controller/apagarRes.php                   |  40 +--
+ Controller/processaGerente.php             |  70 +++--
+ Controller/processaRes.php                 |  84 +++---
+ Controller/rotinasAtualizarFuncionario.php |  86 +++++--
+ Controller/rotinasAtualizarGerente.php     |  63 +++++
+ Controller/rotinasAtualizarIdoso.php       |   8 +-
+ Controller/rotinasAtualizarResponsavel.php |  44 ++++
+ Controller/rotinasCadastroFuncionario.php  |  75 ++++--
+ Controller/rotinasCadastroIdoso.php        | 191 +++++---------
+ Controller/rotinasCadastroPessoa.php       |   8 +-
+ Controller/rotinasCadastroProntuario.php   | 205 ++++++++++++++-
+ Controller/rotinasLogar.php                |  53 +++-
+ Dao/DaoAutenticacao.php                    |  43 ++++
+ Dao/DaoFuncionario.php                     | 155 +++++++++++
+ Dao/DaoGerente.php                         |  46 ++--
+ Dao/DaoIdoso.php                           | 398 +++++++++--------------------
+ Dao/DaoProntuario.php                      |   2 +-
+ Dao/DaoResponsavel.php                     | 149 +++++++++++
+ Model/Funcionario.php                      | 116 ++++++++-
+ Model/Idoso.php                            |  73 +++---
+ pdf/Dao/DaoIdoso.php                       |   6 +-
+ pdf/Dao/DaoProntuario.php                  |   2 +-
+ 24 files changed, 1314 insertions(+), 689 deletions(-)
+322a0d9 refactor(dao): implement PDO singleton and create DAOs for fixed medical record and N:M association
+ Dao/DaoAlimentacao.php         |  84 +++++++++++
+ Dao/DaoAntecedencia.php        | 120 +++++++++++++++
+ Dao/DaoEliminacao.php          |  96 ++++++++++++
+ Dao/DaoExame.php               | 108 ++++++++++++++
+ Dao/DaoFoto.php                |  26 ++++
+ Dao/DaoGerente.php             | 175 +++++++++++++++++-----
+ Dao/DaoLocomocao.php           |  92 ++++++++++++
+ Dao/DaoMedicacaoProntuario.php |  48 ++++++
+ Dao/DaoPele.php                | 116 +++++++++++++++
+ Dao/DaoPessoa.php              | 323 -----------------------------------------
+ Dao/DaoProntuarioFixo.php      |  48 ++++++
+ Dao/DaoPulmonar.php            |  76 ++++++++++
+ Dao/DaoQuestionamento.php      | 160 ++++++++++++++++++++
+ Dao/DaoRelacionamento.php      |  84 +++++++++++
+ Dao/DaoTelefone.php            |  28 ++++
+ Dao/DaoUsuario.php             |  39 -----
+ Dao/conexao.php                |  54 ++++---
+ 17 files changed, 1249 insertions(+), 428 deletions(-)
+b0a7289 refactor(model): align entities with refactored database schema
+ Model/Alimentacao.php      |  52 +++
+ Model/Antecedencia.php     | 124 +++++++
+ Model/Eliminacao.php       |  76 ++++
+ Model/Exame.php            | 100 ++++++
+ Model/Funcionario.php      |   8 -
+ Model/Gerente.php          |  40 ++-
+ Model/Idoso.php            |  15 +-
+ Model/Locomocao.php        |  68 ++++
+ Model/Pele.php             | 116 ++++++
+ Model/Pessoa.php           | 109 ------
+ Model/Prontuario.php       |  54 ---
+ Model/ProntuarioDiario.php |  52 +++
+ Model/ProntuarioFixo.php   | 864 ++-------------------------------------------
+ Model/Pulmonar.php         |  36 ++
+ Model/Questionamento.php   | 204 +++++++++++
+ Model/Relacionamento.php   |  52 +++
+ Model/Responsavel.php      |  92 +++++
+ Model/Usuario.php          |  43 ---
+ 18 files changed, 1042 insertions(+), 1063 deletions(-)
+a7c358b docs: add architectural analysis report of legacy system and README.md
+ README.md    | 114 ++++++++++++++++
+ relatorio.md | 421 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 535 insertions(+)
+e0f4e53 fix(.devcontainer): resolve apt update permission error during build
+ .devcontainer/Dockerfile        | 9 +++++++--
+ .devcontainer/devcontainer.json | 2 +-
+ 2 files changed, 8 insertions(+), 3 deletions(-)
+c504bb4 chore(dev): add .devcontainer for Crush harness
+ .devcontainer/Dockerfile        |  99 +++++++++++++++++++++++++++++
+ .devcontainer/devcontainer.json |  62 ++++++++++++++++++
+ .devcontainer/init-firewall.sh  | 137 ++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 298 insertions(+)
+825a2b7 chore: initial commit
+ .gitignore                                         |    23 +
+ .vs/InfocareMain/v15/.suo                          |   Bin 0 -> 24064 bytes
+ .vs/VSWorkspaceState.json                          |     8 +
+ .vs/slnx.sqlite                                    |   Bin 0 -> 323584 bytes
+ Controller/apagarCuidador.php                      |    20 +
+ Controller/apagarGerente.php                       |    20 +
+ Controller/apagarIdoso.php                         |    22 +
+ Controller/apagarRes.php                           |    20 +
+ Controller/processa.php                            |    35 +
+ Controller/processaCuidador.php                    |    39 +
+ Controller/processaGerente.php                     |    40 +
+ Controller/processaRes.php                         |    39 +
+ Controller/rotinasAtualizar.php                    |    29 +
+ Controller/rotinasAtualizarFuncionario.php         |    29 +
+ Controller/rotinasAtualizarIdoso.php               |    20 +
+ Controller/rotinasCadastro.php                     |    18 +
+ Controller/rotinasCadastroFuncionario.php          |    27 +
+ Controller/rotinasCadastroIdoso.php                |   131 +
+ Controller/rotinasCadastroMedicamento.php          |    14 +
+ Controller/rotinasCadastroPessoa.php               |    39 +
+ Controller/rotinasCadastroProntuario.php           |    16 +
+ Controller/rotinasLogar.php                        |    13 +
+ Dao/ControleAcessoIC.php                           |   132 +
+ Dao/DaoGerente.php                                 |    48 +
+ Dao/DaoIdoso.php                                   |   301 +
+ Dao/DaoMedicamento.php                             |    69 +
+ Dao/DaoPessoa.php                                  |   323 +
+ Dao/DaoProntuario.php                              |    39 +
+ Dao/DaoUsuario.php                                 |    39 +
+ Dao/conexao.php                                    |    33 +
+ Dao/controleAcesso.php                             |    37 +
+ Dao/upload.php                                     |    33 +
+ Model/Funcionario.php                              |    28 +
+ Model/Gerente.php                                  |    83 +
+ Model/Idoso.php                                    |    52 +
+ Model/Medicamento.php                              |    52 +
+ Model/Pessoa.php                                   |   109 +
+ Model/Prontuario.php                               |    54 +
+ Model/ProntuarioFixo.php                           |   843 ++
+ Model/Usuario.php                                  |    43 +
+ View/atualizarFuncionario.php                      |   299 +
+ View/atualizarGerente.php                          |   331 +
+ View/atualizarIdoso.php                            |   264 +
+ View/atualizarResponsavel.php                      |   296 +
+ View/cadastro.php                                  |   285 +
+ View/cadastroCuidador.php                          |   283 +
+ View/cadastroIdoso.php                             |   560 +
+ View/cadastroIdosoTab.php                          |  1111 ++
+ View/cadastroMedicamento.php                       |    80 +
+ View/cadastroMedicamentoCuidador.php               |    80 +
+ View/cadastroPessoa.php                            |   279 +
+ View/cadastroProntuario.php                        |    82 +
+ View/criarProntuario.php                           |   158 +
+ View/escolher-cadastro.php                         |    28 +
+ View/escolher-editar.php                           |    27 +
+ View/escolher.php                                  |    27 +
+ View/homeAdm.php                                   |   369 +
+ View/homeFuncionario.php                           |   264 +
+ View/homeGerente.php                               |   407 +
+ View/homeResponsavel.php                           |   383 +
+ View/hospital.png                                  |   Bin 0 -> 9811 bytes
+ View/listCuidador.php                              |   293 +
+ View/listarRes.php                                 |   303 +
+ View/logout.php                                    |    12 +
+ View/portfolio.png                                 |   Bin 0 -> 8259 bytes
+ View/teste.php                                     |   243 +
+ View/user.png                                      |   Bin 0 -> 5306 bytes
+ View/verificacao.php                               |    11 +
+ View/visualizarProntuario.php                      |    81 +
+ banco/bdcareasy.sql                                |   653 ++
+ banco/bdinfocare-refatorado.sql                    |   320 +
+ banco/bdinfocare.sql                               |  2041 ++++
+ css/Func.css                                       |   572 +
+ css/Ger.css                                        |   466 +
+ css/Gerente.css                                    |   373 +
+ css/Idoso.css                                      |   403 +
+ css/Res.css                                        |   454 +
+ css/adm.css                                        |   432 +
+ css/bootstrap.min.css                              |     6 +
+ css/bootstrap.min.css.map                          |     1 +
+ css/component.css                                  |   836 ++
+ css/cssFunc.css                                    |   559 +
+ css/cssGerente.css                                 |   372 +
+ css/cssIdoso.css                                   |     8 +
+ css/cssLogin.css                                   |   463 +
+ css/cssglobal.css                                  |   461 +
+ css/default.css                                    |   195 +
+ css/global.css                                     |   475 +
+ css/home.css                                       |   433 +
+ css/main.css                                       |   396 +
+ css/style.css                                      |     0
+ css/styleHome.css                                  |   432 +
+ css/styleLogin.css                                 |   168 +
+ css/util.css                                       |  2993 ++++++
+ cssCadastro/css/bootstrap-grid.css                 |  1912 ++++
+ cssCadastro/css/bootstrap-grid.css.map             |     1 +
+ cssCadastro/css/bootstrap-grid.min.css             |     7 +
+ cssCadastro/css/bootstrap-grid.min.css.map         |     1 +
+ cssCadastro/css/bootstrap-reboot.css               |   331 +
+ cssCadastro/css/bootstrap-reboot.css.map           |     1 +
+ cssCadastro/css/bootstrap-reboot.min.css           |     8 +
+ cssCadastro/css/bootstrap-reboot.min.css.map       |     1 +
+ cssCadastro/css/bootstrap.css                      |  9031 ++++++++++++++++
+ cssCadastro/css/bootstrap.css.map                  |     1 +
+ cssCadastro/css/bootstrap.min.css                  |     7 +
+ cssCadastro/css/bootstrap.min.css.map              |     1 +
+ cssCadastro/js/bootstrap.bundle.js                 |  6461 +++++++++++
+ cssCadastro/js/bootstrap.bundle.js.map             |     1 +
+ cssCadastro/js/bootstrap.bundle.min.js             |     7 +
+ cssCadastro/js/bootstrap.bundle.min.js.map         |     1 +
+ cssCadastro/js/bootstrap.js                        |  3944 +++++++
+ cssCadastro/js/bootstrap.js.map                    |     1 +
+ cssCadastro/js/bootstrap.min.js                    |     7 +
+ cssCadastro/js/bootstrap.min.js.map                |     1 +
+ cssModal/css/bootstrap.min.css                     |     6 +
+ cssModal/css/bootstrap.min.css.map                 |     1 +
+ cssModal/js/bootstrap.min.js                       |    18 +
+ fontes/Amaranth-RegularItalic.ttf                  |   Bin 0 -> 77532 bytes
+ fontes/Another Flight.otf                          |   Bin 0 -> 57780 bytes
+ fontes/Antipasto-Pro-Regular-trial.ttf             |   Bin 0 -> 392012 bytes
+ fontes/BebasNeue-Regular.ttf                       |   Bin 0 -> 60576 bytes
+ fontes/Comfortaa-Regular.ttf                       |   Bin 0 -> 135304 bytes
+ fontes/Heavitas.ttf                                |   Bin 0 -> 122632 bytes
+ fontes/LemonMilk.otf                               |   Bin 0 -> 94464 bytes
+ fontes/lemon_milk.zip                              |   Bin 0 -> 360792 bytes
+ idosos.jpg                                         |   Bin 0 -> 78444 bytes
+ img/avatar.png                                     |   Bin 0 -> 12652 bytes
+ img/correct-symbol.png                             |   Bin 0 -> 714 bytes
+ img/f.png                                          |   Bin 0 -> 30195 bytes
+ img/fd.png                                         |   Bin 0 -> 35428 bytes
+ img/fh.jpeg                                        |   Bin 0 -> 25131 bytes
+ img/fi.png                                         |   Bin 0 -> 37564 bytes
+ img/fundo4.png                                     |   Bin 0 -> 2189387 bytes
+ img/hospital.png                                   |   Bin 0 -> 13617 bytes
+ img/idoso1.jpg                                     |   Bin 0 -> 300811 bytes
+ img/idoso2.jpg                                     |   Bin 0 -> 12048 bytes
+ img/images.jpg                                     |   Bin 0 -> 7793 bytes
+ img/infocare branco.png                            |   Bin 0 -> 4499 bytes
+ img/infocare-logo.png                              |   Bin 0 -> 11325 bytes
+ img/mala.png                                       |   Bin 0 -> 6840 bytes
+ img/velho-idoso-680x365.jpg                        |   Bin 0 -> 69405 bytes
+ index.php                                          |    43 +
+ infocare branco.png                                |   Bin 0 -> 4499 bytes
+ js/animatescroll.jquery.json                       |    38 +
+ js/animatescroll.js                                |   183 +
+ js/animatescroll.min.js                            |     2 +
+ js/animatescroll.noeasing.js                       |    50 +
+ js/app.js                                          |     2 +
+ js/bootstrap.bundle.js                             |  7013 ++++++++++++
+ js/bootstrap.bundle.js.map                         |     1 +
+ js/bootstrap.bundle.min.js                         |     7 +
+ js/bootstrap.bundle.min.js.map                     |     1 +
+ js/bootstrap.js                                    |  4435 ++++++++
+ js/bootstrap.js.map                                |     1 +
+ js/bootstrap.min.js                                |     7 +
+ js/bootstrap.min.js.map                            |     1 +
+ js/jquery-1.8.3.min.js                             |     2 +
+ js/jquery.dlmenu.js                                |   252 +
+ js/jquery.mask.min.js                              |    19 +
+ js/jquery.min.js                                   |     4 +
+ js/jquery1.min.js                                  | 10598 +++++++++++++++++++
+ js/main.js                                         |   207 +
+ js/modernizr.custom.js                             |     4 +
+ pdf/Dao/ControleAcessoIC.php                       |   132 +
+ pdf/Dao/DaoGerente.php                             |    48 +
+ pdf/Dao/DaoIdoso.php                               |   301 +
+ pdf/Dao/DaoMedicamento.php                         |    59 +
+ pdf/Dao/DaoPessoa.php                              |   323 +
+ pdf/Dao/DaoProntuario.php                          |    39 +
+ pdf/Dao/DaoUsuario.php                             |    39 +
+ pdf/Dao/conexao.php                                |    33 +
+ pdf/Dao/controleAcesso.php                         |    37 +
+ pdf/Dao/upload.php                                 |    33 +
+ pdf/capa_exemplo.jpg                               |   Bin 0 -> 36960 bytes
+ pdf/css/personalizado.css                          |    14 +
+ pdf/dompdf/.travis.yml                             |    25 +
+ pdf/dompdf/CONTRIBUTING.md                         |    65 +
+ pdf/dompdf/LICENSE.LGPL                            |   456 +
+ pdf/dompdf/README.md                               |   211 +
+ pdf/dompdf/VERSION                                 |     1 +
+ pdf/dompdf/autoload.inc.php                        |    39 +
+ pdf/dompdf/composer.json                           |    48 +
+ pdf/dompdf/lib/Cpdf.php                            |  5640 ++++++++++
+ pdf/dompdf/lib/fonts/Courier-Bold.afm              |   344 +
+ pdf/dompdf/lib/fonts/Courier-BoldOblique.afm       |   344 +
+ pdf/dompdf/lib/fonts/Courier-Oblique.afm           |   344 +
+ pdf/dompdf/lib/fonts/Courier.afm                   |   344 +
+ pdf/dompdf/lib/fonts/DejaVuSans-Bold.ttf           |   Bin 0 -> 705684 bytes
+ pdf/dompdf/lib/fonts/DejaVuSans-Bold.ufm           |  6067 +++++++++++
+ pdf/dompdf/lib/fonts/DejaVuSans-BoldOblique.ttf    |   Bin 0 -> 643292 bytes
+ pdf/dompdf/lib/fonts/DejaVuSans-BoldOblique.ufm    |  5712 ++++++++++
+ pdf/dompdf/lib/fonts/DejaVuSans-Oblique.ttf        |   Bin 0 -> 635416 bytes
+ pdf/dompdf/lib/fonts/DejaVuSans-Oblique.ufm        |  5268 +++++++++
+ pdf/dompdf/lib/fonts/DejaVuSans.ttf                |   Bin 0 -> 757076 bytes
+ pdf/dompdf/lib/fonts/DejaVuSans.ufm                |  6661 ++++++++++++
+ pdf/dompdf/lib/fonts/DejaVuSansMono-Bold.ttf       |   Bin 0 -> 331992 bytes
+ pdf/dompdf/lib/fonts/DejaVuSansMono-Bold.ufm       |  3285 ++++++
+ .../lib/fonts/DejaVuSansMono-BoldOblique.ttf       |   Bin 0 -> 253580 bytes
+ .../lib/fonts/DejaVuSansMono-BoldOblique.ufm       |  2707 +++++
+ pdf/dompdf/lib/fonts/DejaVuSansMono-Oblique.ttf    |   Bin 0 -> 251932 bytes
+ pdf/dompdf/lib/fonts/DejaVuSansMono-Oblique.ufm    |  2707 +++++
+ pdf/dompdf/lib/fonts/DejaVuSansMono.ttf            |   Bin 0 -> 340712 bytes
+ pdf/dompdf/lib/fonts/DejaVuSansMono.ufm            |  3284 ++++++
+ pdf/dompdf/lib/fonts/DejaVuSerif-Bold.ttf          |   Bin 0 -> 356088 bytes
+ pdf/dompdf/lib/fonts/DejaVuSerif-Bold.ufm          |  4013 +++++++
+ pdf/dompdf/lib/fonts/DejaVuSerif-BoldItalic.ttf    |   Bin 0 -> 347460 bytes
+ pdf/dompdf/lib/fonts/DejaVuSerif-BoldItalic.ufm    |  3892 +++++++
+ pdf/dompdf/lib/fonts/DejaVuSerif-Italic.ttf        |   Bin 0 -> 345996 bytes
+ pdf/dompdf/lib/fonts/DejaVuSerif-Italic.ufm        |  3883 +++++++
+ pdf/dompdf/lib/fonts/DejaVuSerif.ttf               |   Bin 0 -> 380132 bytes
+ pdf/dompdf/lib/fonts/DejaVuSerif.ufm               |  4012 +++++++
+ pdf/dompdf/lib/fonts/Helvetica-Bold.afm            |  2829 +++++
+ pdf/dompdf/lib/fonts/Helvetica-BoldOblique.afm     |  2829 +++++
+ pdf/dompdf/lib/fonts/Helvetica-Oblique.afm         |  3053 ++++++
+ pdf/dompdf/lib/fonts/Helvetica.afm                 |  3053 ++++++
+ pdf/dompdf/lib/fonts/Symbol.afm                    |   213 +
+ pdf/dompdf/lib/fonts/Times-Bold.afm                |  2590 +++++
+ pdf/dompdf/lib/fonts/Times-Bold.afm.php            |   572 +
+ pdf/dompdf/lib/fonts/Times-BoldItalic.afm          |  2386 +++++
+ pdf/dompdf/lib/fonts/Times-Italic.afm              |  2669 +++++
+ pdf/dompdf/lib/fonts/Times-Roman.afm               |  2421 +++++
+ pdf/dompdf/lib/fonts/Times-Roman.afm.php           |   572 +
+ pdf/dompdf/lib/fonts/ZapfDingbats.afm              |   225 +
+ .../lib/fonts/dompdf_font_family_cache.dist.php    |    95 +
+ pdf/dompdf/lib/fonts/mustRead.html                 |    17 +
+ pdf/dompdf/lib/html5lib/Data.php                   |   123 +
+ pdf/dompdf/lib/html5lib/InputStream.php            |   299 +
+ pdf/dompdf/lib/html5lib/Parser.php                 |    37 +
+ pdf/dompdf/lib/html5lib/Tokenizer.php              |  2470 +++++
+ pdf/dompdf/lib/html5lib/TreeBuilder.php            |  3989 +++++++
+ .../lib/html5lib/named-character-references.ser    |     1 +
+ pdf/dompdf/lib/php-css-parser/.travis.yml          |    12 +
+ pdf/dompdf/lib/php-css-parser/CHANGELOG.md         |   205 +
+ pdf/dompdf/lib/php-css-parser/Doxyfile             |  2310 ++++
+ pdf/dompdf/lib/php-css-parser/README.md            |   640 ++
+ pdf/dompdf/lib/php-css-parser/composer.json        |    20 +
+ pdf/dompdf/lib/php-css-parser/composer.lock        |  1317 +++
+ .../lib/Sabberworm/CSS/CSSList/AtRuleBlockList.php |    48 +
+ .../lib/Sabberworm/CSS/CSSList/CSSBlockList.php    |    82 +
+ .../lib/Sabberworm/CSS/CSSList/CSSList.php         |   157 +
+ .../lib/Sabberworm/CSS/CSSList/Document.php        |   105 +
+ .../lib/Sabberworm/CSS/CSSList/KeyFrame.php        |    56 +
+ .../lib/Sabberworm/CSS/Comment/Comment.php         |    51 +
+ .../lib/Sabberworm/CSS/Comment/Commentable.php     |    23 +
+ .../lib/Sabberworm/CSS/OutputFormat.php            |   289 +
+ .../php-css-parser/lib/Sabberworm/CSS/Parser.php   |   719 ++
+ .../lib/Sabberworm/CSS/Parsing/OutputException.php |    12 +
+ .../lib/Sabberworm/CSS/Parsing/SourceException.php |    18 +
+ .../CSS/Parsing/UnexpectedTokenException.php       |    31 +
+ .../lib/Sabberworm/CSS/Property/AtRule.php         |    15 +
+ .../lib/Sabberworm/CSS/Property/CSSNamespace.php   |    75 +
+ .../lib/Sabberworm/CSS/Property/Charset.php        |    66 +
+ .../lib/Sabberworm/CSS/Property/Import.php         |    69 +
+ .../lib/Sabberworm/CSS/Property/Selector.php       |    74 +
+ .../lib/Sabberworm/CSS/Renderable.php              |     9 +
+ .../lib/Sabberworm/CSS/Rule/Rule.php               |   197 +
+ .../lib/Sabberworm/CSS/RuleSet/AtRuleSet.php       |    44 +
+ .../Sabberworm/CSS/RuleSet/DeclarationBlock.php    |   608 ++
+ .../lib/Sabberworm/CSS/RuleSet/RuleSet.php         |   173 +
+ .../php-css-parser/lib/Sabberworm/CSS/Settings.php |    54 +
+ .../lib/Sabberworm/CSS/Value/CSSFunction.php       |    40 +
+ .../lib/Sabberworm/CSS/Value/CSSString.php         |    32 +
+ .../lib/Sabberworm/CSS/Value/Color.php             |    41 +
+ .../lib/Sabberworm/CSS/Value/PrimitiveValue.php    |    10 +
+ .../lib/Sabberworm/CSS/Value/RuleValueList.php     |     9 +
+ .../lib/Sabberworm/CSS/Value/Size.php              |    73 +
+ .../lib/Sabberworm/CSS/Value/URL.php               |    31 +
+ .../lib/Sabberworm/CSS/Value/Value.php             |    24 +
+ .../lib/Sabberworm/CSS/Value/ValueList.php         |    47 +
+ pdf/dompdf/lib/php-css-parser/phpunit.xml          |    10 +
+ .../Sabberworm/CSS/CSSList/AtRuleBlockListTest.php |    27 +
+ .../tests/Sabberworm/CSS/CSSList/DocumentTest.php  |    26 +
+ .../tests/Sabberworm/CSS/OutputFormatTest.php      |   170 +
+ .../tests/Sabberworm/CSS/ParserTest.php            |   585 +
+ .../CSS/RuleSet/DeclarationBlockTest.php           |   267 +
+ .../Sabberworm/CSS/RuleSet/LenientParsingTest.php  |    76 +
+ pdf/dompdf/lib/php-css-parser/tests/bootstrap.php  |    10 +
+ .../tests/files/-charset-after-rule.css            |     5 +
+ .../tests/files/-charset-in-block.css              |     3 +
+ .../lib/php-css-parser/tests/files/-empty.css      |     0
+ .../php-css-parser/tests/files/-end-token-2.css    |     1 +
+ .../lib/php-css-parser/tests/files/-end-token.css  |     1 +
+ .../tests/files/-fault-tolerance.css               |    15 +
+ .../lib/php-css-parser/tests/files/-tobedone.css   |     9 +
+ .../lib/php-css-parser/tests/files/1readme.css     |    10 +
+ .../lib/php-css-parser/tests/files/2readme.css     |     5 +
+ .../lib/php-css-parser/tests/files/atrules.css     |    57 +
+ .../tests/files/case-insensitivity.css             |    15 +
+ .../lib/php-css-parser/tests/files/colortest.css   |    12 +
+ .../lib/php-css-parser/tests/files/comments.css    |    17 +
+ .../tests/files/create-shorthands.css              |     6 +
+ .../lib/php-css-parser/tests/files/docuwiki.css    |     1 +
+ .../tests/files/expand-shorthands.css              |     7 +
+ .../lib/php-css-parser/tests/files/functions.css   |    21 +
+ .../lib/php-css-parser/tests/files/ie-hacks.css    |     9 +
+ pdf/dompdf/lib/php-css-parser/tests/files/ie.css   |     6 +
+ .../lib/php-css-parser/tests/files/important.css   |     8 +
+ .../lib/php-css-parser/tests/files/inner-color.css |     3 +
+ .../php-css-parser/tests/files/line-numbers.css    |    32 +
+ .../lib/php-css-parser/tests/files/namespaces.css  |    18 +
+ .../lib/php-css-parser/tests/files/nested.css      |    17 +
+ .../lib/php-css-parser/tests/files/slashed.css     |     4 +
+ .../lib/php-css-parser/tests/files/specificity.css |     7 +
+ .../lib/php-css-parser/tests/files/unicode.css     |    12 +
+ pdf/dompdf/lib/php-css-parser/tests/files/url.css  |     4 +
+ .../lib/php-css-parser/tests/files/values.css      |    14 +
+ .../lib/php-css-parser/tests/files/webkit.css      |     1 +
+ .../lib/php-css-parser/tests/files/whitespace.css  |     3 +
+ pdf/dompdf/lib/php-css-parser/tests/phpunit.xml    |     1 +
+ pdf/dompdf/lib/php-css-parser/tests/quickdump.php  |    20 +
+ pdf/dompdf/lib/php-font-lib/.htaccess              |     1 +
+ pdf/dompdf/lib/php-font-lib/.travis.yml            |    29 +
+ pdf/dompdf/lib/php-font-lib/LICENSE                |   456 +
+ pdf/dompdf/lib/php-font-lib/README.md              |    29 +
+ pdf/dompdf/lib/php-font-lib/bower.json             |    23 +
+ pdf/dompdf/lib/php-font-lib/composer.json          |    24 +
+ pdf/dompdf/lib/php-font-lib/index.php              |     1 +
+ .../php-font-lib/maps/adobe-standard-encoding.map  |   231 +
+ pdf/dompdf/lib/php-font-lib/maps/cp1250.map        |   251 +
+ pdf/dompdf/lib/php-font-lib/maps/cp1251.map        |   255 +
+ pdf/dompdf/lib/php-font-lib/maps/cp1252.map        |   251 +
+ pdf/dompdf/lib/php-font-lib/maps/cp1253.map        |   239 +
+ pdf/dompdf/lib/php-font-lib/maps/cp1254.map        |   249 +
+ pdf/dompdf/lib/php-font-lib/maps/cp1255.map        |   233 +
+ pdf/dompdf/lib/php-font-lib/maps/cp1257.map        |   244 +
+ pdf/dompdf/lib/php-font-lib/maps/cp1258.map        |   247 +
+ pdf/dompdf/lib/php-font-lib/maps/cp874.map         |   225 +
+ pdf/dompdf/lib/php-font-lib/maps/iso-8859-1.map    |   256 +
+ pdf/dompdf/lib/php-font-lib/maps/iso-8859-11.map   |   248 +
+ pdf/dompdf/lib/php-font-lib/maps/iso-8859-15.map   |   256 +
+ pdf/dompdf/lib/php-font-lib/maps/iso-8859-16.map   |   256 +
+ pdf/dompdf/lib/php-font-lib/maps/iso-8859-2.map    |   256 +
+ pdf/dompdf/lib/php-font-lib/maps/iso-8859-4.map    |   256 +
+ pdf/dompdf/lib/php-font-lib/maps/iso-8859-5.map    |   256 +
+ pdf/dompdf/lib/php-font-lib/maps/iso-8859-7.map    |   250 +
+ pdf/dompdf/lib/php-font-lib/maps/iso-8859-9.map    |   256 +
+ pdf/dompdf/lib/php-font-lib/maps/koi8-r.map        |   256 +
+ pdf/dompdf/lib/php-font-lib/maps/koi8-u.map        |   256 +
+ pdf/dompdf/lib/php-font-lib/phpunit.xml.dist       |    19 +
+ .../php-font-lib/sample-fonts/IntelClear-Light.ttf |   Bin 0 -> 96664 bytes
+ .../sample-fonts/NotoSansShavian-Regular.ttf       |   Bin 0 -> 6020 bytes
+ .../php-font-lib/src/FontLib/AdobeFontMetrics.php  |   217 +
+ .../lib/php-font-lib/src/FontLib/Autoloader.php    |    43 +
+ .../lib/php-font-lib/src/FontLib/BinaryStream.php  |   444 +
+ .../lib/php-font-lib/src/FontLib/EOT/File.php      |   160 +
+ .../lib/php-font-lib/src/FontLib/EOT/Header.php    |   113 +
+ .../lib/php-font-lib/src/FontLib/EncodingMap.php   |    37 +
+ .../FontLib/Exception/FontNotFoundException.php    |    11 +
+ pdf/dompdf/lib/php-font-lib/src/FontLib/Font.php   |    89 +
+ .../lib/php-font-lib/src/FontLib/Glyph/Outline.php |   110 +
+ .../src/FontLib/Glyph/OutlineComponent.php         |    31 +
+ .../src/FontLib/Glyph/OutlineComposite.php         |   242 +
+ .../src/FontLib/Glyph/OutlineSimple.php            |   335 +
+ pdf/dompdf/lib/php-font-lib/src/FontLib/Header.php |    37 +
+ .../lib/php-font-lib/src/FontLib/OpenType/File.php |    18 +
+ .../src/FontLib/OpenType/TableDirectoryEntry.php   |    18 +
+ .../src/FontLib/Table/DirectoryEntry.php           |   129 +
+ .../lib/php-font-lib/src/FontLib/Table/Table.php   |    93 +
+ .../php-font-lib/src/FontLib/Table/Type/cmap.php   |   298 +
+ .../php-font-lib/src/FontLib/Table/Type/glyf.php   |   154 +
+ .../php-font-lib/src/FontLib/Table/Type/head.php   |    46 +
+ .../php-font-lib/src/FontLib/Table/Type/hhea.php   |    44 +
+ .../php-font-lib/src/FontLib/Table/Type/hmtx.php   |    59 +
+ .../php-font-lib/src/FontLib/Table/Type/kern.php   |    80 +
+ .../php-font-lib/src/FontLib/Table/Type/loca.php   |    80 +
+ .../php-font-lib/src/FontLib/Table/Type/maxp.php   |    42 +
+ .../php-font-lib/src/FontLib/Table/Type/name.php   |   193 +
+ .../src/FontLib/Table/Type/nameRecord.php          |    53 +
+ .../php-font-lib/src/FontLib/Table/Type/os2.php    |    47 +
+ .../php-font-lib/src/FontLib/Table/Type/post.php   |   141 +
+ .../src/FontLib/TrueType/Collection.php            |   100 +
+ .../lib/php-font-lib/src/FontLib/TrueType/File.php |   471 +
+ .../php-font-lib/src/FontLib/TrueType/Header.php   |    31 +
+ .../src/FontLib/TrueType/TableDirectoryEntry.php   |    33 +
+ .../lib/php-font-lib/src/FontLib/WOFF/File.php     |    81 +
+ .../lib/php-font-lib/src/FontLib/WOFF/Header.php   |    32 +
+ .../src/FontLib/WOFF/TableDirectoryEntry.php       |    34 +
+ .../lib/php-font-lib/tests/FontLib/FontTest.php    |    48 +
+ pdf/dompdf/lib/php-svg-lib/.travis.yml             |    18 +
+ pdf/dompdf/lib/php-svg-lib/COPYING                 |   165 +
+ pdf/dompdf/lib/php-svg-lib/COPYING.GPL             |   674 ++
+ pdf/dompdf/lib/php-svg-lib/README.md               |    14 +
+ pdf/dompdf/lib/php-svg-lib/composer.json           |    24 +
+ pdf/dompdf/lib/php-svg-lib/phpunit.xml             |    19 +
+ .../lib/php-svg-lib/src/Svg/DefaultStyle.php       |    29 +
+ pdf/dompdf/lib/php-svg-lib/src/Svg/Document.php    |   404 +
+ .../lib/php-svg-lib/src/Svg/Gradient/Stop.php      |    16 +
+ pdf/dompdf/lib/php-svg-lib/src/Svg/Style.php       |   550 +
+ .../lib/php-svg-lib/src/Svg/Surface/CPdf.php       |  4768 +++++++++
+ .../php-svg-lib/src/Svg/Surface/SurfaceCpdf.php    |   486 +
+ .../php-svg-lib/src/Svg/Surface/SurfaceGmagick.php |   308 +
+ .../src/Svg/Surface/SurfaceInterface.php           |    90 +
+ .../php-svg-lib/src/Svg/Surface/SurfacePDFLib.php  |   422 +
+ .../lib/php-svg-lib/src/Svg/Tag/AbstractTag.php    |   183 +
+ pdf/dompdf/lib/php-svg-lib/src/Svg/Tag/Anchor.php  |    14 +
+ pdf/dompdf/lib/php-svg-lib/src/Svg/Tag/Circle.php  |    31 +
+ .../lib/php-svg-lib/src/Svg/Tag/ClipPath.php       |    33 +
+ pdf/dompdf/lib/php-svg-lib/src/Svg/Tag/Ellipse.php |    37 +
+ pdf/dompdf/lib/php-svg-lib/src/Svg/Tag/Group.php   |    33 +
+ pdf/dompdf/lib/php-svg-lib/src/Svg/Tag/Image.php   |    62 +
+ pdf/dompdf/lib/php-svg-lib/src/Svg/Tag/Line.php    |    38 +
+ .../lib/php-svg-lib/src/Svg/Tag/LinearGradient.php |    83 +
+ pdf/dompdf/lib/php-svg-lib/src/Svg/Tag/Path.php    |   528 +
+ pdf/dompdf/lib/php-svg-lib/src/Svg/Tag/Polygon.php |    33 +
+ .../lib/php-svg-lib/src/Svg/Tag/Polyline.php       |    31 +
+ .../lib/php-svg-lib/src/Svg/Tag/RadialGradient.php |    17 +
+ pdf/dompdf/lib/php-svg-lib/src/Svg/Tag/Rect.php    |    45 +
+ pdf/dompdf/lib/php-svg-lib/src/Svg/Tag/Shape.php   |    63 +
+ pdf/dompdf/lib/php-svg-lib/src/Svg/Tag/Stop.php    |    17 +
+ .../lib/php-svg-lib/src/Svg/Tag/StyleTag.php       |    27 +
+ pdf/dompdf/lib/php-svg-lib/src/Svg/Tag/Text.php    |    70 +
+ pdf/dompdf/lib/php-svg-lib/src/Svg/Tag/UseTag.php  |    96 +
+ pdf/dompdf/lib/php-svg-lib/src/autoload.php        |    17 +
+ pdf/dompdf/lib/php-svg-lib/tests/Svg/StyleTest.php |    60 +
+ pdf/dompdf/lib/res/broken_image.png                |   Bin 0 -> 618 bytes
+ pdf/dompdf/lib/res/broken_image.svg                |     8 +
+ pdf/dompdf/lib/res/html.css                        |   521 +
+ pdf/dompdf/phpcs.xml                               |   142 +
+ pdf/dompdf/phpunit.xml.dist                        |    15 +
+ pdf/dompdf/src/Adapter/CPDF.php                    |  1184 +++
+ pdf/dompdf/src/Adapter/GD.php                      |  1092 ++
+ pdf/dompdf/src/Adapter/PDFLib.php                  |  1598 +++
+ pdf/dompdf/src/Autoloader.php                      |    42 +
+ pdf/dompdf/src/Canvas.php                          |   422 +
+ pdf/dompdf/src/CanvasFactory.php                   |    59 +
+ pdf/dompdf/src/Cellmap.php                         |   914 ++
+ pdf/dompdf/src/Css/AttributeTranslator.php         |   639 ++
+ pdf/dompdf/src/Css/Color.php                       |   307 +
+ pdf/dompdf/src/Css/Style.php                       |  2952 ++++++
+ pdf/dompdf/src/Css/Stylesheet.php                  |  1733 +++
+ pdf/dompdf/src/Dompdf.php                          |  1516 +++
+ pdf/dompdf/src/Exception.php                       |    29 +
+ pdf/dompdf/src/Exception/ImageException.php        |    31 +
+ pdf/dompdf/src/FontMetrics.php                     |   538 +
+ pdf/dompdf/src/Frame.php                           |  1216 +++
+ pdf/dompdf/src/Frame/Factory.php                   |   287 +
+ pdf/dompdf/src/Frame/FrameList.php                 |    35 +
+ pdf/dompdf/src/Frame/FrameListIterator.php         |    91 +
+ pdf/dompdf/src/Frame/FrameTree.php                 |   315 +
+ pdf/dompdf/src/Frame/FrameTreeIterator.php         |    96 +
+ pdf/dompdf/src/Frame/FrameTreeList.php             |    35 +
+ .../src/FrameDecorator/AbstractFrameDecorator.php  |   915 ++
+ pdf/dompdf/src/FrameDecorator/Block.php            |   284 +
+ pdf/dompdf/src/FrameDecorator/Image.php            |    91 +
+ pdf/dompdf/src/FrameDecorator/Inline.php           |   106 +
+ pdf/dompdf/src/FrameDecorator/ListBullet.php       |    87 +
+ pdf/dompdf/src/FrameDecorator/ListBulletImage.php  |   154 +
+ .../src/FrameDecorator/NullFrameDecorator.php      |    34 +
+ pdf/dompdf/src/FrameDecorator/Page.php             |   683 ++
+ pdf/dompdf/src/FrameDecorator/Table.php            |   398 +
+ pdf/dompdf/src/FrameDecorator/TableCell.php        |   144 +
+ pdf/dompdf/src/FrameDecorator/TableRow.php         |    68 +
+ pdf/dompdf/src/FrameDecorator/TableRowGroup.php    |    70 +
+ pdf/dompdf/src/FrameDecorator/Text.php             |   203 +
+ .../src/FrameReflower/AbstractFrameReflower.php    |   529 +
+ pdf/dompdf/src/FrameReflower/Block.php             |   948 ++
+ pdf/dompdf/src/FrameReflower/Image.php             |   206 +
+ pdf/dompdf/src/FrameReflower/Inline.php            |   103 +
+ pdf/dompdf/src/FrameReflower/ListBullet.php        |    45 +
+ pdf/dompdf/src/FrameReflower/NullFrameReflower.php |    39 +
+ pdf/dompdf/src/FrameReflower/Page.php              |   205 +
+ pdf/dompdf/src/FrameReflower/Table.php             |   589 ++
+ pdf/dompdf/src/FrameReflower/TableCell.php         |   121 +
+ pdf/dompdf/src/FrameReflower/TableRow.php          |    74 +
+ pdf/dompdf/src/FrameReflower/TableRowGroup.php     |    72 +
+ pdf/dompdf/src/FrameReflower/Text.php              |   511 +
+ pdf/dompdf/src/Helpers.php                         |   895 ++
+ pdf/dompdf/src/Image/Cache.php                     |   186 +
+ pdf/dompdf/src/JavascriptEmbedder.php              |    52 +
+ pdf/dompdf/src/LineBox.php                         |   303 +
+ pdf/dompdf/src/Options.php                         |  1005 ++
+ pdf/dompdf/src/PhpEvaluator.php                    |    63 +
+ pdf/dompdf/src/Positioner/Absolute.php             |   118 +
+ pdf/dompdf/src/Positioner/AbstractPositioner.php   |    48 +
+ pdf/dompdf/src/Positioner/Block.php                |    54 +
+ pdf/dompdf/src/Positioner/Fixed.php                |    89 +
+ pdf/dompdf/src/Positioner/Inline.php               |    77 +
+ pdf/dompdf/src/Positioner/ListBullet.php           |    76 +
+ pdf/dompdf/src/Positioner/NullPositioner.php       |    28 +
+ pdf/dompdf/src/Positioner/TableCell.php            |    31 +
+ pdf/dompdf/src/Positioner/TableRow.php             |    36 +
+ pdf/dompdf/src/Renderer.php                        |   295 +
+ pdf/dompdf/src/Renderer/AbstractRenderer.php       |   923 ++
+ pdf/dompdf/src/Renderer/Block.php                  |   262 +
+ pdf/dompdf/src/Renderer/Image.php                  |   139 +
+ pdf/dompdf/src/Renderer/Inline.php                 |   211 +
+ pdf/dompdf/src/Renderer/ListBullet.php             |   255 +
+ pdf/dompdf/src/Renderer/TableCell.php              |   179 +
+ pdf/dompdf/src/Renderer/TableRowGroup.php          |    50 +
+ pdf/dompdf/src/Renderer/Text.php                   |   167 +
+ pdf/index.php                                      |   294 +
+ pdf/read.txt                                       |     2 +
+ upload/0e352075d7d93994c9b5244a0c75bd2d.jpg        |   Bin 0 -> 300811 bytes
+ upload/16daf3accbb10180b3db32fa5d4ba860.jpg        |   Bin 0 -> 69405 bytes
+ upload/42072fa7bd3ca1825d013f4e7bd8088c.png        |   Bin 0 -> 499686 bytes
+ upload/760c7976118b42799bf2afe5bf0cf862.jpg        |   Bin 0 -> 126670 bytes
+ upload/7d44a94b494b038532ffe94009ce4446.jpg        |   Bin 0 -> 39958 bytes
+ upload/7fdc1a630c238af0815181f9faa190f5.jpg        |   Bin 0 -> 7793 bytes
+ upload/a6eb7f70d6033fab220197ccf5b80b8e.jpg        |   Bin 0 -> 12048 bytes
+ upload/fc0952f45747def1310d100d31fd4449.jpg        |   Bin 0 -> 23227 bytes
+ upload/fe6168192f637a4362d184bf7d159c33.jpg        |   Bin 0 -> 23227 bytes
+ upload/user.png                                    |   Bin 0 -> 5306 bytes
+ 502 files changed, 215604 insertions(+)

@@ -16,8 +16,8 @@ class DaoFoto {
 
             if ($fotoAntiga) {
                 // Apaga o arquivo físico da pasta
-                $caminhoArquivo = "../upload/" . $fotoAntiga['nomeFoto'];
-                if (file_exists($caminhoArquivo) && $fotoAntiga['nomeFoto'] !== 'user.png') {
+                $caminhoArquivo = "../upload/" . $fotoAntiga['nome_arquivo'];
+                if (file_exists($caminhoArquivo) && $fotoAntiga['nome_arquivo'] !== 'user.png') {
                     unlink($caminhoArquivo);
                 }
                 

@@ -9,10 +9,10 @@ $conn = Conexao::getConexao();
 $imgPerfil = 'user.png';
 try {
     // Usamos entidade_tipo = 'admin' de acordo com a nossa nova arquitetura Polimórfica
-    $stmtFoto = $conn->prepare("SELECT nomeFoto FROM foto WHERE entidade_tipo = 'admin' AND entidade_id = ? ORDER BY dataFoto DESC LIMIT 1");
+    $stmtFoto = $conn->prepare("SELECT nome_arquivo FROM foto WHERE entidade_tipo = 'admin' AND entidade_id = ? ORDER BY data_foto DESC LIMIT 1");
     $stmtFoto->execute([$_SESSION['user_id']]);
     if ($fotoDb = $stmtFoto->fetch(PDO::FETCH_ASSOC)) {
-        $imgPerfil = $fotoDb['nomeFoto'];
+        $imgPerfil = $fotoDb['nome_arquivo'];
     }
 } catch (PDOException $e) {
     // Falha silenciosa para a foto

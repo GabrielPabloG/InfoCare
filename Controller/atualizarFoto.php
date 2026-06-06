@@ -40,14 +40,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['foto'])) {
                 $salvou = $daoFoto->salvarFoto($novoNome, $_SESSION['user_tipo'], $_SESSION['user_id']);
 
                 if ($salvou) {
-                    // Redireciona de volta para a Home (Dinâmico para Gerente ou outros cargos)
-                    if ($_SESSION['user_tipo'] === 'gerente' || $_SESSION['user_tipo'] === 'admin') {
-                        header("Location: ../View/homeGerente.php?atualizado=1");
-                    } else {
-                        // Se no futuro houver home do Cuidador ou Responsável:
-                        header("Location: ../View/homeResponsavel.php?atualizado=1"); 
-                    }
-                    exit();
+                            // Redireciona de volta para a Home (Dinâmico para Gerente ou outros cargos)
+                switch ($_SESSION['user_tipo']) {
+                    case 'admin':
+                        header("Location: ../View/homeAdm.php");
+                        break;
+                    case 'gerente':
+                        header("Location: ../View/homeGerente.php");
+                        break;
+                    case 'funcionario':
+                        header("Location: ../View/homeFuncionario.php");
+                        break;
+                    case 'responsavel':
+                        header("Location: ../View/homeResponsavel.php");
+                        break;
+                    default:
+                        header("Location: ../index.php?erro=tipo_invalido");
+                        break;
+                }
+                exit();
                 } else {
                     echo "Erro ao vincular a foto no banco de dados.";
                 }

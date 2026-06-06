@@ -1,139 +1,92 @@
 <!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
 <html>
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>InfoCare</title>
+        <title>InfoCare - Cadastro de Funcionário</title>
         <link href="../cssCadastro/css/bootstrap.css" type="text/css" rel="stylesheet">
         <link href="../css/cssGerente.css" type="text/css" rel="stylesheet">
         
         <script type="text/javascript" src="prototype.js"></script>
+        <script src="../js/jquery.min.js"></script>
+        <script src="../js/jquery.mask.min.js"></script>
         
         <script type="text/javascript">
         function limpa_formulário_cep() {
-            //Limpa valores do formulário de cep.
-            document.getElementById('ruaEndereco').value=("");
-            document.getElementById('bairroEndereco').value=("");
-
-    }
-
-    function meu_callback(conteudo) {
-        if (!("erro" in conteudo)) {
-            //Atualiza os campos com os valores.
-            document.getElementById('ruaEndereco').value=(conteudo.logradouro);
-            document.getElementById('bairroEndereco').value=(conteudo.bairro);
-
-        } //end if.
-        else {
-            //CEP não Encontrado.
-            limpa_formulário_cep();
-            alert("CEP não encontrado.");
+            document.getElementById('rua').value=("");
+            document.getElementById('bairro').value=("");
         }
-    }
-        
-    function pesquisacep(valor) {
 
-        //Nova variável "cep" somente com dígitos.
-        var cep = valor.replace(/\D/g, '');
-
-        //Verifica se campo cep possui valor informado.
-        if (cep != "") {
-
-            //Expressão regular para validar o CEP.
-            var validacep = /^[0-9]{8}$/;
-
-            //Valida o formato do CEP.
-            if(validacep.test(cep)) {
-
-                //Preenche os campos com "..." enquanto consulta webservice.
-                document.getElementById('ruaEndereco').value="...";
-                document.getElementById('bairroEndereco').value="...";
-
-
-                //Cria um elemento javascript.
-                var script = document.createElement('script');
-
-                //Sincroniza com o callback.
-                script.src = 'https://viacep.com.br/ws/'+ cep + '/json/?callback=meu_callback';
-
-                //Insere script no documento e carrega o conteúdo.
-                document.body.appendChild(script);
-
-            } //end if.
-            else {
-                //cep é inválido.
+        function meu_callback(conteudo) {
+            if (!("erro" in conteudo)) {
+                document.getElementById('rua').value=(conteudo.logradouro);
+                document.getElementById('bairro').value=(conteudo.bairro);
+            } else {
                 limpa_formulário_cep();
-                alert("Formato de CEP inválido.");
+                alert("CEP não encontrado.");
             }
-        } //end if.
-        else {
-            //cep sem valor, limpa formulário.
-            limpa_formulário_cep();
         }
-    };
         
-        //Verifica se CPF é válido
-	function TestaCPF(strCPF) {
-		var Soma, Resto, borda_original;
-		Soma = 0;
+        function pesquisacep(valor) {
+            var cep = valor.replace(/\D/g, '');
+            if (cep != "") {
+                var validacep = /^[0-9]{8}$/;
+                if(validacep.test(cep)) {
+                    document.getElementById('rua').value="...";
+                    document.getElementById('bairro').value="...";
+
+                    var script = document.createElement('script');
+                    script.src = 'https://viacep.com.br/ws/'+ cep + '/json/?callback=meu_callback';
+                    document.body.appendChild(script);
+                } else {
+                    limpa_formulário_cep();
+                    alert("Formato de CEP inválido.");
+                }
+            } else {
+                limpa_formulário_cep();
+            }
+        };
         
-        var cpf = strCPF.replace(/\D/g, '');
-		
-		if (cpf == "00000000000"){
-			document.getElementById("cpfPessoa").setCustomValidity('Inválido');
-			return false;
-		}
-		
-		for (i=1; i<=9; i++){
-			Soma = Soma + parseInt(cpf.substring(i-1, i)) * (11 - i);
-		}
-		
-		Resto = (Soma * 10) % 11;
-		if ((Resto == 10) || (Resto == 11)){
-			Resto = 0;
-		}
-		
-		if (Resto != parseInt(cpf.substring(9, 10))){
-			document.getElementById("cpfPessoa").setCustomValidity('Inválido');
-			return false;
-		}
-		
-		Soma = 0;
-		for (i = 1; i <= 10; i++){
-			Soma = Soma + parseInt(cpf.substring(i-1, i)) * (12 - i);
-		}
-		
-		Resto = (Soma * 10) % 11;
-		if ((Resto == 10) || (Resto == 11)){
-			Resto = 0;
-		}
-		
-		if (Resto != parseInt(cpf.substring(10, 11))){
-			document.getElementById("cpfPessoa").setCustomValidity('Inválido');
-			return false;
-		}
-		
-		document.getElementById("cpfPessoa").setCustomValidity('');
-		return true;
-	}
-    </script>
-    <script src="../js/jquery.min.js"></script>
-    <script src="../js/jquery.mask.min.js"></script>
+        function TestaCPF(strCPF) {
+            var Soma, Resto;
+            Soma = 0;
+            var cpf = strCPF.replace(/\D/g, '');
+            
+            if (cpf == "00000000000"){
+                document.getElementById("cpf").setCustomValidity('Inválido');
+                return false;
+            }
+            
+            for (i=1; i<=9; i++) Soma = Soma + parseInt(cpf.substring(i-1, i)) * (11 - i);
+            Resto = (Soma * 10) % 11;
+            if ((Resto == 10) || (Resto == 11)) Resto = 0;
+            if (Resto != parseInt(cpf.substring(9, 10))){
+                document.getElementById("cpf").setCustomValidity('Inválido');
+                return false;
+            }
+            
+            Soma = 0;
+            for (i = 1; i <= 10; i++) Soma = Soma + parseInt(cpf.substring(i-1, i)) * (12 - i);
+            Resto = (Soma * 10) % 11;
+            if ((Resto == 10) || (Resto == 11)) Resto = 0;
+            if (Resto != parseInt(cpf.substring(10, 11))){
+                document.getElementById("cpf").setCustomValidity('Inválido');
+                return false;
+            }
+            
+            document.getElementById("cpf").setCustomValidity('');
+            return true;
+        }
+        </script>
     </head>
     <body class="fundo" id="fundoCadastro">    
         
         <?php
-        include_once ("verificacao.php");
-       ?>
+         include_once ("verificacao.php");
+        ?>
 
          <header class="cabecalho">
-           <a href="../View/homeGerente.php"> <h1 class="logo"></h1>
-            </a>
+           <a href="../View/homeGerente.php"> <h1 class="logo"></h1></a>
             <div class="menu">
                <nav>
                    <ul>  
@@ -149,92 +102,72 @@ and open the template in the editor.
             
             <div class="form-row">
                 <div class="form-group col-md-3 col-sm-6 col-20">
-                    <input type="text" class="form-control" id="nomePessoa" name="nomePessoa" required="" placeholder="Nome">
+                    <input type="text" class="form-control" id="nome" name="nome" required="" placeholder="Nome">
                 </div>
                 <div class="form-group col-md-3 col-sm-6 col-15 ">
-                    <input type="email" class="form-control" id="emailPessoa" name="emailPessoa" placeholder="E-mail" required="" >
+                    <input type="email" class="form-control" id="email" name="email" placeholder="E-mail" required="" >
                 </div>
                 <div class="form-group col-md-3 col-sm-6 col-15">
-                    <input type="password" class="form-control" id="senhaPessoa" name="senhaPessoa" placeholder="Senha">
+                    <input type="password" class="form-control" id="senha" name="senha" placeholder="Senha">
                 </div>
             
-                
                 <div class="form-group col-md-3 col-sm-6 col-15">
-                    <input type="text" class="form-control" id="cpfPessoa" name="cpfPessoa" required="" placeholder="CPF" onblur="TestaCPF(this.value);">
+                    <input type="text" class="form-control" id="cpf" name="cpf" required="" placeholder="CPF" onblur="TestaCPF(this.value);">
                 </div>
                 
-                <script type="text/javascript">$("#cpfPessoa").mask("999.999.999-99");</script>
-                
-                
+                <script type="text/javascript">$("#cpf").mask("000.000.000-00");</script>
                 </div>
             
                 <div class="form-row">
                     <div class="form-group col-md-2 col-sm-3 col-4">   
-                <select  class="form-control" id="sexoPessoa" name="sexoPessoa" required="">
+                        <select class="form-control" id="sexo" name="sexo" required="">
                             <option value="Masculino">Masculino</option>
                             <option value="Feminino">Feminino</option>
                         </select>
                 </div>
                 
                 <div class="form-group col-md-3 col-sm-6 col-15">
-                    <input type="date" class="form-control" id="nascPessoa" onchange="validardataDeNascimento(this.value);" name="nascPessoa" required="" placeholder="Data Nascimento">
+                    <input type="date" class="form-control" id="nascimento" onchange="validardataDeNascimento(this.value);" name="nascimento" required="" placeholder="Data Nascimento">
                 </div>     
-                
                  
                 <div class="form-group col-md-3 col-sm-6 col-15">
-                    <input type="text" class="form-control" id="cepEndereco" name="cepEndereco" required="" placeholder="CEP" onblur="pesquisacep(this.value);">
+                    <input type="text" class="form-control" id="cep" name="cep" required="" placeholder="CEP" onblur="pesquisacep(this.value);">
                 </div>
                     
-                    <script type="text/javascript">$("#cepEndereco").mask("00000-000");</script>
+                <script type="text/javascript">$("#cep").mask("00000-000");</script>
                     
                 <div class="form-group col-md-3 col-sm-6 col-15">
-                    <input type="text" class="form-control" id="ruaEndereco" name="ruaEndereco" required="" placeholder="Rua">
+                    <input type="text" class="form-control" id="rua" name="rua" required="" placeholder="Rua">
                 </div>
-                    
-
                 </div>
             
                 <div class="form-row">
                 <div class="form-group col-md-3 col-sm-6 col-15">
-                    <input type="text" class="form-control" id="bairroEndereco" name="bairroEndereco" required="" placeholder="Bairro">
+                    <input type="text" class="form-control" id="bairro" name="bairro" required="" placeholder="Bairro">
                 </div>
                     
                 <div class="form-group col-md-3 col-sm-6 col-15">
-                    <input type="text" class="form-control" id="numCasaEndereco" name="numCasaEndereco" required="" placeholder="Número casa">
+                    <input type="text" class="form-control" id="numero_casa" name="numero_casa" required="" placeholder="Número casa">
+                </div>
+
+                <div class="form-group col-md-3 col-sm-6 col-15">
+                    <input type="number" step="0.01" class="form-control" id="salario" name="salario" required="" placeholder="Salário (Ex: 2500.00)">
                 </div>
                     
-                <div id="telefonePessoa" class="form-group col-md-3 col-sm-6 col-15">
-                    <input type="tel" class="form-control" id="telefonePessoa1" name="telefonePessoa[]" required="" placeholder="Telefone da pessoa">
+                <div id="divTelefone" class="form-group col-md-3 col-sm-6 col-15">
+                    <input type="tel" class="form-control" id="telefone1" name="telefone[]" required="" placeholder="Telefone">
                 </div>
                 
-                <script type="text/javascript">$("#telefonePessoa1").mask("(00) 0000-0000");</script>
+                <script type="text/javascript">$("#telefone1").mask("(00) 00000-0000");</script>
             </div>
-                    <fieldset class="form-group">
-                    <div class="form-check">
-                        <input class="form-check-input" type="hidden" name="cargoFuncionario" id="cargoFuncionario2" value="Funcionario" checked>
-                        <label class="form-check-label" for="cargoFuncionario2">
-                            
-                        </label>
-                        </div>
-              </fieldset>
             
-            <div class="form-row">
-                <div class="form-group col-md-2 col-sm-5 col-5">
-                   
-                </div>
-                </div>
-            
-            <div class="enviar">
-                <a href="homeGerente.php" class="btn btn-primary" id="registerUser">Voltar</a>&nbsp;&nbsp;&nbsp;
-                <input type="submit" class="btn btn-primary" id="loginUser" name="login" value="Cadastrar">
+            <div class="enviar mt-3">
+                <a href="homeGerente.php" class="btn btn-secondary" id="voltarBtn">Voltar</a>&nbsp;&nbsp;&nbsp;
+                <input type="submit" class="btn btn-primary" id="btnCadastrar" name="cadastrar" value="Cadastrar">
+                <button type="button" class="btn btn-info" id="adicionarTelefone">Adicionar Outro Telefone</button>
             </div>
                      
         </form>
-       
-        
-        <div class="extras">
-           
-        </div>
          </div>
             
         </header>
@@ -242,42 +175,35 @@ and open the template in the editor.
     </body>
     <script type="text/javascript" language="javascript">
     const adicionar = document.getElementById("adicionarTelefone");
-    const telefonePessoa = document.getElementById("telefonePessoa");
+    const divTelefone = document.getElementById("divTelefone");
 
-    let i = 2 ;
+    let i = 2;
     
     adicionar.addEventListener("click", function(event) {
         let campo = document.createElement("input");
         campo.type = "tel";
-        campo.class = "form-control";
-        campo.id = "telefonePessoa"+i;
-        campo.name = "telefonePessoa[]";
-        campo.createPattern = "\([0-9]{2}\)[\s][0-9]{4}-[0-9]{4,5}";
-        campo.placeholder = "Telefone da pessoa";
-        telefonePessoa.appendChild(campo);
-        $("#telefonePessoa"+i).mask("(00) 0000-00009");
+        campo.className = "form-control mt-2"; // mt-2 para dar um espacinho do de cima
+        campo.id = "telefone"+i;
+        // Permite enviar múltiplos telefones como Array para o PHP
+        campo.name = "telefone[]"; 
+        campo.placeholder = "Outro Telefone";
+        divTelefone.appendChild(campo);
+        $("#telefone"+i).mask("(00) 00000-0000");
         
-        console.log(campo, i);
         i++;
     });
         
-        function validardataDeNascimento(data){
+    function validardataDeNascimento(data){
+        dataAtual = new Date();
+        data = new Date(data);
 
-            dataAtual= new Date();
-
-            data=new Date(data);
-
-            if (data<dataAtual){
-                console.log("Data Valida");
-                return true;
-            } else {
-                alert("Data inválida");
-                document.getElementById('nascPessoa').value=("");
-                return false;
-            }
-
-
+        if (data < dataAtual){
+            return true;
+        } else {
+            alert("Data inválida");
+            document.getElementById('nascimento').value=("");
+            return false;
         }
-
+    }
 </script>
 </html>

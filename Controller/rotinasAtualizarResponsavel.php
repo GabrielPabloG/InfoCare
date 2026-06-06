@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $daoTelefone->insert($_POST['telefone'], 'CELULAR', 'responsavel', $responsavel->getId());
         }
 
-        header("Location: ../View/listReponsavel.php?atualizado=1");
+        header("Location: ../View/listCuidador.php?atualizado=1");
         exit();
     } else {
         echo "Erro ao atualizar responsavel. Por favor, tente novamente.";

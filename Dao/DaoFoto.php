@@ -9,7 +9,7 @@ class DaoFoto {
             $conn = Conexao::getConexao();
             
             // 1. Busca a foto antiga para apagar o arquivo físico
-            $sqlBusca = "SELECT id, nomeFoto FROM foto WHERE entidade_tipo = ? AND entidade_id = ?";
+            $sqlBusca = "SELECT id, nome_arquivo FROM foto WHERE entidade_tipo = ? AND entidade_id = ?";
             $stmtBusca = $conn->prepare($sqlBusca);
             $stmtBusca->execute([$entidadeTipo, $entidadeId]);
             $fotoAntiga = $stmtBusca->fetch(PDO::FETCH_ASSOC);
@@ -28,7 +28,7 @@ class DaoFoto {
             }
 
             // 2. Insere a foto nova
-            $sqlInsert = "INSERT INTO foto (nomeFoto, dataFoto, entidade_tipo, entidade_id) VALUES (?, NOW(), ?, ?)";
+            $sqlInsert = "INSERT INTO foto (nome_arquivo, data_foto, entidade_tipo, entidade_id) VALUES (?, NOW(), ?, ?)";
             $stmtInsert = $conn->prepare($sqlInsert);
             return $stmtInsert->execute([$nomeFoto, $entidadeTipo, $entidadeId]);
             
@@ -41,7 +41,7 @@ class DaoFoto {
     public function buscarPorEntidade($entidadeTipo, $entidadeId) {
         $conn = Conexao::getConexao();
         $stmt = $conn->prepare(
-            "SELECT nomeFoto FROM foto WHERE entidade_tipo = ? AND entidade_id = ? ORDER BY dataFoto DESC LIMIT 1"
+            "SELECT nome_arquivo FROM foto WHERE entidade_tipo = ? AND entidade_id = ? ORDER BY data_foto DESC LIMIT 1"
         );
         $stmt->execute([$entidadeTipo, $entidadeId]);
         return $stmt->fetch(PDO::FETCH_ASSOC);

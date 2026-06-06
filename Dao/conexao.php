@@ -6,7 +6,7 @@ class Conexao {
     public static function getConexao() {
         if (!isset(self::$instancia)) {
             $servidor = 'localhost';
-            $dbname = 'bdinfocare-refatorado'; // Apontando para o banco novo.
+            $dbname = 'bdinfocare_refatorado'; // Apontando para o banco novo.
             $usuario = 'root';
             $senha = ''; // Mude caso seu MySQL local tenha senha
 

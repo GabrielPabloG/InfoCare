@@ -37,5 +37,14 @@ class DaoFoto {
             return false;
         }
     }
+
+    public function buscarPorEntidade($entidadeTipo, $entidadeId) {
+        $conn = Conexao::getConexao();
+        $stmt = $conn->prepare(
+            "SELECT nomeFoto FROM foto WHERE entidade_tipo = ? AND entidade_id = ? ORDER BY dataFoto DESC LIMIT 1"
+        );
+        $stmt->execute([$entidadeTipo, $entidadeId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }
 ?>

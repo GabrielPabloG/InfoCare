@@ -19,22 +19,146 @@ try {
 
 // A SUPER QUERY DE BUSCA DOS PACIENTES E PRONTUÁRIOS (Atualizada para o novo Banco e com LEFT JOIN)
 $sqlIdosos = "
-    SELECT 
-        i.id, i.nome, i.sexo, i.cpf, i.nascimento,
-        r.nome AS nomeResponsavel,
-        ant.*, q.*, pel.*, pul.*, ali.*, loc.*, rel.*, exa.*, eli.*
+    SELECT
+        -- Idoso
+        i.id            AS idoso_id,
+        i.nome          AS idoso_nome,
+        i.sexo          AS idoso_sexo,
+        i.cpf           AS idoso_cpf,
+        i.nascimento    AS idoso_nascimento,
+
+        -- Responsável
+        r.nome          AS nomeResponsavel,
+
+        -- Antecedência
+        ant.id                  AS ant_id,
+        ant.declinio_cognitivo,
+        ant.dificuldade_fala,
+        ant.audicao,
+        ant.ave,
+        ant.tce,
+        ant.hipertensao,
+        ant.hipotireoidismo,
+        ant.diabetes_tipo,
+        ant.cancer_tipo,
+        ant.local_fratura,
+        ant.cirurgia_tipo,
+        ant.outras_patologias,
+        ant.usa_medicamento,
+        ant.tratamento_realizado,
+
+        -- Questionamento (sinais vitais e hábitos)
+        q.id                    AS q_id,
+        q.peso,
+        q.altura,
+        q.pressao_arterial,
+        q.pulsacao,
+        q.respiracao,
+        q.temperatura,
+        q.dextro,
+        q.spo2,
+        q.usa_oculos,
+        q.protese_auditiva,
+        q.carteira_vacinacao,
+        q.tabagista,
+        q.etilista,
+        q.dependencia_etilismo,
+        q.tipo_sanguineo,
+        q.usa_protese_dentaria,
+        q.marca_protese,
+        q.modelo_protese,
+        q.usa_medicamento_continuo,
+        q.usa_substancia_psicoativa,
+        q.alergia_medicamento,
+        q.convenio,
+        q.encaminhamento_hospitalar,
+        q.atividade_manual,
+
+        -- Pele
+        pel.id                  AS pel_id,
+        pel.integridade,
+        pel.hidratacao,
+        pel.dermatite,
+        pel.prurido,
+        pel.micose_unha,
+        pel.escamacao,
+        pel.ictericia,
+        pel.ferida,
+        pel.petequia,
+        pel.hematoma,
+        pel.ulcera,
+        pel.grau_ulcera,
+        pel.outra_especificacao,
+
+        -- Pulmonar
+        pul.id                  AS pul_id,
+        pul.tipo_tosse,
+        pul.auscultacao,
+        pul.tipo_dispneia,
+
+        -- Alimentação
+        ali.id                  AS ali_id,
+        ali.alimentacao_sozinho,
+        ali.dificuldade_degluticao,
+        ali.uso_sonda,
+        ali.restricao_alimentar,
+        ali.preferencia_alimentar,
+
+        -- Locomoção
+        loc.id                  AS loc_id,
+        loc.locomocao_sozinho,
+        loc.cadeirante,
+        loc.tempo_cadeirante,
+        loc.acamado,
+        loc.tempo_acamado,
+        loc.apoio_fisico,
+        loc.esporte_terapia,
+
+        -- Relacionamento
+        rel.id                  AS rel_id,
+        rel.status_comunicacao,
+        rel.agressividade,
+        rel.temperamento,
+        rel.anterioridade_casa_repouso,
+        rel.irritabilidade,
+
+        -- Exame
+        exa.id                  AS exa_id,
+        exa.hemograma_conclusao,
+        exa.urina_tipo,
+        exa.parasitologico_fezes,
+        exa.glicemia_jejum,
+        exa.colesterol,
+        exa.hepatite_tipo,
+        exa.hiv,
+        exa.vdrl,
+        exa.atestado_neurologico,
+        exa.raiox_pulmao,
+        exa.receituario_medico,
+
+        -- Eliminação
+        eli.id                  AS eli_id,
+        eli.frequencia_evacuacao,
+        eli.aspecto_fezes,
+        eli.coloracao_urina,
+        eli.odor_urina,
+        eli.frequencia_urina,
+        eli.queixa_gases,
+        eli.usa_fralda,
+        eli.marca_fralda
+
     FROM idoso i
-    LEFT JOIN responsavel r ON i.responsavel_id = r.id
-    LEFT JOIN prontuario_fixo pf ON i.prontuario_fixo_id = pf.id
-    LEFT JOIN antecedencia ant ON pf.antecedencia_id = ant.id
-    LEFT JOIN questionamento q ON pf.questionamento_id = q.id
-    LEFT JOIN pele pel ON pf.pele_id = pel.id
-    LEFT JOIN pulmonar pul ON pf.pulmonar_id = pul.id
-    LEFT JOIN alimentacao ali ON pf.alimentacao_id = ali.id
-    LEFT JOIN locomocao loc ON pf.locomocao_id = loc.id
-    LEFT JOIN relacionamento rel ON pf.relacionamento_id = rel.id
-    LEFT JOIN exame exa ON pf.exame_id = exa.id
-    LEFT JOIN eliminacao eli ON pf.eliminacao_id = eli.id
+    LEFT JOIN responsavel r          ON i.responsavel_id    = r.id
+    LEFT JOIN prontuario_fixo pf     ON i.prontuario_fixo_id = pf.id
+    LEFT JOIN antecedencia ant       ON pf.antecedencia_id   = ant.id
+    LEFT JOIN questionamento q       ON pf.questionamento_id = q.id
+    LEFT JOIN pele pel               ON pf.pele_id           = pel.id
+    LEFT JOIN pulmonar pul           ON pf.pulmonar_id       = pul.id
+    LEFT JOIN alimentacao ali        ON pf.alimentacao_id    = ali.id
+    LEFT JOIN locomocao loc          ON pf.locomocao_id      = loc.id
+    LEFT JOIN relacionamento rel     ON pf.relacionamento_id = rel.id
+    LEFT JOIN exame exa              ON pf.exame_id          = exa.id
+    LEFT JOIN eliminacao eli         ON pf.eliminacao_id     = eli.id
     ORDER BY i.nome ASC
 ";
 $stmtIdosos = $conn->query($sqlIdosos);

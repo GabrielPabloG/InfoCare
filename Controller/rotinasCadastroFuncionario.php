@@ -29,8 +29,8 @@ $funcionario->setSalario($_POST['salario']);
 
 // ATENÇÃO: A tabela funcionario tem uma FK gerente_id. 
 // Geralmente pegamos isso da sessão de quem está logado cadastrando ele:
-// session_start();
-// $funcionario->setGerenteId($_SESSION['user_id']); 
+session_start();
+$funcionario->setGerenteId($_SESSION['user_id']); 
 
 // 6. Salva o Funcionário e pega o ID gerado
 $daoFuncionario = new DaoFuncionario();
@@ -44,7 +44,7 @@ if ($idFuncionario) {
     }
     
     // Redireciona para a tela de listagem
-    header("Location: ../View/listCuidador.php?sucesso=1");
+    header("Location: ../View/listRes.php?sucesso=1");
     exit();
 } else {
     echo "Erro ao cadastrar funcionário.";

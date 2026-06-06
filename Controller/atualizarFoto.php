@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['foto'])) {
                         header("Location: ../View/homeGerente.php?atualizado=1");
                     } else {
                         // Se no futuro houver home do Cuidador ou Responsável:
-                        header("Location: ../View/home.php?atualizado=1"); 
+                        header("Location: ../View/homeResponsavel.php?atualizado=1"); 
                     }
                     exit();
                 } else {

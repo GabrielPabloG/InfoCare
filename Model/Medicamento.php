@@ -1,52 +1,29 @@
 <?php
-    
+
 class Medicamento {
-    private $codMedicamento;
-    private $nomeMedicamento;
-    private $dosagemMedicamento;
-    private $horarioMedicamento;
+    private $id;
+    private $nome;
+    private $dosagem;
+    private $horario;
     private $posologia;
-    private $composicaoMedicamento;
+    private $composicao;
     
-    public function getCodMedicamento() {
-        return $this->codMedicamento;
-    }
-    public function setCodMedicamento($codMedicamento) {
-        $this->codMedicamento = $codMedicamento;
-    }
+    public function getId() { return $this->id; }
+    public function setId($id) { $this->id = $id; }
     
-    public function getNomeMedicamento() {
-        return $this->nomeMedicamento;
-    }
-    public function setNomeMedicamento($nomeMedicamento) {
-        $this->nomeMedicamento = $nomeMedicamento;
-    }
+    public function getNome() { return $this->nome; }
+    public function setNome($nome) { $this->nome = $nome; }
     
-    public function getDosagemMedicamento() {
-        return $this->dosagemMedicamento;
-    }
-    public function setDosagemMedicamento($dosagemMedicamento) {
-        $this->dosagemMedicamento = $dosagemMedicamento;
-    }
+    public function getDosagem() { return $this->dosagem; }
+    public function setDosagem($dosagem) { $this->dosagem = $dosagem; }
     
-    public function getHorarioMedicamento() {
-        return $this->horarioMedicamento;
-    }
-    public function setHorarioMedicamento($horarioMedicamento) {
-        $this->horarioMedicamento = $horarioMedicamento;
-    }
+    public function getHorario() { return $this->horario; }
+    public function setHorario($horario) { $this->horario = $horario; }
     
-    public function getPosologia() {
-        return $this->posologia;
-    }
-    public function setPosologia($posologia) {
-        $this->posologia = $posologia;
-    }
+    public function getPosologia() { return $this->posologia; }
+    public function setPosologia($posologia) { $this->posologia = $posologia; }
     
-    public function getComposicaoMedicamento() {
-        return $this->composicaoMedicamento;
-    }
-    public function setComposicaoMedicamento($composicaoMedicamento) {
-        $this->composicaoMedicamento = $composicaoMedicamento;
-    }
+    public function getComposicao() { return $this->composicao; }
+    public function setComposicao($composicao) { $this->composicao = $composicao; }
 }
+?>

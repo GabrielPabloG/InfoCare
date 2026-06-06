@@ -1,69 +1,71 @@
-<html>
-	<head>
-		<meta charset="UTF-8">
-		<title>Bem-Vindo</title>
-	</head>
-	<body style="background-color: #728CA6;">
-	
-	</body>
-</html>
-
 <?php
-    require_once '../Model/Medicamento.php';
-    include_once 'conexao.php';
+require_once '../Model/Medicamento.php';
+require_once 'conexao.php';
 
-    class DaoMedicamento{
-        //rotina de cadastro do usuário no banco de dados
-        public function cadastrarMedicamento($medicamento){
-            $conexao = abrirconexao();
+class DaoMedicamento {
+    
+    public function insert(Medicamento $medicamento) {
+        try {
+            $conn = Conexao::getConexao();
             
-            $queryInsert = "insert into tbMedicacao(nomeMedicacao, dosagemMedicacao, horarioMedicacao, posologia, composicaoMedicamento)
-            values ('".$medicamento->getNomeMedicamento()."', '".$medicamento->getDosagemMedicamento()."', '".$medicamento->getHorarioMedicamento()."', '".$medicamento->getPosologia()."', '".$medicamento->getComposicaoMedicamento()."')";
+            $sql = "INSERT INTO medicacao (nome, dosagem, horario, posologia, composicao) 
+                    VALUES (?, ?, ?, ?, ?)";
             
-            echo($queryInsert);
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([
+                $medicamento->getNome(),
+                $medicamento->getDosagem(),
+                $medicamento->getHorario(),
+                $medicamento->getPosologia(),
+                $medicamento->getComposicao()
+            ]);
             
-            $resultadoInsert = $conexao->query($queryInsert);
-            //retorna a quantidade de inserções no banco
+            // Retorna o ID gerado para podermos usar na associação N:M logo em seguida
+            return $conn->lastInsertId();
             
-            $codMedicamento = "SELECT MAX(codMedicacao) codMedicacao FROM tbMedicacao";
-                
-                $resultado = $conexao->query($codMedicamento);
-
-        while($linharesultado = mysqli_fetch_array($resultado)){
-            $codigoMed = $linharesultado['codMedicacao'];
+        } catch (PDOException $e) {
+            echo "Erro ao cadastrar medicamento: " . $e->getMessage();
+            return false;
         }
-            $codProntuarioFixo = "SELECT MAX(codProntuarioFixo) codProntuarioFixo FROM tbProntuarioFixo";
-                
-                $resultado1 = $conexao->query($codProntuarioFixo);
+    }
 
-        while($linharesultado = mysqli_fetch_array($resultado1)){
-            $codigoPront = $linharesultado['codProntuarioFixo'];
-        } 
-            if($resultadoInsert > 0) {
-                 $queryInsert1 = "insert into tbMedicacaoProntuario(codProntuarioFixo, codMedicacao)
-            values(".$codigoPront.", ".$codigoMed.")";
-            $resultadoReceita = $conexao->query($queryInsert1);
-            
-            if($resultadoReceita > 0 ){
-                echo("<br> Cadastro realizado com sucesso.");
-				 header("Location: ../View/homeGerente.php");   
-				$conexao->close();
-            }
-                
-                else {
-                    echo($queryInsert);
-                    echo("<br> Cadastro não concluiu com sucesso, tente novamente.");
-                }
-            
-			}
-                echo($queryInsert);
-                echo("<br> Cadastro não concluiu com sucesso, tente novamente.");
-            //header("Location: ../View/homeGerente.php");
-            
-            }
-            
-           
-			
+    public function update(Medicamento $medicamento) {
+        try {
+            $conn = Conexao::getConexao();
+            $sql = "UPDATE medicacao SET nome = ?, dosagem = ?, horario = ?, posologia = ?, composicao = ? WHERE id = ?";
+            $stmt = $conn->prepare($sql);
+            return $stmt->execute([
+                $medicamento->getNome(),
+                $medicamento->getDosagem(),
+                $medicamento->getHorario(),
+                $medicamento->getPosologia(),
+                $medicamento->getComposicao(),
+                $medicamento->getId()
+            ]);
+        } catch (PDOException $e) {
+            echo "Erro ao atualizar medicamento: " . $e->getMessage();
+            return false;
         }
-		
+    }
+
+    public function delete($id) {
+        try {
+            $conn = Conexao::getConexao();
+            $sql = "DELETE FROM medicacao WHERE id = ?";
+            $stmt = $conn->prepare($sql);
+            return $stmt->execute([$id]);
+        } catch (PDOException $e) {
+            echo "Erro ao excluir medicamento: " . $e->getMessage();
+            return false;
+        }
+    }
+
+    // Método útil para listar todos os medicamentos disponíveis no sistema
+    public function listAll() {
+        $conn = Conexao::getConexao();
+        $sql = "SELECT * FROM medicacao ORDER BY nome";
+        $stmt = $conn->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+}
 ?>

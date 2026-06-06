@@ -37,12 +37,24 @@ class DaoMedicacaoProntuario {
 
     // Busca todos os IDs de medicamentos de um prontuário específico
     public function listarMedicamentosDoProntuario($prontuarioFixoId) {
-        $conn = Conexao::getConexao();
-        $sql = "SELECT medicacao_id FROM medicacao_prontuario WHERE prontuario_fixo_id = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->execute([$prontuarioFixoId]);
-        
-        // Retorna todos os registros em forma de array
-        return $stmt->fetchAll(); 
+        try {
+            $conn = Conexao::getConexao();
+            
+            // O INNER JOIN junta a tabela associativa com a tabela de medicamentos
+            // Assim, ele traz o nome, a dosagem, o horário, etc.
+            $sql = "SELECT m.* FROM medicacao m
+                    INNER JOIN medicacao_prontuario mp ON m.id = mp.medicacao_id
+                    WHERE mp.prontuario_fixo_id = ?";
+                    
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([$prontuarioFixoId]);
+            
+            // Retorna a lista completa de remédios prontinha para ser exibida no HTML
+            return $stmt->fetchAll(PDO::FETCH_ASSOC); 
+            
+        } catch (PDOException $e) {
+            echo "Erro ao listar medicamentos: " . $e->getMessage();
+            return [];
+        }
     }
 }

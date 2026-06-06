@@ -176,6 +176,14 @@ try {
     $daoProntuario = new DaoProntuarioFixo();
     $idProntuarioFixo = $daoProntuario->insert($prontuarioFixo);
 
+    // Associa o prontuário fixo criado ao idoso
+    if (!empty($_POST['idoso_id'])) {
+        $daoIdoso = new DaoIdoso();
+        $idoso = $daoIdoso->getById($_POST['idoso_id']);
+        $idoso->setProntuarioFixoId($idProntuarioFixo);
+        $daoIdoso->update($idoso);
+    }
+
     if ($idProntuarioFixo) {
         $_SESSION['msg'] = 'Prontuário cadastrado com sucesso.';
         header('Location: ../View/homeFuncionario.php');

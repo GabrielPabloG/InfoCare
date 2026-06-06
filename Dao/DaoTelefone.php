@@ -19,10 +19,18 @@ class DaoTelefone {
     }
 
     public function buscarPorEntidade($entidadeTipo, $entidadeId) {
+            $conn = Conexao::getConexao();
+            $sql = "SELECT * FROM telefone WHERE entidade_tipo = ? AND entidade_id = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([$entidadeTipo, $entidadeId]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+    public function deletarPorEntidade($entidadeTipo, $entidadeId) {
         $conn = Conexao::getConexao();
-        $sql = "SELECT * FROM telefone WHERE entidade_tipo = ? AND entidade_id = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->execute([$entidadeTipo, $entidadeId]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = $conn->prepare(
+            "DELETE FROM telefone WHERE entidade_tipo = ? AND entidade_id = ?"
+        );
+        return $stmt->execute([$entidadeTipo, $entidadeId]);
     }
 }

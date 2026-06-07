@@ -22,7 +22,7 @@ $id = $_GET['id'];
 $daoGerente = new DaoGerente();
 
 if ($daoGerente->delete($id)) {
-        header("Location: ../View/homeGerente.php?excluido=1");
+        header("Location: ../View/homeAdm.php?excluido=1");
     exit(); // Sempre coloque exit() após um header de redirecionamento
 } else {
     echo "Erro ao tentar excluir o gerente do banco de dados.";

@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $daoTelefone->insert($_POST['telefone'], 'CELULAR', 'gerente', $gerente->getId());
         }
 
-        header("Location: ../View/listGerente.php?atualizado=1");
+        header("Location: ../View/homeAdm.php?atualizado=1");
         exit();
     } else {
         echo "Erro ao atualizar gerente. Por favor, tente novamente.";

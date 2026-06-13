@@ -21,3 +21,6 @@ Thumbs.db
 # Uploads (se houver pasta com imagens enviadas)
 uploads/
 fotos/
+
+# Arquivo de configuração do banco de dados
+setup.php

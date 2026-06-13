@@ -1,60 +1,88 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <title>InfoCare - Login</title>
+    <title>InfoCare — Acesso ao Sistema</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <link rel="stylesheet" type="text/css" href="css/styleLogin.css">
-    <link href="css/home.css" type="text/css" rel="stylesheet">
-    <link rel="icon" type="image/png" href="img/infocare-logo.png" />
-    
-    <style>
-        /* Estilos simples para as mensagens de erro e sucesso */
-        .msg-erro { color: #d9534f; font-weight: bold; margin-bottom: 15px; text-align: center; }
-        .msg-sucesso { color: #5cb85c; font-weight: bold; margin-bottom: 15px; text-align: center; }
-    </style>
+    <link rel="icon" type="image/png" href="img/infocare-logo.png">
+    <link rel="stylesheet" href="css/styleLogin.css">
 </head>
 <body>
-    <header class="cabecalho">
-        <a href="index.php"> <h1 class="logo"></h1></a>
-        <div class="menu">
-            <nav>
-                <ul></ul>
-            </nav>
-        </div>
-    </header>
-    <br><br>
 
-    <form class="box" action="Controller/rotinasLogar.php" method="post">
-        <br><br><br><br>
-        <h2>O cuidado para quem você ama</h2>
-        
-        <div class="form">
-            <h3>Acesse sua conta</h3>
-            <br>
-            
+<div class="login-wrapper">
+
+    <!-- ── Painel esquerdo: identidade ── -->
+    <div class="login-panel-left">
+        <span class="deco deco-1"></span>
+        <span class="deco deco-2"></span>
+
+        <div class="login-logo" role="img" aria-label="InfoCare"></div>
+
+        <h1 class="login-tagline">
+            Cuidado com quem<br>você ama.
+        </h1>
+        <p class="login-sub">
+            Sistema integrado de gestão para casas de repouso.<br>
+            Acesse para continuar.
+        </p>
+    </div>
+
+    <!-- ── Painel direito: formulário ── -->
+    <div class="login-panel-right">
+        <div class="login-card">
+            <h2 class="login-card-title">Bem-vindo</h2>
+            <p class="login-card-sub">Entre com suas credenciais para acessar</p>
+
             <?php
                 if (isset($_GET['erro'])) {
                     if ($_GET['erro'] === 'dados_invalidos') {
-                        echo "<div class='msg-erro'>E-mail ou senha incorretos!</div>";
+                        echo "<div class='msg-erro'>E-mail ou senha incorretos.</div>";
                     } elseif ($_GET['erro'] === 'tipo_invalido') {
                         echo "<div class='msg-erro'>Tipo de usuário não reconhecido.</div>";
                     }
                 }
-                
                 if (isset($_GET['msg'])) {
                     if ($_GET['msg'] === 'conta_excluida') {
-                        echo "<div class='msg-sucesso'>Sua conta foi excluída com sucesso.</div>";
+                        echo "<div class='msg-sucesso'>Conta excluída com sucesso.</div>";
                     }
                 }
             ?>
-            <input class="input100" type="email" id="emailUser" name="email" placeholder="E-mail" required>
-            <input class="input100" type="password" id="passwordUser" name="senha" placeholder="Senha" required>
-            
-            <button class="login100-form-btn" type="submit">Entrar</button>
+
+            <form action="Controller/rotinasLogar.php" method="post" novalidate>
+
+                <div class="field-group">
+                    <label for="emailUser">E-mail</label>
+                    <input
+                        type="email"
+                        id="emailUser"
+                        name="email"
+                        placeholder="seu@email.com"
+                        autocomplete="email"
+                        required
+                    >
+                </div>
+
+                <div class="field-group">
+                    <label for="passwordUser">Senha</label>
+                    <input
+                        type="password"
+                        id="passwordUser"
+                        name="senha"
+                        placeholder="••••••••"
+                        autocomplete="current-password"
+                        required
+                    >
+                </div>
+
+                <button class="btn-login" type="submit">Entrar</button>
+
+            </form>
         </div>
-    </form>
+
+        <p class="login-footer">InfoCare &copy; <?= date('Y') ?> — Todos os direitos reservados</p>
+    </div>
+
+</div>
 
 </body>
 </html>

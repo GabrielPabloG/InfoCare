@@ -70,18 +70,27 @@ $totalFuncionarios = count($resultado_funcionarios);
             <div class="sidebar-profile-name">
                 <?= htmlspecialchars($_SESSION['user_nome'] ?? 'Gerente') ?>
             </div>
-            <div class="sidebar-profile-role">Gerente</div>
+            <?php if ($_SESSION['user_tipo'] === 'gerente'): ?>
+                <div class="sidebar-profile-role">Gerente</div>
+            <?php else: ?>
+                <div class="sidebar-profile-role">Administrador</div>
+            <?php endif; ?>
         </div>
     </div>
 
     <nav class="sidebar-nav">
         <span class="sidebar-section-label">Gestão</span>
+        <?php if ($_SESSION['user_tipo'] === 'admin'): ?>
+            <a href="homeAdm.php" class="sidebar-link">
+                <i class="icon">⊞</i> Gerentes
+            </a>
+        <?php endif; ?>
 
         <a href="homeGerente.php" class="sidebar-link">
             <i class="icon">⊞</i> Pacientes
         </a>
         <a href="listCuidador.php" class="sidebar-link active">
-            <i class="icon">⊠</i> Cuidadores
+            <i class="icon">⊠</i> Funcionários
         </a>
 
         <span class="sidebar-section-label">Conta</span>

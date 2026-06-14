@@ -99,6 +99,14 @@ try {
             <i class="icon">⊞</i> Gerentes
         </a>
 
+        <a href="homeGerente.php" class="sidebar-link">
+            <i class="icon">⊞</i> Pacientes
+        </a>
+
+        <a href="listCuidador.php" class="sidebar-link">
+            <i class="icon">⊠</i> Funcionários
+        </a>
+
         <span class="sidebar-section-label">Conta</span>
             <form action="../Controller/atualizarFoto.php" method="post" enctype="multipart/form-data" id="formFoto">
                 

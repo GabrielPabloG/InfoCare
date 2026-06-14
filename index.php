@@ -13,6 +13,7 @@
 
     <!-- ── Painel esquerdo: identidade ── -->
     <div class="login-panel-left">
+        <div class="login-bg-image"></div>
         <span class="deco deco-1"></span>
         <span class="deco deco-2"></span>
 

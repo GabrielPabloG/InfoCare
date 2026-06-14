@@ -7,29 +7,32 @@
 @import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&display=swap');
 
 /* ── Reset & tokens ── */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
 :root {
-  --primary:     #34677D;
-  --primary-dk:  #28516A;
-  --primary-lt:  #5B9DB5;
-  --accent:      #E8A87C;
-  --accent-dk:   #D48B5A;
-  --bg:          #F4F8FA;
-  --surface:     #FFFFFF;
-  --text:        #2C3E50;
-  --text-muted:  #6B8CAA;
-  --danger:      #D95F5F;
-  --success:     #4CAF87;
-  --radius:      12px;
-  --shadow:      0 8px 32px rgba(52, 103, 125, 0.15);
+  --primary: #34677D;
+  --primary-dk: #28516A;
+  --primary-lt: #5B9DB5;
+  --accent: #E8A87C;
+  --accent-dk: #D48B5A;
+  --bg: #F4F8FA;
+  --surface: #FFFFFF;
+  --text: #2C3E50;
+  --text-muted: #6B8CAA;
+  --danger: #D95F5F;
+  --success: #4CAF87;
+  --radius: 12px;
+  --shadow: 0 8px 32px rgba(52, 103, 125, 0.15);
 }
 
-html, body {
+html,
+body {
   height: 100%;
   font-family: 'Comfortaa', 'Amaranth', sans-serif;
   background: var(--bg);
@@ -49,13 +52,84 @@ html, body {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: flex-start;
-  padding: 60px 56px;
+  /* centraliza verticalmente */
+  align-items: center;
+  /* centraliza horizontalmente */
+  text-align: center;
+  padding: 60px 40px;
   position: relative;
   overflow: hidden;
+  /* necessário para o corte diagonal */
 }
 
-/* Onda diagonal decorativa */
+/* Imagem de fundo do idoso, semi-transparente */
+.login-bg-image {
+  position: absolute;
+  inset: 0;
+  background: url('../img/idoso-bg.jpg') center center / cover no-repeat;
+  opacity: 0.25;
+  /* ajuste a transparência aqui */
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Conteúdo centralizado acima da imagem e do corte */
+.login-logo,
+.login-tagline,
+.login-sub {
+  position: relative;
+  z-index: 2;
+}
+
+.login-logo {
+  width: 260px;
+  height: 180px;
+  background: url('../img/infocare branco.png') center center / contain no-repeat;
+  margin-bottom: 32px;
+}
+
+.login-tagline {
+  color: #ffffff;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.25;
+  max-width: 400px;
+  margin-bottom: 20px;
+  letter-spacing: -0.02em;
+}
+
+.login-sub {
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 400;
+  max-width: 350px;
+  line-height: 1.6;
+}
+
+/* Círculos decorativos de fundo */
+.login-panel-left .deco {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.login-panel-left .deco-1 {
+  width: 320px;
+  height: 320px;
+  bottom: -80px;
+  left: -80px;
+}
+
+.login-panel-left .deco-2 {
+  width: 180px;
+  height: 180px;
+  top: 40px;
+  right: 80px;
+}
+
+/* ── Corte diagonal (original restaurado) ── */
 .login-panel-left::after {
   content: '';
   position: absolute;
@@ -67,42 +141,6 @@ html, body {
   clip-path: polygon(60px 0, 100% 0, 100% 100%, 0 100%);
   z-index: 1;
 }
-
-.login-logo {
-  width: 200px;
-  height: 70px;
-  background: url('../img/infocare branco.png') left center / contain no-repeat;
-  margin-bottom: 56px;
-  flex-shrink: 0;
-}
-
-.login-tagline {
-  color: rgba(255,255,255,0.95);
-  font-size: 2rem;
-  font-weight: 700;
-  line-height: 1.25;
-  max-width: 340px;
-  margin-bottom: 20px;
-  letter-spacing: -0.02em;
-}
-
-.login-sub {
-  color: rgba(255,255,255,0.65);
-  font-size: 1rem;
-  font-weight: 400;
-  max-width: 300px;
-  line-height: 1.6;
-}
-
-/* Círculos decorativos de fundo */
-.login-panel-left .deco {
-  position: absolute;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.06);
-  pointer-events: none;
-}
-.login-panel-left .deco-1 { width: 320px; height: 320px; bottom: -80px; left: -80px; }
-.login-panel-left .deco-2 { width: 180px; height: 180px; top: 40px; right: 80px; }
 
 /* ── Painel direito — formulário ── */
 .login-panel-right {
@@ -208,7 +246,7 @@ html, body {
   box-shadow: 0 2px 8px rgba(52, 103, 125, 0.20);
 }
 
-/* ── Acento no botão — barra de cor quente ── */
+/* ── Acento no botão — bolinha pêssego ── */
 .btn-login::after {
   content: '';
   display: inline-block;
@@ -239,7 +277,9 @@ html, body {
   border: 1px solid rgba(217, 95, 95, 0.25);
 }
 
-.msg-erro::before { content: '✕'; }
+.msg-erro::before {
+  content: '✕';
+}
 
 .msg-sucesso {
   background: rgba(76, 175, 135, 0.10);
@@ -247,7 +287,9 @@ html, body {
   border: 1px solid rgba(76, 175, 135, 0.25);
 }
 
-.msg-sucesso::before { content: '✓'; }
+.msg-sucesso::before {
+  content: '✓';
+}
 
 /* ── Rodapé discreto ── */
 .login-footer {
@@ -259,26 +301,38 @@ html, body {
 
 /* ── Responsivo ── */
 @media (max-width: 768px) {
-  .login-wrapper { flex-direction: column; }
+  .login-wrapper {
+    flex-direction: column;
+  }
 
   .login-panel-left {
     padding: 40px 32px 60px;
-    align-items: center;
-    text-align: center;
   }
 
-  .login-panel-left::after { display: none; }
+  .login-logo {
+    width: 180px;
+    height: 120px;
+    margin: 0 auto 40px;
+  }
 
-  .login-tagline { font-size: 1.5rem; max-width: 100%; }
+  .login-tagline {
+    font-size: 1.5rem;
+    max-width: 100%;
+  }
 
   .login-panel-right {
     width: 100%;
     padding: 32px 20px 48px;
   }
 
-  .login-logo { margin: 0 auto 40px; }
+  /* Em mobile, escondemos o corte diagonal para não atrapalhar */
+  .login-panel-left::after {
+    display: none;
+  }
 }
 
 @media (max-width: 400px) {
-  .login-card { padding: 32px 24px; }
+  .login-card {
+    padding: 32px 24px;
+  }
 }

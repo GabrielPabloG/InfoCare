@@ -9,6 +9,7 @@ USE bdinfocare_refatorado;
 -- ---------------------------------------------------
 CREATE TABLE admin (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(40) NOT NULL,
     email VARCHAR(100) NOT NULL,
     senha VARCHAR(255) NOT NULL  -- armazenar hash
 ) ENGINE=InnoDB;
@@ -320,3 +321,37 @@ CREATE TABLE prescricao_enfermagem (
     prontuario_fixo_id INT NOT NULL,
     FOREIGN KEY (prontuario_fixo_id) REFERENCES prontuario_fixo(id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;
+
+DELIMITER //
+
+-- 1. Trigger para limpar telefones de Funcionários
+CREATE TRIGGER trg_cascade_telefone_funcionario
+AFTER DELETE ON funcionario
+FOR EACH ROW
+BEGIN
+    DELETE FROM telefone 
+    WHERE entidade_id = OLD.id 
+    AND entidade_tipo = 'funcionario';
+END; //
+
+-- 2. Trigger para limpar telefones de Idosos
+CREATE TRIGGER trg_cascade_telefone_idoso
+AFTER DELETE ON idoso
+FOR EACH ROW
+BEGIN
+    DELETE FROM telefone 
+    WHERE entidade_id = OLD.id 
+    AND entidade_tipo = 'idoso';
+END; //
+
+-- 3. Trigger para limpar telefones de Responsáveis
+CREATE TRIGGER trg_cascade_telefone_responsavel
+AFTER DELETE ON responsavel
+FOR EACH ROW
+BEGIN
+    DELETE FROM telefone 
+    WHERE entidade_id = OLD.id 
+    AND entidade_tipo = 'responsavel';
+END; //
+
+DELIMITER ;

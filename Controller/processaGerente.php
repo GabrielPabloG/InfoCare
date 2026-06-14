@@ -25,11 +25,21 @@ $idGerente = $daoGerente->insert($gerente);
 
 if ($idGerente) {
     // 3. Salva o telefone associando ao ID do gerente
-    if (!empty($_POST['telefone'])) {
-        $daoTelefone = new DaoTelefone();
-        // Passa o número, o tipo (ex: CELULAR), a entidade ('gerente') e o ID salvo
-        $daoTelefone->insert($_POST['telefone'], 'CELULAR', 'gerente', $idGerente);
+if (!empty($_POST['telefone']) && is_array($_POST['telefone'])) {
+    $daoTelefone = new DaoTelefone();
+    
+    // O foreach percorre a lista de telefones enviada pelo formulário
+    foreach ($_POST['telefone'] as $numero) {
+        
+        // Remove espaços vazios e garante que o usuário não enviou um campo em branco
+        $numeroLimpo = trim($numero);
+        
+        if (!empty($numeroLimpo)) {
+            // Passa o número limpo, o tipo, a entidade e o ID salvo
+            $daoTelefone->insert($numeroLimpo, 'CELULAR', 'gerente', $idGerente);
+        }
     }
+}
     
     // Redireciona para o sucesso
     header("Location: ../View/homeAdm.php?sucesso=1");

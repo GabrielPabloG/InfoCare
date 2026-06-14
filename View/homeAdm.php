@@ -9,19 +9,26 @@ $conn = Conexao::getConexao();
 $imgPerfil = '../upload/user.png';
 try {
     $stmtFoto = $conn->prepare(
-        "SELECT nomeFoto FROM foto WHERE entidade_tipo = 'admin' AND entidade_id = ? ORDER BY dataFoto DESC LIMIT 1"
+        "SELECT nome_arquivo FROM foto WHERE entidade_tipo = 'admin' AND entidade_id = ? ORDER BY data_foto DESC LIMIT 1"
     );
     $stmtFoto->execute([$_SESSION['user_id']]);
     if ($fotoDb = $stmtFoto->fetch(PDO::FETCH_ASSOC)) {
-        $imgPerfil = '../upload/' . htmlspecialchars($fotoDb['nomeFoto']);
+        $imgPerfil = '../upload/' . htmlspecialchars($fotoDb['nome_arquivo']);
     }
 } catch (PDOException $e) {}
 
 // Lista de gerentes
 try {
-    $resultado_gerentes = $conn
-        ->query("SELECT id, nome, cpf, sexo, nascimento, email FROM gerente ORDER BY nome ASC")
-        ->fetchAll(PDO::FETCH_ASSOC);
+    $sqlGerentes = "
+        SELECT g.id, g.nome, g.cpf, g.sexo, g.nascimento, g.email, g.salario, 
+               g.rua, g.bairro, g.cep, g.numero_casa,
+               t.numero AS telefone
+        FROM gerente g
+        LEFT JOIN telefone t ON t.entidade_id = g.id AND t.entidade_tipo = 'GERENTE'
+        ORDER BY g.nome ASC
+    ";
+    
+    $resultado_gerentes = $conn->query($sqlGerentes)->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     $resultado_gerentes = [];
 }
@@ -30,7 +37,7 @@ $totalGerentes = count($resultado_gerentes);
 
 // Total de idosos e funcionários para os KPIs
 try {
-    $totalIdosos     = $conn->query("SELECT COUNT(*) FROM idoso")->fetchColumn();
+    $totalIdosos = $conn->query("SELECT COUNT(*) FROM idoso")->fetchColumn();
     $totalFuncionarios = $conn->query("SELECT COUNT(*) FROM funcionario")->fetchColumn();
 } catch (PDOException $e) {
     $totalIdosos = $totalFuncionarios = '—';
@@ -47,73 +54,6 @@ try {
     <link rel="stylesheet" href="../css/adm.css">
     <!-- Bootstrap 4 para modais (mantém compatibilidade) -->
     <link rel="stylesheet" href="../cssModal/css/bootstrap.min.css">
-    <style>
-        /* Botões de ação da tabela */
-        .btn-ver {
-            padding: 6px 14px; border-radius: 6px;
-            background: var(--surface); color: var(--primary);
-            border: 1.5px solid var(--primary-lt);
-            font-family: var(--font); font-size: .78rem; font-weight: 700;
-            cursor: pointer; transition: background .15s;
-        }
-        .btn-ver:hover { background: var(--primary-xlt); }
-
-        .btn-edit {
-            padding: 6px 14px; border-radius: 6px;
-            background: #FFF8EC; color: #B07800;
-            border: 1.5px solid #E6C04A;
-            font-family: var(--font); font-size: .78rem; font-weight: 700;
-            cursor: pointer; transition: background .15s;
-        }
-        .btn-edit:hover { background: #FFF0CC; }
-
-        .btn-del {
-            padding: 6px 14px; border-radius: 6px;
-            background: #FBF0F0; color: var(--danger);
-            border: 1.5px solid #EDB8B8;
-            font-family: var(--font); font-size: .78rem; font-weight: 700;
-            cursor: pointer; transition: background .15s;
-        }
-        .btn-del:hover { background: #F7DEDE; }
-
-        .actions { display: flex; gap: 6px; align-items: center; }
-
-        /* Modal de confirmação de exclusão */
-        .confirm-overlay {
-            display: none; position: fixed; inset: 0;
-            background: rgba(0,0,0,.45); z-index: 9999;
-            align-items: center; justify-content: center;
-        }
-        .confirm-overlay.open { display: flex; }
-        .confirm-box {
-            background: var(--surface); border-radius: 14px;
-            box-shadow: 0 16px 48px rgba(0,0,0,.22);
-            width: 380px; max-width: 90vw; overflow: hidden;
-        }
-        .confirm-hdr {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 18px 24px; border-bottom: 1px solid var(--border);
-        }
-        .confirm-hdr-title { font-size: 1rem; font-weight: 700; color: var(--danger); }
-        .confirm-close { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--muted); }
-        .confirm-body { padding: 24px; font-size: .9rem; line-height: 1.6; }
-        .confirm-body strong { color: var(--primary-dk); }
-        .confirm-note { color: var(--muted); font-size: .82rem; margin-top: 6px; display: block; }
-        .confirm-ftr {
-            background: #F0F5F8; border-top: 1px solid var(--border);
-            padding: 14px 24px; display: flex; justify-content: flex-end; gap: 8px;
-        }
-        .btn-confirm-cancel {
-            padding: 8px 18px; border-radius: 7px; border: 1.5px solid var(--border);
-            background: transparent; font-family: var(--font); font-size: .82rem;
-            color: var(--muted); cursor: pointer;
-        }
-        .btn-confirm-del {
-            padding: 8px 18px; border-radius: 7px; border: none;
-            background: var(--danger); color: #fff;
-            font-family: var(--font); font-size: .82rem; font-weight: 700; cursor: pointer;
-        }
-    </style>
 
     <script src="../js/jquery.min.js"></script>
     <script src="../js/jquery.mask.min.js"></script>
@@ -126,8 +66,8 @@ try {
 <aside class="sidebar" id="sidebar">
 
     <div class="sidebar-logo">
-        <!-- Troque por <img src="../img/infocare branco.png" alt="InfoCare"> se preferir -->
-        <span class="sidebar-logo-text">InfoCare</span>
+        <img src="../img/infocare branco.png" alt="InfoCare">
+        <!-- Troque por <span class="sidebar-logo-text">InfoCare</span> se preferir -->
     </div>
 
     <div class="sidebar-profile">
@@ -152,10 +92,14 @@ try {
         </a>
 
         <span class="sidebar-section-label">Conta</span>
-
-        <a href="atualizarFoto.php" class="sidebar-link">
-            <i class="icon">◎</i> Atualizar foto
-        </a>
+            <form action="../Controller/atualizarFoto.php" method="post" enctype="multipart/form-data" id="formFoto">
+                
+                <input type="file" name="foto" id="inputFoto" style="display: none;" accept="image/*">
+                
+                <label for="inputFoto" class="sidebar-link" style="cursor: pointer; margin-bottom: 0;">
+                    <i class="icon">◎</i> Atualizar foto
+                </label>
+            </form>
     </nav>
 
     <div class="sidebar-footer">
@@ -293,6 +237,9 @@ try {
                                         <p><strong>CPF:</strong> <?= htmlspecialchars($g['cpf']) ?></p>
                                         <p><strong>Nascimento:</strong> <?= date('d/m/Y', strtotime($g['nascimento'])) ?></p>
                                         <p><strong>E-mail:</strong> <?= htmlspecialchars($g['email']) ?></p>
+                                        <p><strong>Telefone:</strong> <?= htmlspecialchars($g['telefone']) ?></p>
+                                        <p><strong>Endereço:</strong> <?= htmlspecialchars($g['rua']) ?>, <?= htmlspecialchars($g['numero_casa']) ?> - <?= htmlspecialchars($g['bairro']) ?></p>
+                                        
                                     </div>
                                     <div class="modal-footer">
                                         <button class="btn btn-ghost" data-dismiss="modal">Fechar</button>
@@ -395,6 +342,22 @@ try {
     </div>
 </div>
 
+<div class="confirm-overlay" id="modalErroFoto">
+    <div class="confirm-box">
+        <div class="confirm-hdr">
+            <span class="confirm-hdr-title" style="color: var(--warning);">Ops! Arquivo muito pesado</span>
+            <button class="confirm-close" onclick="fecharErroFoto()">✕</button>
+        </div>
+        <div class="confirm-body">
+            A imagem escolhida tem <strong id="tamanho-arquivo"></strong>MB.<br>
+            <span class="confirm-note">Por favor, escolha uma imagem com no máximo <strong>10MB</strong>.</span>
+        </div>
+        <div class="confirm-ftr">
+            <button class="btn-confirm-cancel" onclick="fecharErroFoto()">Entendi</button>
+        </div>
+    </div>
+</div>
+
 <!-- Scripts Bootstrap 4 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
@@ -439,6 +402,33 @@ overlay.addEventListener('click', function() {
     sidebar.classList.remove('open');
     overlay.classList.remove('visible');
 });
+
+document.getElementById('inputFoto').addEventListener('change', function() {
+    // Se o usuário abriu a janela de foto mas cancelou sem escolher nada, o código para aqui.
+    if (!this.files || this.files.length === 0) return;
+
+    // Pega o tamanho do arquivo em Megabytes
+    const tamanho = this.files[0].size / 1024 / 1024;
+    
+    if (tamanho > 2) { // Limite aumentado para 2MB
+        // Mostra o tamanho real da foto que o usuário tentou subir (arredondado para 1 casa decimal)
+        document.getElementById('tamanho-arquivo').textContent = tamanho.toFixed(1);
+        
+        // Abre o modal bonitão no lugar do alert()
+        document.getElementById('modalErroFoto').classList.add('open');
+        
+        // Limpa o input para ele não tentar enviar a foto pesada
+        this.value = ''; 
+    } else {
+        // Se a foto tiver menos de 10MB, envia o formulário!
+        document.getElementById('formFoto').submit(); 
+    }
+});
+
+// Função para fechar o modal novo
+function fecharErroFoto() {
+    document.getElementById('modalErroFoto').classList.remove('open');
+}
 </script>
 
 </body>

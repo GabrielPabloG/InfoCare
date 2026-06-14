@@ -211,6 +211,12 @@ try {
                                         data-cpf="<?= htmlspecialchars($g['cpf']) ?>"
                                         data-nasc="<?= $g['nascimento'] ?>"
                                         data-email="<?= htmlspecialchars($g['email']) ?>"
+                                        data-telefone="<?= htmlspecialchars($g['telefone']) ?>"
+                                        data-rua="<?= htmlspecialchars($g['rua']) ?>"
+                                        data-bairro="<?= htmlspecialchars($g['bairro']) ?>"
+                                        data-cep="<?= htmlspecialchars($g['cep']) ?>"
+                                        data-numero_casa="<?= htmlspecialchars($g['numero_casa']) ?>"
+                                        data-salario="<?= $g['salario'] ?>"
                                     >✏ Editar</button>
 
                                     <!-- 🗑 Apagar — abre modal de confirmação -->
@@ -238,8 +244,9 @@ try {
                                         <p><strong>Nascimento:</strong> <?= date('d/m/Y', strtotime($g['nascimento'])) ?></p>
                                         <p><strong>E-mail:</strong> <?= htmlspecialchars($g['email']) ?></p>
                                         <p><strong>Telefone:</strong> <?= htmlspecialchars($g['telefone']) ?></p>
+                                        <p><strong>CEP:</strong> <?= htmlspecialchars($g['cep']) ?></p>
                                         <p><strong>Endereço:</strong> <?= htmlspecialchars($g['rua']) ?>, <?= htmlspecialchars($g['numero_casa']) ?> - <?= htmlspecialchars($g['bairro']) ?></p>
-                                        
+                                        <p><strong>Salário:</strong> R$ <?= number_format($g['salario'], 2, ',', '.') ?></p>
                                     </div>
                                     <div class="modal-footer">
                                         <button class="btn btn-ghost" data-dismiss="modal">Fechar</button>
@@ -279,9 +286,9 @@ try {
 
                     <div class="form-group">
                         <label class="form-label">Sexo</label>
-                        <select name="sexo" class="form-control" id="edit-sexo">
-                            <option value="Masculino">Masculino</option>
-                            <option value="Feminino">Feminino</option>
+                        <select name="sexo" class="form-control" id="edit-sexo" required>
+                            <option value="M">Masculino</option>
+                            <option value="F">Feminino</option>
                         </select>
                     </div>
 
@@ -302,8 +309,40 @@ try {
                     </div>
 
                     <div class="form-group">
+                        <label class="form-label">Telefone</label>
+                        <input name="telefone" type="text" class="form-control" id="edit-telefone" required>
+                        <script>$("#edit-telefone").mask("(00) 00000-0000");</script>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Rua</label>
+                        <input name="rua" type="text" class="form-control" id="edit-rua" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Bairro</label>
+                        <input name="bairro" type="text" class="form-control" id="edit-bairro" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">CEP</label>
+                        <input name="cep" type="text" class="form-control" id="edit-cep" required>
+                        <script>$("#edit-cep").mask("00000-000");</script>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Número da Casa</label>
+                        <input name="numero_casa" type="text" class="form-control" id="edit-numero_casa" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Salário</label>
+                        <input name="salario" type="number" step="0.01" class="form-control" id="edit-salario" required>
+                    </div>
+
+                    <div class="form-group">
                         <label class="form-label">Nova Senha <span class="text-muted">(deixe em branco para manter)</span></label>
-                        <input name="senha" type="password" class="form-control" placeholder="••••••••">
+                        <input name="senha" type="password" class="form-control" placeholder="">
                     </div>
 
                     <input name="id" type="hidden" id="edit-id">
@@ -365,13 +404,20 @@ try {
 <script>
 // Preenche modal de edição
 $('#modalEditar').on('show.bs.modal', function(e) {
-    var btn = $(e.relatedTarget);
+    const btn = $(e.relatedTarget);
+    
     $('#edit-id').val(btn.data('id'));
     $('#edit-nome').val(btn.data('nome'));
+    $('#edit-sexo').val(btn.data('sexo'));   // já é 'M' ou 'F'
     $('#edit-cpf').val(btn.data('cpf'));
     $('#edit-nasc').val(btn.data('nasc'));
     $('#edit-email').val(btn.data('email'));
-    $('#edit-sexo').val(btn.data('sexo'));
+    $('#edit-telefone').val(btn.data('telefone'));
+    $('#edit-rua').val(btn.data('rua'));
+    $('#edit-bairro').val(btn.data('bairro'));
+    $('#edit-cep').val(btn.data('cep'));
+    $('#edit-numero_casa').val(btn.data('numero_casa'));
+    $('#edit-salario').val(btn.data('salario'));
 });
 
 // Modal de confirmação de exclusão

@@ -1,21 +1,26 @@
 <?php
-session_start();
 require_once 'verificacao.php';
 require_once '../Dao/conexao.php';
 
 $conn = Conexao::getConexao();
 
-// Foto de perfil do gerente
-$imgPerfil = '../upload/user.png';
-try {
-    $stmtFoto = $conn->prepare(
-        "SELECT nome_arquivo FROM foto WHERE entidade_tipo = 'gerente' AND entidade_id = ? ORDER BY data_foto DESC LIMIT 1"
-    );
-    $stmtFoto->execute([$_SESSION['user_id']]);
-    if ($fotoDb = $stmtFoto->fetch(PDO::FETCH_ASSOC)) {
-        $imgPerfil = '../upload/' . htmlspecialchars($fotoDb['nome_arquivo']);
+if ($_SESSION['user_tipo'] !== 'admin' && $_SESSION['user_tipo'] !== 'gerente') {
+    switch ($_SESSION['user_tipo']) {
+        case 'funcionario':
+            header('Location: homeFuncionario.php');
+            break;
+        case 'responsavel':
+            header('Location: homeResponsavel.php');
+            break;
+        default:
+            session_destroy();
+            header('Location: index.php');
     }
-} catch (PDOException $e) {}
+    exit;
+}
+
+// Foto de perfil do gerente
+$imgPerfil = $_SESSION['foto_perfil'] ?? '../upload/user.png';
 
 // Lista de funcionarios
 $sqlFuncionarios = "

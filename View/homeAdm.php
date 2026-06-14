@@ -125,9 +125,6 @@ try {
             </button>
             <span class="topbar-title">Painel Administrativo</span>
         </div>
-        <div class="topbar-actions">
-            <a href="../View/logout.php" class="btn btn-ghost btn-sm">Sair</a>
-        </div>
     </header>
 
     <!-- Conteúdo -->
@@ -456,7 +453,7 @@ document.getElementById('inputFoto').addEventListener('change', function() {
     // Pega o tamanho do arquivo em Megabytes
     const tamanho = this.files[0].size / 1024 / 1024;
     
-    if (tamanho > 2) { // Limite aumentado para 2MB
+    if (tamanho > 10) { // Limite aumentado para 10MB
         // Mostra o tamanho real da foto que o usuário tentou subir (arredondado para 1 casa decimal)
         document.getElementById('tamanho-arquivo').textContent = tamanho.toFixed(1);
         

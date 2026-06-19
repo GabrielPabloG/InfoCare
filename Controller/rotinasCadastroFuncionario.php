@@ -44,7 +44,7 @@ if ($idFuncionario) {
     }
     
     // Redireciona para a tela de listagem
-    header("Location: ../View/listRes.php?sucesso=1");
+    header("Location: ../View/listCuidador.php?sucesso=1");
     exit();
 } else {
     echo "Erro ao cadastrar funcionário.";

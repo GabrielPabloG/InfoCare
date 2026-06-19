@@ -121,8 +121,8 @@
                 <div class="form-row">
                     <div class="form-group col-md-2 col-sm-3 col-4">   
                         <select class="form-control" id="sexo" name="sexo" required="">
-                            <option value="Masculino">Masculino</option>
-                            <option value="Feminino">Feminino</option>
+                            <option value="M">Masculino</option>
+                            <option value="F">Feminino</option>
                         </select>
                 </div>
                 

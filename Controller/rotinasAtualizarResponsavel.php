@@ -46,16 +46,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($atualizou) {
         // 6. Atualização do Telefone (Polimorfismo)
-        if (!empty($_POST['telefone'])) {
-            $daoTelefone = new DaoTelefone();
-            // A abordagem mais limpa em atualizações N:1 é apagar os antigos e inserir os novos,
-            // ou ter um método no DAO que faça um "Upsert" (Update se existir, Insert se não existir).
-            // Exemplo apagando os antigos daquele funcionário antes de inserir o novo:
-            $daoTelefone->deletarPorEntidade('responsavel', $responsavel->getId());
-            $daoTelefone->insert($_POST['telefone'], 'CELULAR', 'responsavel', $responsavel->getId());
+if (!empty($_POST['telefone']) && is_array($_POST['telefone'])) {
+    $daoTelefone = new DaoTelefone();
+    
+    // Remove todos os telefones antigos desse funcionário
+    $daoTelefone->deletarPorEntidade('responsavel', $responsavel->getId());
+    
+    // Insere cada novo telefone enviado
+    foreach ($_POST['telefone'] as $numero) {
+        $numero = trim($numero);
+        if ($numero !== '') {
+            $daoTelefone->insert($numero, 'CELULAR', 'responsavel', $responsavel->getId());
         }
+    }
+}
 
-        header("Location: ../View/listCuidador.php?atualizado=1");
+        header("Location: ../View/listarRes.php?sucesso=1");
         exit();
     } else {
         echo "Erro ao atualizar responsavel. Por favor, tente novamente.";

@@ -30,13 +30,23 @@ $idResponsavel = $daoResponsavel->insert($responsavel);
 
 if ($idResponsavel) {
     // 7. Salva o telefone associando ao ID do funcionário (Polimorfismo)
-    if (!empty($_POST['telefone'])) {
-        $daoTelefone = new DaoTelefone();
-        $daoTelefone->insert($_POST['telefone'], 'CELULAR', 'responsavel', $idResponsavel);
-    }
+if (!empty($_POST['telefone']) && is_array($_POST['telefone'])) {
+    $daoTelefone = new DaoTelefone();
     
+    // O foreach percorre a lista de telefones enviada pelo formulário
+    foreach ($_POST['telefone'] as $numero) {
+        
+        // Remove espaços vazios e garante que o usuário não enviou um campo em branco
+        $numeroLimpo = trim($numero);
+        
+        if (!empty($numeroLimpo)) {
+            // Passa o número limpo, o tipo, a entidade e o ID salvo
+            $daoTelefone->insert($numeroLimpo, 'CELULAR', 'responsavel', $idResponsavel);
+        }
+    }
+}   
     // Redireciona para a tela de listagem
-    header("Location: ../View/listRes.php?sucesso=1");
+    header("Location: ../View/listarRes.php?sucesso=1");
     exit();
 } else {
     echo "Erro ao cadastrar funcionário.";

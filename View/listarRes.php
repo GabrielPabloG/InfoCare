@@ -23,11 +23,17 @@ if ($_SESSION['user_tipo'] !== 'admin' && $_SESSION['user_tipo'] !== 'gerente') 
 // Foto de perfil via sessão
 $imgPerfil = $_SESSION['foto_perfil'] ?? '../upload/user.png';
 
-// Lista de responsáveis
+// Lista de responsáveis com telefones agrupados (mesmo padrão de listCuidador)
 try {
-    $sqlRes = "SELECT id, nome, cpf, sexo, nascimento, email, rua, bairro, cep, numero_casa 
-               FROM responsavel 
-               ORDER BY nome ASC";
+    $sqlRes = "
+        SELECT r.id, r.nome, r.cpf, r.sexo, r.nascimento, r.email, 
+               r.rua, r.bairro, r.cep, r.numero_casa,
+               GROUP_CONCAT(t.numero ORDER BY t.id SEPARATOR ', ') AS telefones
+        FROM responsavel r
+        LEFT JOIN telefone t ON t.entidade_id = r.id AND t.entidade_tipo = 'RESPONSAVEL'
+        GROUP BY r.id
+        ORDER BY r.nome ASC
+    ";
     $stmtRes = $conn->query($sqlRes);
     $resultado_res = $stmtRes->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
@@ -157,7 +163,15 @@ $totalResponsaveis = count($resultado_res);
                             </td>
                         </tr>
                         <?php else: ?>
-                        <?php foreach ($resultado_res as $r): ?>
+                        <?php foreach ($resultado_res as $r): 
+                            // Extrai o primeiro telefone para o modal de edição
+                            $telefones_str = $r['telefones'] ?? '';
+                            $primeiroTelefone = '';
+                            if (!empty($telefones_str)) {
+                                $telefones_array = explode(', ', $telefones_str);
+                                $primeiroTelefone = $telefones_array[0];
+                            }
+                        ?>
                         <tr>
                             <td class="text-muted"><?= $r['id'] ?></td>
                             <td><strong><?= htmlspecialchars($r['nome']) ?></strong></td>
@@ -175,6 +189,7 @@ $totalResponsaveis = count($resultado_res);
                                         data-cpf="<?= htmlspecialchars($r['cpf']) ?>"
                                         data-nasc="<?= $r['nascimento'] ?>"
                                         data-email="<?= htmlspecialchars($r['email']) ?>"
+                                        data-telefone="<?= htmlspecialchars($primeiroTelefone) ?>"
                                         data-rua="<?= htmlspecialchars($r['rua']) ?>"
                                         data-bairro="<?= htmlspecialchars($r['bairro']) ?>"
                                         data-cep="<?= htmlspecialchars($r['cep']) ?>"
@@ -202,6 +217,7 @@ $totalResponsaveis = count($resultado_res);
                                         <p><strong>CPF:</strong> <?= htmlspecialchars($r['cpf']) ?></p>
                                         <p><strong>Nascimento:</strong> <?= date('d/m/Y', strtotime($r['nascimento'])) ?></p>
                                         <p><strong>E-mail:</strong> <?= htmlspecialchars($r['email']) ?></p>
+                                        <p><strong>Telefone(s):</strong> <?= htmlspecialchars($r['telefones'] ?? 'Não informado') ?></p>
                                         <hr>
                                         <p><strong>CEP:</strong> <?= htmlspecialchars($r['cep']) ?></p>
                                         <p><strong>Endereço:</strong> <?= htmlspecialchars($r['rua']) ?>, <?= htmlspecialchars($r['numero_casa']) ?> - <?= htmlspecialchars($r['bairro']) ?></p>
@@ -263,6 +279,13 @@ $totalResponsaveis = count($resultado_res);
                             <input name="email" type="email" class="form-control" id="edit-email" required>
                         </div>
                     </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <label class="form-label">Telefone</label>
+                            <input name="telefone" type="text" class="form-control" id="edit-telefone" required>
+                            <script>$("#edit-telefone").mask("(00) 00000-0000");</script>
+                        </div>
+                    </div>
                     <hr>
                     <div class="form-row">
                         <div class="form-group col-md-4">
@@ -317,7 +340,7 @@ $totalResponsaveis = count($resultado_res);
     </div>
 </div>
 
-<!-- Modal erro foto (padrão) -->
+<!-- Modal erro foto -->
 <div class="confirm-overlay" id="modalErroFoto">
     <div class="confirm-box">
         <div class="confirm-hdr">
@@ -347,6 +370,7 @@ $('#modalEditar').on('show.bs.modal', function(e) {
     $('#edit-cpf').val(btn.data('cpf'));
     $('#edit-nasc').val(btn.data('nasc'));
     $('#edit-email').val(btn.data('email'));
+    $('#edit-telefone').val(btn.data('telefone'));
     $('#edit-rua').val(btn.data('rua'));
     $('#edit-bairro').val(btn.data('bairro'));
     $('#edit-cep').val(btn.data('cep'));
@@ -378,7 +402,7 @@ overlay.addEventListener('click', function() {
     overlay.classList.remove('visible');
 });
 
-// Upload foto
+// Upload foto (corrigido para 2MB)
 document.getElementById('inputFoto').addEventListener('change', function() {
     if (!this.files || this.files.length === 0) return;
     var tamanho = this.files[0].size / 1024 / 1024;

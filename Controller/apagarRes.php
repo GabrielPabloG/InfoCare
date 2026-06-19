@@ -6,7 +6,7 @@ require_once '../Dao/DaoResponsavel.php';
 // 1. TRAVA DE SEGURANÇA (Autorização)
 // Verifica se alguém está logado e se esse alguém é um Administrador.
 // Ajuste 'admin' caso a regra do seu sistema permita que outros cargos apaguem gerentes.
-if (!isset($_SESSION['user_tipo']) || $_SESSION['user_tipo'] !== 'gerente') {
+if (!isset($_SESSION['user_tipo']) || $_SESSION['user_tipo'] !== 'gerente' && $_SESSION['user_tipo'] !== 'admin') {
     die("Erro de Acesso: Você não tem permissão para realizar esta ação.");
 }
 
@@ -19,12 +19,12 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 $id = $_GET['id']; 
 
 // 3. EXECUÇÃO
-$daoGerente = new DaoGerente();
+$daoResponsavel = new DaoResponsavel();
 
-if ($daoGerente->delete($id)) {
-        header("Location: ../View/homeGerente.php?excluido=1");
+if ($daoResponsavel->delete($id)) {
+        header("Location: ../View/listRes.php?excluido=1");
     exit(); 
 } else {
-    echo "Erro ao tentar excluir o gerente do banco de dados.";
+    echo "Erro ao tentar excluir o responsável do banco de dados.";
 }
 ?>

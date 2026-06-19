@@ -180,8 +180,8 @@ if (!$responsavelEncontrado && !empty($cpfResp)) {
                                     <div class="form-group col-md-4">
                                         <label class="form-label">Sexo *</label>
                                         <select name="sexoIdoso" class="form-control" required>
-                                            <option value="Masculino">Masculino</option>
-                                            <option value="Feminino">Feminino</option>
+                                            <option value="M">Masculino</option>
+                                            <option value="F">Feminino</option>
                                         </select>
                                     </div>
                                     <div class="form-group col-md-4">

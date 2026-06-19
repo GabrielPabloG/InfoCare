@@ -96,8 +96,14 @@ $totalFuncionarios = count($resultado_funcionarios);
         <a href="listCuidador.php" class="sidebar-link active">
             <i class="icon">⊠</i> Funcionários
         </a>
+        <?php if ($_SESSION['user_tipo'] === 'admin' || $_SESSION['user_tipo'] === 'gerente'): ?>
+            <a href="listarRes.php" class="sidebar-link">
+                <i class="icon">⊟</i> Responsáveis
+            </a>
+        <?php endif; ?>
 
         <span class="sidebar-section-label">Conta</span>
+
         <form action="../Controller/atualizarFoto.php" method="post" enctype="multipart/form-data" id="formFoto">
             <input type="file" name="foto" id="inputFoto" style="display: none;" accept="image/*">
             <label for="inputFoto" class="sidebar-link" style="cursor: pointer; margin-bottom: 0;">

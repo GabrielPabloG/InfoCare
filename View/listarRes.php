@@ -1,5 +1,4 @@
 <?php
-session_start();
 require_once 'verificacao.php';
 require_once '../Dao/conexao.php';
 

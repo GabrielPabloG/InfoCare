@@ -53,9 +53,21 @@ $imgPerfil = $_SESSION['foto_perfil'] ?? '../upload/user.png';
     <link rel="stylesheet" href="../css/adm.css">
     <style>
         @media print {
-            .sidebar, .topbar, .btn { display: none; }
-            .main-wrapper { margin-left: 0; }
-        }
+    @page {
+        margin: 10mm;           /* margem confortável */
+        size: A4;
+    }
+    body {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    .sidebar, .topbar, .btn, .sidebar-overlay, #modalErroFoto {
+        display: none !important;
+    }
+    .main-wrapper {
+        margin-left: 0 !important;
+    }
+}
         .prontuario-section { margin-bottom: 2rem; }
         .prontuario-section h5 { border-bottom: 1px solid var(--primary-lt); padding-bottom: 6px; }
         .prontuario-field { margin-bottom: 6px; }
@@ -76,6 +88,9 @@ $imgPerfil = $_SESSION['foto_perfil'] ?? '../upload/user.png';
     <nav class="sidebar-nav">
         <span class="sidebar-section-label">Ações</span>
         <a href="#" onclick="window.print()" class="sidebar-link"><i class="icon">🖨</i> Imprimir / PDF</a>
+        <small style="color: var(--text-muted); display: block; padding: 0 16px;">
+    ⚠️ Antes de imprimir, desmarque "Cabeçalhos e rodapés" nas opções da impressão.
+</small>
         <a href="javascript:history.back()" class="sidebar-link"><i class="icon">↩</i> Voltar</a>
     </nav>
 </aside>

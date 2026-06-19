@@ -100,7 +100,7 @@ try {
         </a>
 
         <a href="homeGerente.php" class="sidebar-link">
-            <i class="icon">⊞</i> Pacientes
+            <i class="icon">⊞</i> Idosos
         </a>
 
         <a href="listCuidador.php" class="sidebar-link">

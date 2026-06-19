@@ -103,7 +103,7 @@ try {
         <?php endif; ?>
 
         <a href="homeGerente.php" class="sidebar-link active">
-            <i class="icon">⊞</i> Pacientes
+            <i class="icon">⊞</i> Idosos
         </a>
         <a href="listCuidador.php" class="sidebar-link">
             <i class="icon">⊠</i> Funcionários
@@ -149,7 +149,7 @@ try {
         <!-- KPIs -->
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-label">Pacientes</div>
+                <div class="stat-label">Idosos</div>
                 <div class="stat-value"><?= $totalIdosos ?></div>
             </div>
             <div class="stat-card success">

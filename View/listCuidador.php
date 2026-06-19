@@ -87,7 +87,7 @@ $totalFuncionarios = count($resultado_funcionarios);
         <?php endif; ?>
 
         <a href="homeGerente.php" class="sidebar-link">
-            <i class="icon">⊞</i> Pacientes
+            <i class="icon">⊞</i> Idosos
         </a>
         <a href="listCuidador.php" class="sidebar-link active">
             <i class="icon">⊠</i> Funcionários

@@ -17,6 +17,9 @@ $sql = "
     SELECT
         i.id AS idoso_id, i.nome, i.sexo, i.cpf, i.nascimento,
         r.nome AS responsavel,
+        (SELECT nome_arquivo FROM foto 
+         WHERE entidade_tipo = 'idoso' AND entidade_id = i.id 
+         ORDER BY data_foto DESC LIMIT 1) AS foto,
         ant.*, q.*, pel.*, pul.*, ali.*, loc.*, rel.*, exa.*, eli.*
     FROM idoso i
     LEFT JOIN responsavel r ON i.responsavel_id = r.id
@@ -87,6 +90,12 @@ $imgPerfil = $_SESSION['foto_perfil'] ?? '../upload/user.png';
         <div class="card">
             <div class="card-header"><span class="card-header-title">Dados Pessoais</span></div>
             <div class="card-body">
+                <?php 
+                $fotoIdoso = !empty($dados['foto']) ? '../upload/' . htmlspecialchars($dados['foto']) : '../upload/user.png';
+                ?>
+                <div class="text-center mb-3">
+                    <img src="<?= $fotoIdoso ?>" alt="Foto do idoso" style="max-width: 200px; border-radius: 12px;">
+                </div>
                 <div class="prontuario-field"><strong>Nome:</strong> <?= htmlspecialchars($dados['nome']) ?></div>
                 <div class="prontuario-field"><strong>Sexo:</strong> <?= htmlspecialchars($dados['sexo']) ?></div>
                 <div class="prontuario-field"><strong>CPF:</strong> <?= htmlspecialchars($dados['cpf']) ?></div>

@@ -230,6 +230,6 @@ $idosoId = $conn->lastInsertId();
 } catch (Exception $e) {
     $conn->rollBack();
      //debug: echo $e->getMessage(); exit;
-    header('Location: ../View/cadastroIdosoTab.php?erro=1');
+    header('Location: ../View/homeGerente.php?erro=1');
     exit;
 }

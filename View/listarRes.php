@@ -383,7 +383,7 @@ overlay.addEventListener('click', function() {
 document.getElementById('inputFoto').addEventListener('change', function() {
     if (!this.files || this.files.length === 0) return;
     var tamanho = this.files[0].size / 1024 / 1024;
-    if (tamanho > 2) {
+    if (tamanho > 10) {
         document.getElementById('tamanho-arquivo').textContent = tamanho.toFixed(1);
         document.getElementById('modalErroFoto').classList.add('open');
         this.value = '';

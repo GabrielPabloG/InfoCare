@@ -23,18 +23,19 @@ if ($_SESSION['user_tipo'] !== 'admin' && $_SESSION['user_tipo'] !== 'gerente') 
 // Foto de perfil
 $imgPerfil = $_SESSION['foto_perfil'] ?? '../upload/user.png';
 
-// Lista de funcionários (cuidadores)
+// Lista de funcionários (cuidadores) com telefones agrupados
 try {
     $sqlFuncionarios = "
         SELECT f.id, f.nome, f.cpf, f.sexo, f.nascimento, f.email, 
                f.rua, f.bairro, f.cep, f.numero_casa,
-               t.numero AS telefone
+               GROUP_CONCAT(t.numero ORDER BY t.id SEPARATOR ', ') AS telefones
         FROM funcionario f
         LEFT JOIN telefone t ON t.entidade_id = f.id AND t.entidade_tipo = 'FUNCIONARIO'
+        GROUP BY f.id
         ORDER BY f.nome ASC
     ";
     
-    $stmt = $conn->query($sqlFuncionarios);          // ← corrigido
+    $stmt = $conn->query($sqlFuncionarios);
     $resultado_funcionarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     die('Erro SQL: ' . $e->getMessage());
@@ -59,7 +60,7 @@ $totalFuncionarios = count($resultado_funcionarios);
 </head>
 <body>
 
-<!-- ════════════ SIDEBAR (idêntica à homeAdm) ════════════ -->
+<!-- ════════════ SIDEBAR ════════════ -->
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
         <img src="../img/infocare branco.png" alt="InfoCare">
@@ -173,7 +174,15 @@ $totalFuncionarios = count($resultado_funcionarios);
                             </td>
                         </tr>
                         <?php else: ?>
-                        <?php foreach ($resultado_funcionarios as $c): ?>
+                        <?php foreach ($resultado_funcionarios as $c): 
+                            // Extrai o primeiro telefone para o modal de edição
+                            $telefones_str = $c['telefones'] ?? '';
+                            $primeiroTelefone = '';
+                            if (!empty($telefones_str)) {
+                                $telefones_array = explode(', ', $telefones_str);
+                                $primeiroTelefone = $telefones_array[0];
+                            }
+                        ?>
                         <tr>
                             <td class="text-muted"><?= $c['id'] ?></td>
                             <td><strong><?= htmlspecialchars($c['nome']) ?></strong></td>
@@ -199,7 +208,7 @@ $totalFuncionarios = count($resultado_funcionarios);
                                         data-cpf="<?= htmlspecialchars($c['cpf'] ?? '') ?>"
                                         data-nasc="<?= htmlspecialchars($c['nascimento'] ?? '') ?>"
                                         data-email="<?= htmlspecialchars($c['email'] ?? '') ?>"
-                                        data-telefone="<?= htmlspecialchars($c['telefone'] ?? '') ?>"
+                                        data-telefone="<?= htmlspecialchars($primeiroTelefone) ?>"
                                         data-rua="<?= htmlspecialchars($c['rua'] ?? '') ?>"
                                         data-bairro="<?= htmlspecialchars($c['bairro'] ?? '') ?>"
                                         data-cep="<?= htmlspecialchars($c['cep'] ?? '') ?>"
@@ -230,9 +239,13 @@ $totalFuncionarios = count($resultado_funcionarios);
                                         <p><strong>CPF:</strong> <?= htmlspecialchars($c['cpf'] ?? 'Não informado') ?></p>
                                         <p><strong>Nascimento:</strong> <?= (!empty($c['nascimento']) && $c['nascimento'] !== '0000-00-00') ? date('d/m/Y', strtotime($c['nascimento'])) : 'Não informado' ?></p>
                                         <p><strong>E-mail:</strong> <?= htmlspecialchars($c['email'] ?? 'Não informado') ?></p>
-                                        <p><strong>Telefone:</strong> <?= htmlspecialchars($c['telefone'] ?? 'Não informado') ?></p>
+                                        <p><strong>Telefone(s):</strong> <?= htmlspecialchars($c['telefones'] ?? 'Não informado') ?></p>
                                         <p><strong>CEP:</strong> <?= htmlspecialchars($c['cep'] ?? '—') ?></p>
-                                        <p><strong>Endereço:</strong> <?= htmlspecialchars($c['rua'] ?? '') ?><?= !empty($c['numero_casa']) ? ', ' . htmlspecialchars($c['numero_casa']) : '' ?><?= !empty($c['bairro']) ? ' - ' . htmlspecialchars($c['bairro']) : '' ?></p>
+                                        <p><strong>Endereço:</strong> 
+                                            <?= htmlspecialchars($c['rua'] ?? '') ?>
+                                            <?= !empty($c['numero_casa']) ? ', ' . htmlspecialchars($c['numero_casa']) : '' ?>
+                                            <?= !empty($c['bairro']) ? ' - ' . htmlspecialchars($c['bairro']) : '' ?>
+                                        </p>
                                     </div>
                                     <div class="modal-footer">
                                         <button class="btn btn-ghost" data-dismiss="modal">Fechar</button>
@@ -320,7 +333,7 @@ $totalFuncionarios = count($resultado_funcionarios);
                         <input name="numero_casa" type="text" class="form-control" id="edit-numero_casa" required>
                     </div>
 
-                    <!-- Funcionário não tem salário nem senha nesse modal, mas se precisar, adicione -->
+                    <!-- Salário e senha podem ser adicionados se necessário, mas esse modal mantém o básico -->
 
                     <div class="modal-footer" style="padding:0; margin-top:16px; border:none;">
                         <button type="button" class="btn btn-ghost" data-dismiss="modal">Cancelar</button>
@@ -353,7 +366,7 @@ $totalFuncionarios = count($resultado_funcionarios);
     </div>
 </div>
 
-<!-- Modal de erro de foto (cópia da homeAdm) -->
+<!-- Modal de erro de foto -->
 <div class="confirm-overlay" id="modalErroFoto">
     <div class="confirm-box">
         <div class="confirm-hdr">
@@ -375,7 +388,7 @@ $totalFuncionarios = count($resultado_funcionarios);
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
 
 <script>
-// Preenche modal de edição (exatamente como na homeAdm)
+// Preenche modal de edição
 $('#modalEditar').on('show.bs.modal', function(e) {
     const btn = $(e.relatedTarget);
     
@@ -427,7 +440,7 @@ document.getElementById('inputFoto').addEventListener('change', function() {
 
     const tamanho = this.files[0].size / 1024 / 1024;
     
-    if (tamanho > 10) {
+    if (tamanho > 10) { // Limite de 10MB
         document.getElementById('tamanho-arquivo').textContent = tamanho.toFixed(1);
         document.getElementById('modalErroFoto').classList.add('open');
         this.value = '';

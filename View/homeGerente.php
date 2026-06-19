@@ -105,8 +105,13 @@ try {
         <a href="homeGerente.php" class="sidebar-link active">
             <i class="icon">⊞</i> Idosos
         </a>
+        
         <a href="listCuidador.php" class="sidebar-link">
             <i class="icon">⊠</i> Funcionários
+        </a>
+
+        <a href="listarRes.php" class="sidebar-link">
+            <i class="icon">⊟</i> Responsáveis
         </a>
 
         <span class="sidebar-section-label">Conta</span>

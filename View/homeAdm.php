@@ -107,6 +107,10 @@ try {
             <i class="icon">⊠</i> Funcionários
         </a>
 
+        <a href="listarRes.php" class="sidebar-link">
+            <i class="icon">⊟</i> Responsáveis
+        </a>
+
         <span class="sidebar-section-label">Conta</span>
             <form action="../Controller/atualizarFoto.php" method="post" enctype="multipart/form-data" id="formFoto">
                 

@@ -21,7 +21,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $responsavel->setSexo($_POST['sexo']);
     $responsavel->setNascimento($_POST['nascimento']);
     $responsavel->setEmail($_POST['email']);
-    $responsavel->setSalario($_POST['salario']);
 
     // 3. Recebe os dados de endereço atualizados
     $responsavel->setRua($_POST['rua']);
@@ -64,6 +63,7 @@ if (!empty($_POST['telefone']) && is_array($_POST['telefone'])) {
         header("Location: ../View/listarRes.php?sucesso=1");
         exit();
     } else {
-        echo "Erro ao atualizar responsavel. Por favor, tente novamente.";
+        header("Location: ../View/listarRes.php?erro=1");
+        exit();
     }
 }

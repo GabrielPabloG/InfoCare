@@ -159,7 +159,7 @@ $totalIdosos = count($resultado_idoso);
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <title>InfoCare — Meus Familiares</title>
+    <title>InfoCare — Responsável</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -183,14 +183,14 @@ $totalIdosos = count($resultado_idoso);
             <div class="sidebar-profile-name">
                 <?= htmlspecialchars($_SESSION['user_nome'] ?? 'Responsável') ?>
             </div>
-            <div class="sidebar-profile-role">Familiar</div>
+            <div class="sidebar-profile-role">Responsável</div>
         </div>
     </div>
 
     <nav class="sidebar-nav">
-        <span class="sidebar-section-label">Meus Familiares</span>
+        <span class="sidebar-section-label">Menu</span>
         <a href="homeResponsavel.php" class="sidebar-link active">
-            <i class="icon">⊞</i> Pacientes
+            <i class="icon">⊞</i> Idosos
         </a>
 
         <span class="sidebar-section-label">Conta</span>
@@ -227,7 +227,7 @@ $totalIdosos = count($resultado_idoso);
         <!-- KPIs -->
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-label">Familiares na Clínica</div>
+                <div class="stat-label">Na Clínica</div>
                 <div class="stat-value"><?= $totalIdosos ?></div>
             </div>
         </div>
@@ -240,10 +240,10 @@ $totalIdosos = count($resultado_idoso);
             <div class="alert alert-danger">Ocorreu um erro. Tente novamente.</div>
         <?php endif; ?>
 
-        <!-- Tabela de pacientes -->
+        <!-- Tabela de idosos -->
         <div class="card">
             <div class="card-header">
-                <span class="card-header-title">Meus Familiares</span>
+                <span class="card-header-title">Idosos</span>
                 <!-- Responsável não cadastra idoso, então sem botão de adicionar -->
             </div>
 
@@ -261,7 +261,7 @@ $totalIdosos = count($resultado_idoso);
                         <?php if (empty($resultado_idoso)): ?>
                         <tr>
                             <td colspan="4" style="text-align:center; color:var(--text-muted); padding:40px;">
-                                Nenhum familiar vinculado à sua conta.
+                                Nenhum idoso vinculado à sua conta.
                             </td>
                         </tr>
                         <?php else: ?>

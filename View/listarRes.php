@@ -246,7 +246,7 @@ $totalResponsaveis = count($resultado_res);
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
             <div class="modal-body">
-                <form method="POST" action="../Controller/atualizarResponsavel.php">
+                <form method="POST" action="../Controller/rotinasAtualizarResponsavel.php">
                     <input type="hidden" name="id" id="edit-id">
 
                     <div class="form-row">
@@ -259,8 +259,8 @@ $totalResponsaveis = count($resultado_res);
                         <div class="form-group col-md-6">
                             <label class="form-label">Sexo</label>
                             <select name="sexo" class="form-control" id="edit-sexo" required>
-                                <option value="Masculino">Masculino</option>
-                                <option value="Feminino">Feminino</option>
+                                <option value="M">Masculino</option>
+                                <option value="F">Feminino</option>
                             </select>
                         </div>
                         <div class="form-group col-md-6">
@@ -306,6 +306,14 @@ $totalResponsaveis = count($resultado_res);
                         <div class="form-group col-md-4">
                             <label class="form-label">Número</label>
                             <input name="numero_casa" type="text" class="form-control" id="edit-num" required>
+                        </div>
+                    </div>
+
+                    <!-- Campo de senha: deixe em branco para não alterar -->
+                    <div class="form-row mt-3">
+                        <div class="form-group col-md-12">
+                            <label class="form-label">Nova senha <small class="text-muted">(deixe em branco para manter a senha atual)</small></label>
+                            <input type="password" name="senha" class="form-control" id="edit-senha" placeholder="Não digite nada para manter a senha atual">
                         </div>
                     </div>
 
@@ -375,6 +383,8 @@ $('#modalEditar').on('show.bs.modal', function(e) {
     $('#edit-bairro').val(btn.data('bairro'));
     $('#edit-cep').val(btn.data('cep'));
     $('#edit-num').val(btn.data('num'));
+    // O campo de senha sempre deve ficar limpo ao abrir o modal
+    $('#edit-senha').val('');
 });
 
 // Modal de confirmação de exclusão
@@ -402,11 +412,11 @@ overlay.addEventListener('click', function() {
     overlay.classList.remove('visible');
 });
 
-// Upload foto (corrigido para 2MB)
+// Upload foto (limite de 2MB)
 document.getElementById('inputFoto').addEventListener('change', function() {
     if (!this.files || this.files.length === 0) return;
     var tamanho = this.files[0].size / 1024 / 1024;
-    if (tamanho > 10) {
+    if (tamanho > 2) {
         document.getElementById('tamanho-arquivo').textContent = tamanho.toFixed(1);
         document.getElementById('modalErroFoto').classList.add('open');
         this.value = '';

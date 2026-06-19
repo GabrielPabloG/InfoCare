@@ -22,7 +22,7 @@ $id = $_GET['id'];
 $daoResponsavel = new DaoResponsavel();
 
 if ($daoResponsavel->delete($id)) {
-        header("Location: ../View/listRes.php?excluido=1");
+        header("Location: ../View/listarRes.php?excluido=1");
     exit(); 
 } else {
     echo "Erro ao tentar excluir o responsável do banco de dados.";

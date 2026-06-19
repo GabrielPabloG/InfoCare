@@ -36,27 +36,26 @@ class DaoResponsavel {
         try {
             $conn = Conexao::getConexao();
             
-            // Monta a base da query (tudo MENOS a senha)
+            // Monta a base da query (sem a senha)
             $sql = "UPDATE responsavel SET 
                     nome = ?, cpf = ?, sexo = ?, nascimento = ?, 
-                    email = ?, senha = ?, rua = ?, bairro = ?, 
+                    email = ?, rua = ?, bairro = ?, 
                     cep = ?, numero_casa = ?";
             
-            // Array com os valores correspondentes
             $valores = [
                 $responsavel->getNome(), $responsavel->getCpf(), $responsavel->getSexo(),
-                $responsavel->getNascimento(), $responsavel->getEmail(), $responsavel->getSenha(),
+                $responsavel->getNascimento(), $responsavel->getEmail(),
                 $responsavel->getRua(), $responsavel->getBairro(), $responsavel->getCep(),
                 $responsavel->getNumeroCasa()
             ];
 
-            // Se a senha NÃO for nula, adicionamos ela na query
+            // Só adiciona a senha na query se for diferente de null
             if ($responsavel->getSenha() !== null) {
                 $sql .= ", senha = ?";
-                $valores[] = $responsavel->getSenha(); // Adiciona o hash na lista de valores
+                $valores[] = $responsavel->getSenha();
             }
 
-            // Finaliza a query com o WHERE e adiciona o ID na lista de valores
+            // WHERE e ID
             $sql .= " WHERE id = ?";
             $valores[] = $responsavel->getId();
 

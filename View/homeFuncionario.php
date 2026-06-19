@@ -34,7 +34,7 @@ if (strpos($fotoSessao, '../upload/') === false) {
     $imgPerfil = $fotoSessao;
 }
 
-// Lista de pacientes
+// Lista de idosos para o funcionário
 $sqlIdosos = "
     SELECT i.id, i.nome, i.sexo, i.cpf, i.nascimento, r.nome AS nomeResponsavel
     FROM idoso i
@@ -74,16 +74,16 @@ $totalIdosos = count($resultado_idoso);
         <img src="<?= $imgPerfil ?>" alt="Foto de perfil" class="sidebar-avatar">
         <div class="sidebar-profile-info">
             <div class="sidebar-profile-name">
-                <?= htmlspecialchars($_SESSION['user_nome'] ?? 'Cuidador') ?>
+                <?= htmlspecialchars($_SESSION['user_nome'] ?? 'Funcionário') ?>
             </div>
-            <div class="sidebar-profile-role">Cuidador(a)</div>
+            <div class="sidebar-profile-role">Funcionário(a)</div>
         </div>
     </div>
 
     <nav class="sidebar-nav">
         <span class="sidebar-section-label">Gestão</span>
         <a href="homeFuncionario.php" class="sidebar-link active">
-            <i class="icon">⊞</i> Pacientes
+            <i class="icon">⊞</i> Idosos
         </a>
 
         <span class="sidebar-section-label">Conta</span>
@@ -111,7 +111,7 @@ $totalIdosos = count($resultado_idoso);
     <header class="topbar">
         <div class="d-flex align-center gap-2">
             <button class="sidebar-toggle" id="sidebarToggle" aria-label="Menu">☰</button>
-            <span class="topbar-title">Painel do Cuidador</span>
+            <span class="topbar-title">Painel do Funcionário</span>
         </div>
     </header>
 
@@ -119,7 +119,7 @@ $totalIdosos = count($resultado_idoso);
         <!-- KPIs -->
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-label">Pacientes</div>
+                <div class="stat-label">Idosos</div>
                 <div class="stat-value"><?= $totalIdosos ?></div>
             </div>
         </div>
@@ -135,7 +135,7 @@ $totalIdosos = count($resultado_idoso);
         <!-- Tabela -->
         <div class="card">
             <div class="card-header">
-                <span class="card-header-title">Pacientes Cadastrados</span>
+                <span class="card-header-title">Idosos Cadastrados</span>
             </div>
 
             <div class="table-wrapper">
@@ -152,7 +152,7 @@ $totalIdosos = count($resultado_idoso);
                         <?php if (empty($resultado_idoso)): ?>
                         <tr>
                             <td colspan="4" style="text-align:center; color:var(--text-muted); padding:40px;">
-                                Nenhum paciente cadastrado.
+                                Nenhum idoso cadastrado.
                             </td>
                         </tr>
                         <?php else: ?>

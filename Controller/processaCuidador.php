@@ -1,39 +1,50 @@
 <?php
-	include_once '../Dao/conexao.php';
-	$id = mysqli_real_escape_string($conn, $_POST['codFuncionario']);
-	$nome = mysqli_real_escape_string($conn, $_POST['nomeFuncionario']);
-	$sexo = mysqli_real_escape_string($conn, $_POST['sexoFuncionario']);
-    $cpf = mysqli_real_escape_string($conn, $_POST['cpfFuncionario']);
-    $nasc = mysqli_real_escape_string($conn, $_POST['nascFuncionario']);
-    $email = mysqli_real_escape_string($conn, $_POST['emailFuncionario']);
+require_once '../Dao/conexao.php';
+require_once '../Model/Funcionario.php';
+require_once '../Dao/DaoFuncionario.php';
+require_once '../Dao/DaoTelefone.php';
 
-	//echo "$id - $nome - $detalhes";
-	$result_idoso = "UPDATE tbfuncionario SET nomeFuncionario='$nome', sexoFuncionario = '$sexo', cpfFuncionario = '$cpf', nascFuncionario = '$nasc', emailFuncionario = '$email' WHERE codFuncionario = '$id'";
-	
-	$resultado_idoso = mysqli_query($conn, $result_idoso);	
+// 1. Recebe os dados do formulário
+$funcionario = new Funcionario();
+$funcionario->setNome($_POST['nome']);
+$funcionario->setEmail($_POST['email']);
+$funcionario->setCpf($_POST['cpf']);
+$senhaSegura = password_hash($_POST['senha'], PASSWORD_DEFAULT);
+$funcionario->setSenha($senhaSegura);
+$funcionario->setRua($_POST['rua']);
+$funcionario->setNumeroCasa($_POST['numero_casa']);
+$funcionario->setBairro($_POST['bairro']);
+$funcionario->setCep($_POST['cep']);
+$funcionario->setSexo($_POST['sexo']);
+$funcionario->setNascimento($_POST['nascimento']);
+$funcionario->setSalario($_POST['salario']);
+
+// 2. Salva o Funcionario e pega o ID gerado
+$daoFuncionario = new DaoFuncionario();
+$idFuncionario = $daoFuncionario->insert($funcionario);
+
+if ($idFuncionario) {
+    // 3. Salva o telefone associando ao ID do funcionário
+if (!empty($_POST['telefone']) && is_array($_POST['telefone'])) {
+    $daoTelefone = new DaoTelefone();
+    
+    // O foreach percorre a lista de telefones enviada pelo formulário
+    foreach ($_POST['telefone'] as $numero) {
+        
+        // Remove espaços vazios e garante que o usuário não enviou um campo em branco
+        $numeroLimpo = trim($numero);
+        
+        if (!empty($numeroLimpo)) {
+            // Passa o número limpo, o tipo, a entidade e o ID salvo
+            $daoTelefone->insert($numeroLimpo, 'CELULAR', 'funcionario', $idFuncionario);
+        }
+    }
+}
+    
+    // Redireciona para o sucesso
+    header("Location: ../View/listCuidador.php?sucesso=1");
+    exit();
+} else {
+    echo "Erro ao cadastrar funcionário.";
+}
 ?>
-<!DOCTYPE html>
-<html lang="pt-br">
-	<head>
-		<meta charset="utf-8">
-	</head>
-
-	<body> <?php
-		if(mysqli_affected_rows($conn) != 0){
-			echo "
-				<META HTTP-EQUIV=REFRESH CONTENT = '0;URL=../view/listCuidador.php'>
-				<script type=\"text/javascript\">
-					alert(\"Cuidador alterado com Sucesso.\");
-				</script>
-			";	
-		}else{
-			echo "
-				<META HTTP-EQUIV=REFRESH CONTENT = '0;URL=../view/listCuidador.php'>
-				<script type=\"text/javascript\">
-					alert(\"Cuidador não foi alterado com Sucesso.\");
-				</script>
-			";	
-		}?>
-	</body>
-</html>
-<?php $conn->close(); ?>

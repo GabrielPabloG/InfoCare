@@ -169,9 +169,9 @@ try {
         <!-- Tabela de pacientes -->
         <div class="card">
             <div class="card-header">
-                <span class="card-header-title">Pacientes Cadastrados</span>
+                <span class="card-header-title">Idosos Cadastrados</span>
                 <a href="cadastroIdosoTab.php" class="btn btn-primary btn-sm">
-                    + Novo Paciente
+                    + Novo Idoso
                 </a>
             </div>
 
@@ -180,7 +180,7 @@ try {
                     <thead>
                         <tr>
                             <th>Código</th>
-                            <th>Nome do Paciente</th>
+                            <th>Nome do Idoso</th>
                             <th>CPF</th>
                             <th></th>
                         </tr>
@@ -189,7 +189,7 @@ try {
                         <?php if (empty($resultado_idoso)): ?>
                         <tr>
                             <td colspan="4" style="text-align:center; color:var(--text-muted); padding:40px;">
-                                Nenhum paciente cadastrado ainda.
+                                Nenhum idoso cadastrado ainda.
                             </td>
                         </tr>
                         <?php else: ?>
@@ -274,7 +274,7 @@ try {
 </div>
 
 <!-- ════════════════════════════════
-     MODAL EDITAR PACIENTE
+     MODAL EDITAR IDOSO
      ════════════════════════════════ -->
 <div class="modal fade" id="modalEditar" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
@@ -295,8 +295,8 @@ try {
                     <div class="form-group">
                         <label class="form-label">Sexo</label>
                         <select name="sexo" class="form-control" id="edit-sexo" required>
-                            <option value="Masculino">Masculino</option>
-                            <option value="Feminino">Feminino</option>
+                            <option value="M">Masculino</option>
+                            <option value="F">Feminino</option>
                         </select>
                     </div>
 

@@ -4,6 +4,7 @@ require_once '../Dao/conexao.php';
 
 $conn = Conexao::getConexao();
 
+// Controle de acesso
 if ($_SESSION['user_tipo'] !== 'admin' && $_SESSION['user_tipo'] !== 'gerente') {
     switch ($_SESSION['user_tipo']) {
         case 'funcionario':
@@ -19,19 +20,26 @@ if ($_SESSION['user_tipo'] !== 'admin' && $_SESSION['user_tipo'] !== 'gerente') 
     exit;
 }
 
-// Foto de perfil do gerente
+// Foto de perfil
 $imgPerfil = $_SESSION['foto_perfil'] ?? '../upload/user.png';
 
-// Lista de funcionarios
-$sqlFuncionarios = "
-    SELECT id, nome, cpf, sexo, nascimento, email, rua, bairro, numero_casa
-    FROM funcionario
-    ORDER BY nome ASC
-";
-$stmtFuncionarios = $conn->query($sqlFuncionarios);
-$resultado_funcionarios = $stmtFuncionarios->fetchAll(PDO::FETCH_ASSOC);
+// Lista de funcionários (cuidadores)
+try {
+    $sqlFuncionarios = "
+        SELECT f.id, f.nome, f.cpf, f.sexo, f.nascimento, f.email, 
+               f.rua, f.bairro, f.cep, f.numero_casa,
+               t.numero AS telefone
+        FROM funcionario f
+        LEFT JOIN telefone t ON t.entidade_id = f.id AND t.entidade_tipo = 'FUNCIONARIO'
+        ORDER BY f.nome ASC
+    ";
+    
+    $stmt = $conn->query($sqlFuncionarios);          // ← corrigido
+    $resultado_funcionarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    die('Erro SQL: ' . $e->getMessage());
+}
 
-// KPIs simples (total de funcionarios)
 $totalFuncionarios = count($resultado_funcionarios);
 ?>
 <!DOCTYPE html>
@@ -51,11 +59,8 @@ $totalFuncionarios = count($resultado_funcionarios);
 </head>
 <body>
 
-<!-- ════════════════════════════════
-     SIDEBAR
-     ════════════════════════════════ -->
+<!-- ════════════ SIDEBAR (idêntica à homeAdm) ════════════ -->
 <aside class="sidebar" id="sidebar">
-
     <div class="sidebar-logo">
         <img src="../img/infocare branco.png" alt="InfoCare">
     </div>
@@ -68,13 +73,11 @@ $totalFuncionarios = count($resultado_funcionarios);
         >
         <div class="sidebar-profile-info">
             <div class="sidebar-profile-name">
-                <?= htmlspecialchars($_SESSION['user_nome'] ?? 'Gerente') ?>
+                <?= htmlspecialchars($_SESSION['user_nome'] ?? 'Usuário') ?>
             </div>
-            <?php if ($_SESSION['user_tipo'] === 'gerente'): ?>
-                <div class="sidebar-profile-role">Gerente</div>
-            <?php else: ?>
-                <div class="sidebar-profile-role">Administrador</div>
-            <?php endif; ?>
+            <div class="sidebar-profile-role">
+                <?= $_SESSION['user_tipo'] === 'admin' ? 'Administrador' : 'Gerente' ?>
+            </div>
         </div>
     </div>
 
@@ -112,12 +115,9 @@ $totalFuncionarios = count($resultado_funcionarios);
 <!-- Overlay mobile -->
 <div class="sidebar-overlay" id="overlay"></div>
 
-<!-- ════════════════════════════════
-     CONTEÚDO PRINCIPAL
-     ════════════════════════════════ -->
+<!-- ════════════ CONTEÚDO PRINCIPAL ════════════ -->
 <div class="main-wrapper">
 
-    <!-- Topbar -->
     <header class="topbar">
         <div class="d-flex align-center gap-2">
             <button class="sidebar-toggle" id="sidebarToggle" aria-label="Menu">
@@ -127,7 +127,6 @@ $totalFuncionarios = count($resultado_funcionarios);
         </div>
     </header>
 
-    <!-- Conteúdo -->
     <main class="page-content">
 
         <!-- KPIs -->
@@ -146,7 +145,7 @@ $totalFuncionarios = count($resultado_funcionarios);
             <div class="alert alert-danger">Ocorreu um erro. Tente novamente.</div>
         <?php endif; ?>
 
-        <!-- Tabela de funcionarios -->
+        <!-- Tabela de funcionários -->
         <div class="card">
             <div class="card-header">
                 <span class="card-header-title">Funcionários Cadastrados</span>
@@ -159,16 +158,17 @@ $totalFuncionarios = count($resultado_funcionarios);
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Código</th>
+                            <th>#</th>
                             <th>Nome</th>
                             <th>CPF</th>
+                            <th>E-mail</th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php if (empty($resultado_funcionarios)): ?>
                         <tr>
-                            <td colspan="4" style="text-align:center; color:var(--text-muted); padding:40px;">
+                            <td colspan="5" style="text-align:center; color:var(--text-muted); padding:40px;">
                                 Nenhum funcionário cadastrado ainda.
                             </td>
                         </tr>
@@ -178,6 +178,7 @@ $totalFuncionarios = count($resultado_funcionarios);
                             <td class="text-muted"><?= $c['id'] ?></td>
                             <td><strong><?= htmlspecialchars($c['nome']) ?></strong></td>
                             <td><?= htmlspecialchars($c['cpf']) ?></td>
+                            <td><?= htmlspecialchars($c['email']) ?></td>
                             <td>
                                 <div class="actions">
                                     <!-- 👁 Visualizar -->
@@ -188,14 +189,22 @@ $totalFuncionarios = count($resultado_funcionarios);
                                     >👁 Ver</button>
 
                                     <!-- ✏ Editar -->
+                                    <!-- ✏ Editar -->
                                     <button
                                         class="btn-edit"
                                         data-toggle="modal"
                                         data-target="#modalEditar"
                                         data-id="<?= $c['id'] ?>"
-                                        data-nome="<?= htmlspecialchars($c['nome']) ?>"
-                                        data-sexo="<?= htmlspecialchars($c['sexo']) ?>"
-                                        data-cpf="<?= htmlspecialchars($c['cpf']) ?>"
+                                        data-nome="<?= htmlspecialchars($c['nome'] ?? '') ?>"
+                                        data-sexo="<?= htmlspecialchars($c['sexo'] ?? '') ?>"
+                                        data-cpf="<?= htmlspecialchars($c['cpf'] ?? '') ?>"
+                                        data-nasc="<?= htmlspecialchars($c['nascimento'] ?? '') ?>"
+                                        data-email="<?= htmlspecialchars($c['email'] ?? '') ?>"
+                                        data-telefone="<?= htmlspecialchars($c['telefone'] ?? '') ?>"
+                                        data-rua="<?= htmlspecialchars($c['rua'] ?? '') ?>"
+                                        data-bairro="<?= htmlspecialchars($c['bairro'] ?? '') ?>"
+                                        data-cep="<?= htmlspecialchars($c['cep'] ?? '') ?>"
+                                        data-numero_casa="<?= htmlspecialchars($c['numero_casa'] ?? '') ?>"
                                     >✏ Editar</button>
 
                                     <!-- 🗑 Apagar -->
@@ -216,13 +225,15 @@ $totalFuncionarios = count($resultado_funcionarios);
                                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                                     </div>
                                     <div class="modal-body">
-                                        <p><strong>Código:</strong> <?= $c['id'] ?></p>
-                                        <p><strong>Nome:</strong> <?= htmlspecialchars($c['nome']) ?></p>
-                                        <p><strong>Sexo:</strong> <?= htmlspecialchars($c['sexo']) ?></p>
-                                        <p><strong>CPF:</strong> <?= htmlspecialchars($c['cpf']) ?></p>
-                                        <p><strong>Nascimento:</strong> <?= date('d/m/Y', strtotime($c['nascimento'])) ?></p>
-                                        <p><strong>E-mail:</strong> <?= htmlspecialchars($c['email']) ?></p>
-                                        <p><strong>Endereço:</strong> <?= htmlspecialchars($c['rua']) ?>, <?= htmlspecialchars($c['numero_casa']) ?> - <?= htmlspecialchars($c['bairro']) ?></p>
+                                        <p><strong>ID:</strong> <?= $c['id'] ?></p>
+                                        <p><strong>Nome:</strong> <?= htmlspecialchars($c['nome'] ?? 'Não informado') ?></p>
+                                        <p><strong>Sexo:</strong> <?= htmlspecialchars($c['sexo'] ?? 'Não informado') ?></p>
+                                        <p><strong>CPF:</strong> <?= htmlspecialchars($c['cpf'] ?? 'Não informado') ?></p>
+                                        <p><strong>Nascimento:</strong> <?= (!empty($c['nascimento']) && $c['nascimento'] !== '0000-00-00') ? date('d/m/Y', strtotime($c['nascimento'])) : 'Não informado' ?></p>
+                                        <p><strong>E-mail:</strong> <?= htmlspecialchars($c['email'] ?? 'Não informado') ?></p>
+                                        <p><strong>Telefone:</strong> <?= htmlspecialchars($c['telefone'] ?? 'Não informado') ?></p>
+                                        <p><strong>CEP:</strong> <?= htmlspecialchars($c['cep'] ?? '—') ?></p>
+                                        <p><strong>Endereço:</strong> <?= htmlspecialchars($c['rua'] ?? '') ?><?= !empty($c['numero_casa']) ? ', ' . htmlspecialchars($c['numero_casa']) : '' ?><?= !empty($c['bairro']) ? ' - ' . htmlspecialchars($c['bairro']) : '' ?></p>
                                     </div>
                                     <div class="modal-footer">
                                         <button class="btn btn-ghost" data-dismiss="modal">Fechar</button>
@@ -242,14 +253,12 @@ $totalFuncionarios = count($resultado_funcionarios);
     </main>
 </div>
 
-<!-- ════════════════════════════════
-     MODAL EDITAR CUIDADOR
-     ════════════════════════════════ -->
+<!-- ════════════ MODAL EDITAR FUNCIONÁRIO ════════════ -->
 <div class="modal fade" id="modalEditar" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Editar Cuidador</h5>
+                <h5 class="modal-title">Editar Funcionário</h5>
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
             <div class="modal-body">
@@ -275,6 +284,45 @@ $totalFuncionarios = count($resultado_funcionarios);
                         <script>$("#edit-cpf").mask("000.000.000-00");</script>
                     </div>
 
+                    <div class="form-group">
+                        <label class="form-label">Data de Nascimento</label>
+                        <input name="nascimento" type="date" class="form-control" id="edit-nasc" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">E-mail</label>
+                        <input name="email" type="email" class="form-control" id="edit-email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Telefone</label>
+                        <input name="telefone" type="text" class="form-control" id="edit-telefone" required>
+                        <script>$("#edit-telefone").mask("(00) 00000-0000");</script>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Rua</label>
+                        <input name="rua" type="text" class="form-control" id="edit-rua" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Bairro</label>
+                        <input name="bairro" type="text" class="form-control" id="edit-bairro" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">CEP</label>
+                        <input name="cep" type="text" class="form-control" id="edit-cep" required>
+                        <script>$("#edit-cep").mask("00000-000");</script>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Número da Casa</label>
+                        <input name="numero_casa" type="text" class="form-control" id="edit-numero_casa" required>
+                    </div>
+
+                    <!-- Funcionário não tem salário nem senha nesse modal, mas se precisar, adicione -->
+
                     <div class="modal-footer" style="padding:0; margin-top:16px; border:none;">
                         <button type="button" class="btn btn-ghost" data-dismiss="modal">Cancelar</button>
                         <button type="submit" class="btn btn-primary">Salvar Alterações</button>
@@ -285,17 +333,15 @@ $totalFuncionarios = count($resultado_funcionarios);
     </div>
 </div>
 
-<!-- ════════════════════════════════
-     MODAL CONFIRMAR EXCLUSÃO
-     ════════════════════════════════ -->
+<!-- ════════════ MODAL CONFIRMAR EXCLUSÃO ════════════ -->
 <div class="confirm-overlay" id="modalDeletar">
     <div class="confirm-box">
         <div class="confirm-hdr">
-            <span class="confirm-hdr-title">Apagar Cuidador</span>
+            <span class="confirm-hdr-title">Apagar Funcionário</span>
             <button class="confirm-close" onclick="fecharDeletar()">✕</button>
         </div>
         <div class="confirm-body">
-            Tem certeza que deseja apagar o cuidador <strong id="del-nome"></strong>?
+            Tem certeza que deseja apagar o funcionário <strong id="del-nome"></strong>?
             <span class="confirm-note">Esta ação não pode ser desfeita.</span>
         </div>
         <div class="confirm-ftr">
@@ -308,7 +354,7 @@ $totalFuncionarios = count($resultado_funcionarios);
     </div>
 </div>
 
-<!-- Modal de erro de foto -->
+<!-- Modal de erro de foto (cópia da homeAdm) -->
 <div class="confirm-overlay" id="modalErroFoto">
     <div class="confirm-box">
         <div class="confirm-hdr">
@@ -330,13 +376,21 @@ $totalFuncionarios = count($resultado_funcionarios);
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
 
 <script>
-// Preenche modal de edição
+// Preenche modal de edição (exatamente como na homeAdm)
 $('#modalEditar').on('show.bs.modal', function(e) {
     const btn = $(e.relatedTarget);
+    
     $('#edit-id').val(btn.data('id'));
     $('#edit-nome').val(btn.data('nome'));
-    $('#edit-sexo').val(btn.data('sexo'));
+    $('#edit-sexo').val(btn.data('sexo'));   
     $('#edit-cpf').val(btn.data('cpf'));
+    $('#edit-nasc').val(btn.data('nasc'));
+    $('#edit-email').val(btn.data('email'));
+    $('#edit-telefone').val(btn.data('telefone'));
+    $('#edit-rua').val(btn.data('rua'));
+    $('#edit-bairro').val(btn.data('bairro'));
+    $('#edit-cep').val(btn.data('cep'));
+    $('#edit-numero_casa').val(btn.data('numero_casa'));
 });
 
 // Modal de confirmação de exclusão
@@ -371,8 +425,10 @@ overlay.addEventListener('click', function() {
 // Upload de foto
 document.getElementById('inputFoto').addEventListener('change', function() {
     if (!this.files || this.files.length === 0) return;
+
     const tamanho = this.files[0].size / 1024 / 1024;
-    if (tamanho > 2) {
+    
+    if (tamanho > 10) {
         document.getElementById('tamanho-arquivo').textContent = tamanho.toFixed(1);
         document.getElementById('modalErroFoto').classList.add('open');
         this.value = '';

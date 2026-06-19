@@ -189,7 +189,6 @@ $totalFuncionarios = count($resultado_funcionarios);
                                     >👁 Ver</button>
 
                                     <!-- ✏ Editar -->
-                                    <!-- ✏ Editar -->
                                     <button
                                         class="btn-edit"
                                         data-toggle="modal"

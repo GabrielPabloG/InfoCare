@@ -87,6 +87,12 @@ $totalIdosos = count($resultado_idoso);
         </a>
 
         <span class="sidebar-section-label">Conta</span>
+
+        <!-- Link para editar os dados da conta -->
+        <a href="atualizarFuncionario.php" class="sidebar-link">
+            <i class="icon">👤</i> Meus dados
+        </a>
+
         <form action="../Controller/atualizarFoto.php" method="post" enctype="multipart/form-data" id="formFoto">
             <input type="file" name="foto" id="inputFoto" style="display: none;" accept="image/*">
             <label for="inputFoto" class="sidebar-link" style="cursor: pointer; margin-bottom: 0;">

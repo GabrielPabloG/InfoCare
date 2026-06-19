@@ -197,6 +197,7 @@ try {
                                                 <p><strong>ID do Prontuário:</strong> <?= $idoso['prontuario_fixo_id'] ?? '—' ?></p>
                                             </div>
                                             <div class="modal-footer">
+                                                <a href="visualizarProntuarioFixo.php?id=<?= $idoso['id'] ?>" class="btn btn-primary btn-sm">📋 Prontuário Completo</a>
                                                 <button class="btn btn-ghost" data-dismiss="modal">Fechar</button>
                                             </div>
                                         </div>

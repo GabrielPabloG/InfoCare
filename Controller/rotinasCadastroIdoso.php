@@ -224,7 +224,7 @@ $idosoId = $conn->lastInsertId();
     }
 
     $conn->commit();
-    header('Location: ../View/listarRes.php?sucesso=1');
+    header('Location: ../View/homeGerente.php?sucesso=1');
     exit;
 
 } catch (Exception $e) {

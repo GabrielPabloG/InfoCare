@@ -1,7 +1,7 @@
 <?php
 require_once '../Dao/conexao.php';
 require_once '../Model/Responsavel.php';
-require_once '../Dao/DaoResponsavel.php'; // Certifique-se de que este DAO foi criado na Fase 3
+require_once '../Dao/DaoResponsavel.php';
 require_once '../Dao/DaoTelefone.php';
 
 // 1. Instancia o novo Model
@@ -36,7 +36,7 @@ if ($idResponsavel) {
     }
     
     // Redireciona para a tela de listagem
-    header("Location: ../View/listCuidador.php?sucesso=1");
+    header("Location: ../View/listRes.php?sucesso=1");
     exit();
 } else {
     echo "Erro ao cadastrar funcionário.";

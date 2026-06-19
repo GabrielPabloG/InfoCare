@@ -1,4 +1,4 @@
-<?
+<?php
 class Responsavel {
 
     private $id;

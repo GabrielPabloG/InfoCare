@@ -40,6 +40,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['foto'])) {
                 $salvou = $daoFoto->salvarFoto($novoNome, $_SESSION['user_tipo'], $_SESSION['user_id']);
 
                 if ($salvou) {
+                    // Atualiza a sessão para a tela mudar.
+                    $_SESSION['foto_perfil'] = '../upload/' . $novoNome;
+
                             // Redireciona de volta para a Home (Dinâmico para Gerente ou outros cargos)
                 switch ($_SESSION['user_tipo']) {
                     case 'admin':

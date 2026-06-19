@@ -1,217 +1,342 @@
-<?php 
-session_start();
+<?php
 require_once 'verificacao.php';
 require_once '../Dao/conexao.php';
 
 $conn = Conexao::getConexao();
 
-// LÓGICA DE BUSCA DA FOTO DE PERFIL DO FUNCIONÁRIO (CUIDADOR)
-$imgPerfil = 'user.png';
-try {
-    $stmtFoto = $conn->prepare("SELECT nomeFoto FROM foto WHERE entidade_tipo = 'funcionario' AND entidade_id = ? ORDER BY dataFoto DESC LIMIT 1");
-    $stmtFoto->execute([$_SESSION['user_id']]);
-    if ($fotoDb = $stmtFoto->fetch(PDO::FETCH_ASSOC)) {
-        $imgPerfil = $fotoDb['nomeFoto'];
+// Apenas funcionários acessam esta página
+if ($_SESSION['user_tipo'] !== 'funcionario') {
+    switch ($_SESSION['user_tipo']) {
+        case 'admin':
+            header('Location: homeAdm.php');
+            break;
+        case 'gerente':
+            header('Location: homeGerente.php');
+            break;
+        case 'responsavel':
+            header('Location: homeResponsavel.php');
+            break;
+        default:
+            session_destroy();
+            header('Location: ../index.php');
     }
-} catch (PDOException $e) {
-    // Falha silenciosa para a foto
+    exit;
 }
 
-// QUERY PARA BUSCAR TODOS OS PACIENTES
-try {
-    $sqlIdosos = "SELECT i.id, i.nome, i.sexo, i.cpf, i.nascimento, r.nome AS nomeResponsavel 
-                  FROM idoso i
-                  LEFT JOIN responsavel r ON i.responsavel_id = r.id
-                  ORDER BY i.nome ASC";
-    $stmtIdosos = $conn->query($sqlIdosos);
-    $resultado_idoso = $stmtIdosos->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    echo "Erro ao buscar pacientes: " . $e->getMessage();
-    $resultado_idoso = [];
+// Foto de perfil via sessão (definida no verificacao.php)
+$fotoSessao = $_SESSION['foto_perfil'] ?? 'user.png';
+
+if (strpos($fotoSessao, '../upload/') === false) {
+    // Se a sessão veio só com o nome do arquivo, a gente adiciona a pasta
+    $imgPerfil = '../upload/' . $fotoSessao;
+} else {
+    // Se já veio com o caminho completo do login, usa direto
+    $imgPerfil = $fotoSessao;
 }
+
+// Lista de pacientes
+$sqlIdosos = "
+    SELECT i.id, i.nome, i.sexo, i.cpf, i.nascimento, r.nome AS nomeResponsavel
+    FROM idoso i
+    LEFT JOIN responsavel r ON i.responsavel_id = r.id
+    ORDER BY i.nome ASC
+";
+$stmtIdosos = $conn->query($sqlIdosos);
+$resultado_idoso = $stmtIdosos->fetchAll(PDO::FETCH_ASSOC);
+
+// KPIs
+$totalIdosos = count($resultado_idoso);
 ?>
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8"/>
-        <title>InfoCare - Painel do Cuidador</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        
-        <link href="../css/default.css" rel="stylesheet">
-        <link href="../css/component.css" rel="stylesheet">
-        <link href="../cssModal/css/bootstrap.min.css" rel="stylesheet">
-        <link rel="stylesheet" type="text/css" href="../css/Ger.css">
-        <link rel="icon" type="image/png" href="../img/infocare-logo.png"/>
+<html lang="pt-br">
+<head>
+    <title>InfoCare — Painel do Cuidador</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <script src="../js/modernizr.custom.js"></script>
-        <script src="../js/jquery.min.js"></script>
-        <script src="../js/jquery.mask.min.js"></script>
-    </head>
-    
-    <body>
-        <div class="cabecalho">
-           <a href="../View/homeFuncionario.php"> <h1 class="logo"></h1></a>
-             <div class="novomenu">
-                <div id="dl-menu" class="dl-menuwrapper">
-                  <br><br>
-                    <button class="dl-trigger" style="background-color: transparent"></button>
-                    <ul class="dl-menu" style=" background-color: rgba(52,103,125,0.8);">
-                        <li><a href="../View/homeFuncionario.php">Pacientes</a></li>
-                        <li><a href="../View/logout.php">Sair</a></li>
-                    </ul>
-                 </div>
+    <link rel="stylesheet" href="../css/adm.css">
+    <link rel="stylesheet" href="../cssModal/css/bootstrap.min.css">
+
+    <script src="../js/jquery.min.js"></script>
+    <script src="../js/jquery.mask.min.js"></script>
+</head>
+<body>
+
+<!-- ════════════════════════════════
+     SIDEBAR
+     ════════════════════════════════ -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+        <img src="../img/infocare branco.png" alt="InfoCare">
+    </div>
+
+    <div class="sidebar-profile">
+        <img src="<?= $imgPerfil ?>" alt="Foto de perfil" class="sidebar-avatar">
+        <div class="sidebar-profile-info">
+            <div class="sidebar-profile-name">
+                <?= htmlspecialchars($_SESSION['user_nome'] ?? 'Cuidador') ?>
+            </div>
+            <div class="sidebar-profile-role">Cuidador(a)</div>
+        </div>
+    </div>
+
+    <nav class="sidebar-nav">
+        <span class="sidebar-section-label">Gestão</span>
+        <a href="homeFuncionario.php" class="sidebar-link active">
+            <i class="icon">⊞</i> Pacientes
+        </a>
+
+        <span class="sidebar-section-label">Conta</span>
+        <form action="../Controller/atualizarFoto.php" method="post" enctype="multipart/form-data" id="formFoto">
+            <input type="file" name="foto" id="inputFoto" style="display: none;" accept="image/*">
+            <label for="inputFoto" class="sidebar-link" style="cursor: pointer; margin-bottom: 0;">
+                <i class="icon">◎</i> Atualizar foto
+            </label>
+        </form>
+    </nav>
+
+    <div class="sidebar-footer">
+        <a href="../View/logout.php" class="sidebar-link">
+            <i class="icon">↩</i> Sair
+        </a>
+    </div>
+</aside>
+
+<div class="sidebar-overlay" id="overlay"></div>
+
+<!-- ════════════════════════════════
+     CONTEÚDO PRINCIPAL
+     ════════════════════════════════ -->
+<div class="main-wrapper">
+    <header class="topbar">
+        <div class="d-flex align-center gap-2">
+            <button class="sidebar-toggle" id="sidebarToggle" aria-label="Menu">☰</button>
+            <span class="topbar-title">Painel do Cuidador</span>
+        </div>
+    </header>
+
+    <main class="page-content">
+        <!-- KPIs -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Pacientes</div>
+                <div class="stat-value"><?= $totalIdosos ?></div>
             </div>
         </div>
-        <br><br><br><br>
-        
-        <div class="lixo">
-            <div class="loginbox">
-                <form action="../Controller/atualizarFoto.php" method="post" enctype="multipart/form-data">
-                    <img src="../upload/<?php echo $imgPerfil; ?>" class="avatar">
-                    <input type='file' required name='foto' style='opacity: 0; margin-top: 30%; cursor: pointer;' onchange="this.form.submit()">
-                </form>
-                
-                <h1><?php echo isset($_SESSION['user_nome']) ? $_SESSION['user_nome'] : 'Cuidador'; ?></h1>
-                <div class="indicador"><p>Cuidador(a)</p></div>
-                <ul>
-                    <br>
-                    <hr style="height:2px; border:none; color:#C1C1C1; width: 220px; background-color:#fff; margin-top: 0px; margin-bottom: 0px;"/>
-                    <li><a href="atualizarFuncionario.php"><i class="fas fa-user" aria-hidden="true"></i>Perfil</a></li>
-                    <br> <br>
-                </ul>
+
+        <!-- Alertas -->
+        <?php if (isset($_GET['sucesso'])): ?>
+            <div class="alert alert-success">Operação realizada com sucesso.</div>
+        <?php endif; ?>
+        <?php if (isset($_GET['erro'])): ?>
+            <div class="alert alert-danger">Ocorreu um erro. Tente novamente.</div>
+        <?php endif; ?>
+
+        <!-- Tabela -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-header-title">Pacientes Cadastrados</span>
             </div>
-            
-            <?php
-            // Mensagens dinâmicas
-            if(isset($_GET['excluido'])) echo "<p class='text-danger text-center'><strong>Registro excluído com sucesso.</strong></p>";
-            if(isset($_GET['atualizado'])) echo "<p class='text-success text-center'><strong>Registro atualizado com sucesso.</strong></p>";
-            ?>
-        </div>
-        
-        <div id="containerM" role="main">
-            <div class="page-header">
-                <h1>Pacientes Cadastrados</h1>
-            </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Código</th>
-                                <th>Nome do Idoso</th>
-                                <th>CPF do Idoso</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach($resultado_idoso as $rows_idoso): ?>
-                                <tr>
-                                    <td><?php echo $rows_idoso['id']; ?></td>
-                                    <td><?php echo $rows_idoso['nome']; ?></td>
-                                    <td><?php echo $rows_idoso['cpf']; ?></td>
-                                    <td>
-                                        <button type="button" class="btn btn-xs btn-primaryM" data-toggle="modal" data-target="#myModal<?php echo $rows_idoso['id']; ?>">Visualizar</button>
-                                        
-                                        <button type="button" class="btn btn-xs btn-warning" data-toggle="modal" data-target="#exampleModal" 
-                                            data-id="<?php echo $rows_idoso['id']; ?>" 
-                                            data-nome="<?php echo $rows_idoso['nome']; ?>" 
-                                            data-sexo="<?php echo $rows_idoso['sexo']; ?>">
-                                            Editar
-                                        </button>
-                                        
-                                        <form action="../Controller/apagarIdoso.php" method="GET" style="display:inline;">
-                                            <input type="hidden" name="id" value="<?php echo $rows_idoso['id']; ?>">
-                                            <button class="btn btn-xs btn-danger" type="submit" onclick="return confirm('Tem certeza que deseja apagar? Esta ação pode ser bloqueada caso não tenha permissão.')">Apagar</button>
-                                        </form>
-                                        
-                                        <form action="criarProntuario.php" method="POST" style="display:inline;">
-                                            <input type="hidden" name="cpfIdoso" value="<?php echo $rows_idoso['cpf']; ?>">
-                                            <button class="btn btn-xs btn-primaryI" type="submit">+ Prontuário</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                                
-                                <div class="modal fade" id="myModal<?php echo $rows_idoso['id']; ?>" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                                    <div class="modal-dialog" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                                <h4 class="modal-title text-center" id="myModalLabel"><?php echo $rows_idoso['nome']; ?></h4>
-                                            </div>
-                                            <div class="modal-body">
-                                                <p><b>Código:</b> <?php echo $rows_idoso['id']; ?></p>
-                                                <p><b>Nome:</b> <?php echo $rows_idoso['nome']; ?></p>
-                                                <p><b>Sexo:</b> <?php echo $rows_idoso['sexo']; ?></p>
-                                                <p><b>Data de Nascimento:</b> <?php echo date('d/m/Y', strtotime($rows_idoso['nascimento'])); ?></p>
-                                                <p><b>Responsável:</b> <?php echo $rows_idoso['nomeResponsavel'] ? $rows_idoso['nomeResponsavel'] : 'Não cadastrado'; ?></p>
-                                            </div>
-                                        </div>
+
+            <div class="table-wrapper">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Nome</th>
+                            <th>CPF</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (empty($resultado_idoso)): ?>
+                        <tr>
+                            <td colspan="4" style="text-align:center; color:var(--text-muted); padding:40px;">
+                                Nenhum paciente cadastrado.
+                            </td>
+                        </tr>
+                        <?php else: ?>
+                        <?php foreach ($resultado_idoso as $idoso): ?>
+                        <tr>
+                            <td class="text-muted"><?= $idoso['id'] ?></td>
+                            <td><strong><?= htmlspecialchars($idoso['nome']) ?></strong></td>
+                            <td><?= htmlspecialchars($idoso['cpf']) ?></td>
+                            <td>
+                                <div class="actions">
+                                    <!-- Visualizar -->
+                                    <button class="btn-ver" data-toggle="modal" data-target="#modalVer<?= $idoso['id'] ?>">👁 Ver</button>
+
+                                    <!-- Editar -->
+                                    <button class="btn-edit" data-toggle="modal" data-target="#modalEditar"
+                                        data-id="<?= $idoso['id'] ?>"
+                                        data-nome="<?= htmlspecialchars($idoso['nome']) ?>"
+                                        data-sexo="<?= htmlspecialchars($idoso['sexo']) ?>">✏ Editar</button>
+
+                                    <!-- Apagar (modal) -->
+                                    <button class="btn-del" onclick="confirmarExclusao(<?= $idoso['id'] ?>, '<?= htmlspecialchars($idoso['nome'], ENT_QUOTES) ?>')">🗑 Apagar</button>
+
+                                    <!-- Prontuário -->
+                                    <form action="criarProntuario.php" method="POST" style="display:inline;">
+                                        <input type="hidden" name="cpfIdoso" value="<?= htmlspecialchars($idoso['cpf']) ?>">
+                                        <button class="btn btn-primary btn-sm" type="submit" style="margin-left:4px;">+ Prontuário</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Modal Visualizar -->
+                        <div class="modal fade" id="modalVer<?= $idoso['id'] ?>" tabindex="-1" role="dialog">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title"><?= htmlspecialchars($idoso['nome']) ?></h5>
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p><strong>Código:</strong> <?= $idoso['id'] ?></p>
+                                        <p><strong>Nome:</strong> <?= htmlspecialchars($idoso['nome']) ?></p>
+                                        <p><strong>Sexo:</strong> <?= htmlspecialchars($idoso['sexo']) ?></p>
+                                        <p><strong>Nascimento:</strong> <?= date('d/m/Y', strtotime($idoso['nascimento'])) ?></p>
+                                        <p><strong>Responsável:</strong> <?= $idoso['nomeResponsavel'] ? htmlspecialchars($idoso['nomeResponsavel']) : 'Não cadastrado' ?></p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button class="btn btn-ghost" data-dismiss="modal">Fechar</button>
                                     </div>
                                 </div>
-                                <?php endforeach; ?>
-                        </tbody>
-                     </table>
-                </div>
-            </div>      
-        </div>
-        
-        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">Editar Paciente</h4>
-              </div>
-              <div class="modal-body">
-                <form method="POST" action="../Controller/atualizarIdoso.php">
-                  <div class="form-group">
-                    <label for="recipient-name" class="control-label">Nome:</label>
-                    <input name="nome" type="text" class="form-control" id="recipient-name" required>
-                  </div>
-                  <div class="form-group">
-                    <label for="recipient-sexo" class="control-label">Sexo:</label>
-                    <select name="sexo" class="form-control" id="recipient-sexo">
-                        <option value="Masculino">Masculino</option>
-                        <option value="Feminino">Feminino</option>
-                    </select>
-                  </div>
-                  <input name="id" type="hidden" class="form-control" id="modal-id" value="">
-                
-                  <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                  <button type="submit" class="btn btn-primary">Salvar Alterações</button>
-                </form>
-              </div>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
             </div>
-          </div>
         </div>
+    </main>
+</div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
-    <script src="../cssModal/js/bootstrap.min.js"></script>
-    
-    <script type="text/javascript">
-        // Preenche o Modal de Edição
-        $('#exampleModal').on('show.bs.modal', function (event) {
-          var button = $(event.relatedTarget);
-          var id = button.data('id');
-          var nome = button.data('nome');
-          var sexo = button.data('sexo');
-          
-          var modal = $(this);
-          modal.find('.modal-title').text('Editar Paciente ID ' + id);
-          modal.find('#modal-id').val(id);
-          modal.find('#recipient-name').val(nome);
-          modal.find('#recipient-sexo').val(sexo);
-        });
-    </script>
-    
-    <script src="../js/jquery.dlmenu.js"></script>
-    <script>
-        $(function() {
-            $( '#dl-menu' ).dlmenu({
-                animationClasses : { classin : 'dl-animate-in-2', classout : 'dl-animate-out-2' }
-            });
-        });
-    </script>
-    </body>
+<!-- Modal Editar -->
+<div class="modal fade" id="modalEditar" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Paciente</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="../Controller/atualizarIdoso.php">
+                    <input type="hidden" name="id" id="edit-id">
+                    <div class="form-group">
+                        <label class="form-label">Nome</label>
+                        <input name="nome" type="text" class="form-control" id="edit-nome" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Sexo</label>
+                        <select name="sexo" class="form-control" id="edit-sexo" required>
+                            <option value="Masculino">Masculino</option>
+                            <option value="Feminino">Feminino</option>
+                        </select>
+                    </div>
+                    <div class="modal-footer" style="padding:0; margin-top:16px; border:none;">
+                        <button type="button" class="btn btn-ghost" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Confirmar Exclusão -->
+<div class="confirm-overlay" id="modalDeletar">
+    <div class="confirm-box">
+        <div class="confirm-hdr">
+            <span class="confirm-hdr-title">Apagar Paciente</span>
+            <button class="confirm-close" onclick="fecharDeletar()">✕</button>
+        </div>
+        <div class="confirm-body">
+            Tem certeza que deseja apagar <strong id="del-nome"></strong>?
+            <span class="confirm-note">Esta ação não pode ser desfeita.</span>
+        </div>
+        <div class="confirm-ftr">
+            <button class="btn-confirm-cancel" onclick="fecharDeletar()">Cancelar</button>
+            <form id="del-form" action="../Controller/apagarIdoso.php" method="GET" style="display:inline">
+                <input type="hidden" name="id" id="del-id">
+                <button type="submit" class="btn-confirm-del">Sim, apagar</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Erro Foto -->
+<div class="confirm-overlay" id="modalErroFoto">
+    <div class="confirm-box">
+        <div class="confirm-hdr">
+            <span class="confirm-hdr-title" style="color: var(--warning);">Arquivo muito pesado</span>
+            <button class="confirm-close" onclick="fecharErroFoto()">✕</button>
+        </div>
+        <div class="confirm-body">
+            A imagem escolhida tem <strong id="tamanho-arquivo"></strong>MB.<br>
+            <span class="confirm-note">Escolha uma imagem com no máximo <strong>2MB</strong>.</span>
+        </div>
+        <div class="confirm-ftr">
+            <button class="btn-confirm-cancel" onclick="fecharErroFoto()">Entendi</button>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+<script>
+// Modal de edição
+$('#modalEditar').on('show.bs.modal', function(e) {
+    const btn = $(e.relatedTarget);
+    $('#edit-id').val(btn.data('id'));
+    $('#edit-nome').val(btn.data('nome'));
+    $('#edit-sexo').val(btn.data('sexo'));
+});
+
+// Modal de exclusão
+function confirmarExclusao(id, nome) {
+    document.getElementById('del-id').value = id;
+    document.getElementById('del-nome').textContent = nome;
+    document.getElementById('modalDeletar').classList.add('open');
+}
+function fecharDeletar() {
+    document.getElementById('modalDeletar').classList.remove('open');
+}
+document.getElementById('modalDeletar').addEventListener('click', function(e) {
+    if (e.target === this) fecharDeletar();
+});
+
+// Sidebar mobile
+var sidebar = document.getElementById('sidebar');
+var overlay = document.getElementById('overlay');
+var toggle  = document.getElementById('sidebarToggle');
+toggle.addEventListener('click', function() {
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('visible');
+});
+overlay.addEventListener('click', function() {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('visible');
+});
+
+// Upload foto
+document.getElementById('inputFoto').addEventListener('change', function() {
+    if (!this.files || this.files.length === 0) return;
+    const tamanho = this.files[0].size / 1024 / 1024;
+    if (tamanho > 10) {
+        document.getElementById('tamanho-arquivo').textContent = tamanho.toFixed(1);
+        document.getElementById('modalErroFoto').classList.add('open');
+        this.value = '';
+    } else {
+        document.getElementById('formFoto').submit();
+    }
+});
+function fecharErroFoto() {
+    document.getElementById('modalErroFoto').classList.remove('open');
+}
+</script>
+</body>
 </html>

@@ -1,34 +1,91 @@
 <?php
-session_start();
+require_once '../View/verificacao.php';
 require_once '../Dao/conexao.php';
-require_once '../Dao/DaoIdoso.php';
 
-// 1. TRAVA DE SEGURANÇA (Autorização)
-// Verifica se o usuário está logado e se o tipo dele permite excluir idosos.
-// Usei in_array para permitir que tanto 'admin' quanto 'gerente' façam isso.
-if (!isset($_SESSION['user_tipo']) || !in_array($_SESSION['user_tipo'], ['admin', 'gerente'])) {
-    die("Erro de Acesso: Você não tem permissão para realizar esta ação.");
+// Apenas admin e gerente podem excluir idosos
+if ($_SESSION['user_tipo'] !== 'admin' && $_SESSION['user_tipo'] !== 'gerente') {
+    header('Location: ../index.php');
+    exit;
 }
 
-// 2. VALIDAÇÃO DO PARÂMETRO
-// Garante que o ID foi enviado pela URL e é um número válido
-if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-    die("Erro: ID do idoso inválido ou não fornecido.");
+if (empty($_GET['id'])) {
+    header('Location: ../View/homeGerente.php?erro=1');
+    exit;
 }
 
-$id = $_GET['id']; 
+$id = (int) $_GET['id'];
+$conn = Conexao::getConexao();
 
-// 3. EXECUÇÃO
-$daoIdoso = new DaoIdoso();
+try {
+    $conn->beginTransaction();
 
-// O banco de dados (se estiver com ON DELETE CASCADE configurado)
-// se encarregará de apagar o prontuário diário vinculado a esse idoso automaticamente.
-if ($daoIdoso->delete($id)) {
-    // Redireciona para a tela onde os idosos/responsáveis são listados
-    header("Location: ../View/listarRes.php?excluido=1"); 
-    exit(); 
-} else {
-    // Em caso de falha (ex: banco offline ou restrição de chave estrangeira)
-    echo "Erro ao tentar excluir o idoso do banco de dados.";
+    // 0. Buscar o prontuário fixo vinculado ao idoso
+    $stmt = $conn->prepare("SELECT prontuario_fixo_id FROM idoso WHERE id = ?");
+    $stmt->execute([$id]);
+    $idoso = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$idoso) {
+        header('Location: ../View/homeGerente.php?erro=1');
+        exit;
+    }
+
+    $prontuarioId = $idoso['prontuario_fixo_id'];
+
+    // 1. Remover telefones do idoso (tabela polimórfica)
+    $stmt = $conn->prepare("DELETE FROM telefone WHERE entidade_tipo = 'idoso' AND entidade_id = ?");
+    $stmt->execute([$id]);
+
+    // 2. Remover fotos do idoso
+    $stmt = $conn->prepare("DELETE FROM foto WHERE entidade_tipo = 'idoso' AND entidade_id = ?");
+    $stmt->execute([$id]);
+
+    // 3. Remover medicamentos (se existir tabela medicamento vinculada à antecedencia)
+    if ($prontuarioId) {
+        $stmt = $conn->prepare("
+            DELETE m FROM medicamento m
+            INNER JOIN antecedencia a ON m.antecedencia_id = a.id
+            INNER JOIN prontuario_fixo pf ON pf.antecedencia_id = a.id
+            WHERE pf.id = ?
+        ");
+        $stmt->execute([$prontuarioId]);
+    }
+
+    // 4. Excluir as avaliações (ordem inversa das dependências)
+    if ($prontuarioId) {
+        $tabelas = [
+            'eliminacao',
+            'exame',
+            'relacionamento',
+            'locomocao',
+            'alimentacao',
+            'pulmonar',
+            'pele',
+            'questionamento',
+            'antecedencia'
+        ];
+
+        foreach ($tabelas as $tabela) {
+            $stmt = $conn->prepare("
+                DELETE $tabela FROM $tabela
+                INNER JOIN prontuario_fixo ON prontuario_fixo.{$tabela}_id = $tabela.id
+                WHERE prontuario_fixo.id = ?
+            ");
+            $stmt->execute([$prontuarioId]);
+        }
+
+        // 5. Excluir o prontuário fixo
+        $stmt = $conn->prepare("DELETE FROM prontuario_fixo WHERE id = ?");
+        $stmt->execute([$prontuarioId]);
+    }
+
+    // 6. Finalmente, excluir o idoso
+    $stmt = $conn->prepare("DELETE FROM idoso WHERE id = ?");
+    $stmt->execute([$id]);
+
+    $conn->commit();
+    header('Location: ../View/homeGerente.php?sucesso=1');
+} catch (PDOException $e) {
+    $conn->rollBack();
+    header('Location: ../View/homeGerente.php?erro=1');
 }
-?>
+exit;

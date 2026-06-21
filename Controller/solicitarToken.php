@@ -1,6 +1,12 @@
 <?php
 require_once '../Dao/conexao.php';
 
+// Namespaces do PHPMailer
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require '../vendor/autoload.php';
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($_POST['email'])) {
     header('Location: ../View/esqueciSenha.php?erro=1');
     exit;
@@ -45,7 +51,7 @@ $expira_timestamp = (int)($expira_ms / 1000) + 3600;
 // Gera o DATETIME no formato UTC para o banco
 $expira = gmdate('Y-m-d H:i:s', $expira_timestamp);
 
-// Gera token único e segura
+// Gera token único e seguro
 $token = bin2hex(random_bytes(32));
 
 // Salva o token
@@ -55,7 +61,7 @@ $stmt->execute([$email, $token, $tipo, $expira]);
 // Link de redefinição
 $link = "http://localhost/InfocareMain9/View/redefinirSenha.php?token=$token";
 
-// Envia e‑mail
+// Mensagem do e‑mail
 $assunto = "Redefinição de Senha - InfoCare";
 $mensagem = "
 Olá {$usuario['nome']},
@@ -70,15 +76,25 @@ Este link é válido por 1 hora.
 Se você não solicitou esta alteração, ignore este e‑mail.
 ";
 
-$headers = "From: no-reply@infocare.com\r\n";
-$headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
+// Envio com PHPMailer
+try {
+    $mail = new PHPMailer(true);
+    $mail->isSMTP();
+    $mail->Host       = 'smtp.gmail.com';
+    $mail->SMTPAuth   = true;
+    $mail->Username   = 'pgabpabg@gmail.com';
+    $mail->Password   = 'ikjb tfuu resg whyc';   // senha de app do Gmail
+    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+    $mail->Port       = 587;
+    $mail->setFrom('no-reply@infocare.com', 'InfoCare');
+    $mail->addAddress($email, $usuario['nome']);
+    $mail->Subject = $assunto;
+    $mail->Body    = $mensagem;
 
-$enviado = mail($email, $assunto, $mensagem, $headers);
-
-if ($enviado) {
+    $mail->send();
     header('Location: ../View/esqueciSenha.php?sucesso=1');
-} else {
-    // Em ambiente de desenvolvimento, mostre o link (remova em produção)
+} catch (Exception $e) {
+    // Em desenvolvimento, mostre o link para testes
     header("Location: ../View/esqueciSenha.php?erro=envio&link=$token");
 }
 exit;

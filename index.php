@@ -78,6 +78,9 @@
                 <button class="btn-login" type="submit">Entrar</button>
 
             </form>
+
+            <p style="text-align:center; margin-top:20px;">
+                <a href="View/esqueciSenha.php" style="color: var(--primary);">Esqueci minha senha</a>
         </div>
 
         <p class="login-footer">InfoCare &copy; <?= date('Y') ?> — Todos os direitos reservados</p>

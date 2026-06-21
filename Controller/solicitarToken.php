@@ -87,12 +87,11 @@ try {
     $mail->Encoding = 'base64';                   // codificação segura para acentos
     $mail->setLanguage('pt_br');                  // mensagens de erro em português (opcional)
     $mail->isSMTP();
-    $mail->Host       = 'smtp.gmail.com';
-    $mail->SMTPAuth   = true;
-    $mail->Username   = 'pgabpabg@gmail.com';
-    $mail->Password   = 'ikjb tfuu resg whyc';   // senha de app do Gmail
-    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-    $mail->Port       = 587;
+    $mail->Host       = MAIL_HOST;
+    $mail->Username   = MAIL_USER;
+    $mail->Password   = MAIL_PASS;
+    $mail->Port       = MAIL_PORT;
+    $mail->setFrom(MAIL_FROM_ADDRESS, MAIL_FROM_NAME);
     $mail->setFrom('no-reply@infocare.com', 'InfoCare');
     $mail->addAddress($email, $usuario['nome']);
     $mail->Subject = $assunto;

@@ -24,3 +24,6 @@ fotos/
 
 # Arquivo de configuração do banco de dados
 setup.php
+
+# Arquivo de configuração do PHPMailer (se existir)
+configEmail.php

@@ -36,9 +36,17 @@ if (!$usuario) {
     exit;
 }
 
+// Recebe o timestamp local do usuário (milissegundos)
+$expira_ms = $_POST['expira_ms'] ?? 0;
+
+// Calcula a expiração: +1 hora (3600 segundos) a partir do instante do clique
+$expira_timestamp = (int)($expira_ms / 1000) + 3600;
+
+// Gera o DATETIME no formato UTC para o banco
+$expira = gmdate('Y-m-d H:i:s', $expira_timestamp);
+
 // Gera token único e segura
 $token = bin2hex(random_bytes(32));
-$expira = date('Y-m-d H:i:s', strtotime('+1 hour'));
 
 // Salva o token
 $stmt = $conn->prepare("INSERT INTO password_resets (email, token, tipo, expira_em) VALUES (?, ?, ?, ?)");

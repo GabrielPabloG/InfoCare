@@ -31,6 +31,10 @@
             <?php endif; ?>
 
             <form action="../Controller/solicitarToken.php" method="post">
+
+                <!-- Campo oculto para armazenar o timestamp de expiração do token -->
+                <input type="hidden" name="expira_ms" id="expira_ms" value="">
+
                 <div class="field-group">
                     <label for="email">E‑mail</label>
                     <input type="email" name="email" id="email" placeholder="seu@email.com" required>
@@ -44,5 +48,13 @@
         <p class="login-footer">InfoCare &copy; <?= date('Y') ?></p>
     </div>
 </div>
+
+<!-- Script para definir o valor do campo oculto com o timestamp atual do cliente. -->
+<script>
+document.querySelector('form').addEventListener('submit', function() {
+    document.getElementById('expira_ms').value = Date.now();
+});
+</script>
+
 </body>
 </html>

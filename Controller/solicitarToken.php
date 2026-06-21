@@ -7,6 +7,7 @@ use PHPMailer\PHPMailer\Exception;
 
 require '../vendor/autoload.php';
 
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($_POST['email'])) {
     header('Location: ../View/esqueciSenha.php?erro=1');
     exit;
@@ -14,6 +15,9 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($_POST['email'])) {
 
 $email = trim($_POST['email']);
 $conn = Conexao::getConexao();
+
+// Remove tokens expirados há mais de 30 dias
+$conn->exec("DELETE FROM password_resets WHERE expira_em < NOW() - INTERVAL 30 DAY");
 
 // Procura o e‑mail em todas as tabelas de usuários
 $tabelas = [
@@ -79,6 +83,9 @@ Se você não solicitou esta alteração, ignore este e‑mail.
 // Envio com PHPMailer
 try {
     $mail = new PHPMailer(true);
+    $mail->CharSet = 'UTF-8';                     // charset da mensagem
+    $mail->Encoding = 'base64';                   // codificação segura para acentos
+    $mail->setLanguage('pt_br');                  // mensagens de erro em português (opcional)
     $mail->isSMTP();
     $mail->Host       = 'smtp.gmail.com';
     $mail->SMTPAuth   = true;
@@ -95,6 +102,7 @@ try {
     header('Location: ../View/esqueciSenha.php?sucesso=1');
 } catch (Exception $e) {
     // Em desenvolvimento, mostre o link para testes
-    header("Location: ../View/esqueciSenha.php?erro=envio&link=$token");
+    //echo "Erro ao enviar e-mail: " . $e->getMessage();
+    header("Location: ../View/esqueciSenha.php?erro=Erro ao processar. Tente novamente.");
 }
 exit;

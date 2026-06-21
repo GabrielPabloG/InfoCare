@@ -259,6 +259,19 @@ document.querySelector('form').addEventListener('submit', function(e) {
     }
 });
 
+// Revalida quando o conteúdo do campo CPF muda (para limpar a mensagem)
+document.getElementById("cpf").addEventListener('input', function() {
+    TestaCPF(this.value);
+});
+
+// Impede envio do formulário se CPF for inválido
+document.querySelector('form').addEventListener('submit', function(e) {
+    if (!TestaCPF(document.getElementById("cpf").value)) {
+        e.preventDefault();
+        // Opcional: alert("CPF inválido");
+    }
+});
+
 // Busca CEP
 function limpa_formulario_cep() {
     document.getElementById('rua').value = "";

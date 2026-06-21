@@ -322,6 +322,20 @@ CREATE TABLE prescricao_enfermagem (
     FOREIGN KEY (prontuario_fixo_id) REFERENCES prontuario_fixo(id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
+-- ---------------------------------------------------
+-- Reset de Senha (para recuperação de senha)
+-- ---------------------------------------------------
+
+CREATE TABLE password_resets (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL,
+    token VARCHAR(64) NOT NULL,
+    tipo ENUM('admin','gerente','funcionario','responsavel') NOT NULL,
+    expira_em DATETIME NOT NULL,
+    usado TINYINT(1) DEFAULT 0,
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+); ENGINE=InnoDB;
+
 DELIMITER //
 
 -- 1. Trigger para limpar telefones de Funcionários

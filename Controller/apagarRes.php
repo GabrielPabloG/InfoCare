@@ -1,30 +1,47 @@
 <?php
-session_start();
+require_once '../View/verificacao.php';
 require_once '../Dao/conexao.php';
-require_once '../Dao/DaoResponsavel.php';
 
-// 1. TRAVA DE SEGURANÇA (Autorização)
-// Verifica se alguém está logado e se esse alguém é um Administrador.
-// Ajuste 'admin' caso a regra do seu sistema permita que outros cargos apaguem gerentes.
-if (!isset($_SESSION['user_tipo']) || $_SESSION['user_tipo'] !== 'gerente' && $_SESSION['user_tipo'] !== 'admin') {
-    die("Erro de Acesso: Você não tem permissão para realizar esta ação.");
+// Apenas admin e gerente podem excluir responsáveis
+if ($_SESSION['user_tipo'] !== 'admin' && $_SESSION['user_tipo'] !== 'gerente') {
+    header('Location: ../View/listarRes.php?erro=permissao');
+    exit;
 }
 
-// 2. VALIDAÇÃO DO PARÂMETRO
-// Garante que o ID foi enviado e é estritamente numérico
-if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-    die("Erro: ID inválido ou não fornecido.");
+if (empty($_GET['id'])) {
+    header('Location: ../View/listarRes.php?erro=1');
+    exit;
 }
 
-$id = $_GET['id']; 
+$id = (int) $_GET['id'];
+$conn = Conexao::getConexao();
 
-// 3. EXECUÇÃO
-$daoResponsavel = new DaoResponsavel();
+try {
+    // Verifica se há idosos vinculados
+    $stmt = $conn->prepare("SELECT COUNT(*) FROM idoso WHERE responsavel_id = ?");
+    $stmt->execute([$id]);
+    $totalVinculados = $stmt->fetchColumn();
 
-if ($daoResponsavel->delete($id)) {
-        header("Location: ../View/listarRes.php?excluido=1");
-    exit(); 
-} else {
-    echo "Erro ao tentar excluir o responsável do banco de dados.";
+    if ($totalVinculados > 0) {
+        // Exibe mensagem informando que não pode excluir
+        header("Location: ../View/listarRes.php?erro=vinculado&total=$totalVinculados");
+        exit;
+    }
+
+    $conn->beginTransaction();
+
+    // Remove telefones associados
+    $stmt = $conn->prepare("DELETE FROM telefone WHERE entidade_tipo = 'responsavel' AND entidade_id = ?");
+    $stmt->execute([$id]);
+
+    // Remove o responsável
+    $stmt = $conn->prepare("DELETE FROM responsavel WHERE id = ?");
+    $stmt->execute([$id]);
+
+    $conn->commit();
+    header('Location: ../View/listarRes.php?sucesso=1');
+} catch (PDOException $e) {
+    $conn->rollBack();
+    header('Location: ../View/listarRes.php?erro=1');
 }
-?>
+exit;

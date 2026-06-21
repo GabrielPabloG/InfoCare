@@ -135,6 +135,13 @@ $totalResponsaveis = count($resultado_res);
         <?php if (isset($_GET['erro'])): ?>
             <div class="alert alert-danger">Ocorreu um erro. Tente novamente.</div>
         <?php endif; ?>
+        <?php if (isset($_GET['erro']) && $_GET['erro'] === 'vinculado'): ?>
+            <div class="alert alert-warning">
+                Não é possível excluir este responsável porque ele possui 
+                <strong><?= (int)($_GET['total'] ?? 0) ?></strong> idoso(s) vinculado(s). 
+                Reatribua os idosos a outro responsável antes de excluir.
+            </div>
+        <?php endif; ?>
 
         <!-- Tabela de responsáveis -->
         <div class="card">

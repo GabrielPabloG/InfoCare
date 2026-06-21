@@ -71,7 +71,7 @@ $assunto = "Redefinição de Senha - InfoCare";
 $mensagem = "
 Olá {$usuario['nome']},
 
-Você solicitou a redefinição de senha no sistema InfoCare.
+Você solicitou a redefinição de senha no InfoCare.
 Acesse o link abaixo para criar uma nova senha:
 
 $link
@@ -84,16 +84,17 @@ Se você não solicitou esta alteração, ignore este e‑mail.
 // Envio com PHPMailer
 try {
     $mail = new PHPMailer(true);
-    $mail->CharSet = 'UTF-8';                     // charset da mensagem
-    $mail->Encoding = 'base64';                   // codificação segura para acentos
-    $mail->setLanguage('pt_br');                  // mensagens de erro em português (opcional)
+    $mail->CharSet = 'UTF-8';
+    $mail->Encoding = 'base64';
+    $mail->setLanguage('pt_br');
     $mail->isSMTP();
     $mail->Host       = MAIL_HOST;
+    $mail->SMTPAuth   = true;
     $mail->Username   = MAIL_USER;
     $mail->Password   = MAIL_PASS;
+    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
     $mail->Port       = MAIL_PORT;
-    $mail->setFrom(MAIL_FROM_ADDRESS, MAIL_FROM_NAME);
-    $mail->setFrom('no-reply@infocare.com', 'InfoCare');
+    $mail->setFrom(MAIL_FROM_ADDRESS, MAIL_FROM_NAME);   // ← usa as constantes
     $mail->addAddress($email, $usuario['nome']);
     $mail->Subject = $assunto;
     $mail->Body    = $mensagem;
@@ -101,8 +102,6 @@ try {
     $mail->send();
     header('Location: ../View/esqueciSenha.php?sucesso=1');
 } catch (Exception $e) {
-    // Em desenvolvimento, mostre o link para testes
-    //echo "Erro ao enviar e-mail: " . $e->getMessage();
     header("Location: ../View/esqueciSenha.php?erro=Erro ao processar. Tente novamente.");
 }
 exit;

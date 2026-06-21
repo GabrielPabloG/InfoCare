@@ -1,5 +1,6 @@
 <?php
 require_once '../Dao/conexao.php';
+require_once '../config/configEmail.php'; 
 
 // Namespaces do PHPMailer
 use PHPMailer\PHPMailer\PHPMailer;

@@ -148,7 +148,7 @@ if (!$responsavelEncontrado && !empty($cpfResp)) {
                     <?php endif; ?>
                 <?php else: ?>
                     <!-- Formulário do Idoso com Abas -->
-                    <form action="../Controller/rotinasCadastroIdoso.php" method="post" enctype="multipart/form-data">
+                    <form id="formCadastroIdoso" action="../Controller/rotinasCadastroIdoso.php" method="post" enctype="multipart/form-data">
                         <input type="hidden" name="codResponsavel" value="<?= $responsavel['id'] ?>">
                         <p class="text-muted">Responsável: <strong><?= htmlspecialchars($responsavel['nome']) ?></strong> (<?= htmlspecialchars($responsavel['cpf']) ?>)</p>
                         <ul class="nav nav-tabs" id="idosoTabs" role="tablist">
@@ -1248,63 +1248,61 @@ if (!$responsavelEncontrado && !empty($cpfResp)) {
 <!-- MODAIS DE ERRO DE FOTO (padrão) -->
 <div class="confirm-overlay" id="modalErroFoto">
     <div class="confirm-box"><div class="confirm-hdr"><span class="confirm-hdr-title" style="color:var(--warning)">Arquivo muito pesado</span><button class="confirm-close" onclick="fecharErroFoto()">✕</button></div>
-        <div class="confirm-body">A imagem escolhida tem <strong id="tamanho-arquivo"></strong>MB.<br><span class="confirm-note">Máximo 2MB.</span></div>
+        <div class="confirm-body">A imagem escolhida tem <strong id="tamanho-arquivo"></strong>MB.<br><span class="confirm-note">Máximo 10MB.</span></div>
         <div class="confirm-ftr"><button class="btn-confirm-cancel" onclick="fecharErroFoto()">Entendi</button></div>
+    </div>
+</div>
+
+<!-- Modal de feedback (validação) -->
+<div class="feedback-overlay" id="feedbackModal">
+    <div class="feedback-box">
+        <div class="icon">⚠️</div>
+        <h5 id="feedbackTitle">Atenção</h5>
+        <p id="feedbackMsg"></p>
+        <button class="btn btn-primary" id="feedbackClose">Entendi</button>
     </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+
+<script src="../js/validacoes.js?v=1.0.0"></script>
+
 <script>
 // Máscaras
 $("#cpfIdoso").mask("000.000.000-00");
+$("#cpfPessoa").mask("000.000.000-00");
 
-// Validação de CPF (mantida a original)
-// Validação de CPF (mantida a original, com ajuste)
-function TestaCPF(strCPF) {
-    var Soma, Resto;
-    Soma = 0;
-    var cpf = strCPF.replace(/\D/g, '');
-    if (cpf == "00000000000" || cpf.length !== 11) {
-        document.getElementById("cpf").setCustomValidity('CPF inválido');
-        return false;
-    }
-    for (i = 1; i <= 9; i++) Soma = Soma + parseInt(cpf.substring(i - 1, i)) * (11 - i);
-    Resto = (Soma * 10) % 11;
-    if ((Resto == 10) || (Resto == 11)) Resto = 0;
-    if (Resto != parseInt(cpf.substring(9, 10))) {
-        document.getElementById("cpf").setCustomValidity('CPF inválido');
-        return false;
-    }
-    Soma = 0;
-    for (i = 1; i <= 10; i++) Soma = Soma + parseInt(cpf.substring(i - 1, i)) * (12 - i);
-    Resto = (Soma * 10) % 11;
-    if ((Resto == 10) || (Resto == 11)) Resto = 0;
-    if (Resto != parseInt(cpf.substring(10, 11))) {
-        document.getElementById("cpf").setCustomValidity('CPF inválido');
-        return false;
-    }
-    document.getElementById("cpf").setCustomValidity('');
-    return true;
-}
-
-// Revalida quando o conteúdo do campo CPF muda (para limpar a mensagem)
-document.getElementById("cpf").addEventListener('input', function() {
+// Revalida CPF do idoso enquanto digita
+document.getElementById("cpfIdoso").addEventListener('input', function() {
     TestaCPF(this.value);
 });
 
-// Impede envio do formulário se CPF for inválido
-document.querySelector('form').addEventListener('submit', function(e) {
-    if (!TestaCPF(document.getElementById("cpf").value)) {
-        e.preventDefault();
-        // Opcional: alert("CPF inválido");
-    }
+// Fechar modal de feedback
+document.getElementById('feedbackClose').addEventListener('click', function() {
+    document.getElementById('feedbackModal').classList.remove('open');
+});
+document.getElementById('feedbackModal').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('open');
 });
 
-// Valida data
-function validardataDeNascimento(data) {
-    if (new Date(data) >= new Date()) { alert("Data inválida"); document.getElementById('nascIdoso').value = ""; }
-}
+// Validação no envio do formulário principal
+document.getElementById("formCadastroIdoso").addEventListener('submit', function(e) {
+    var cpfOk = TestaCPF(document.getElementById("cpfIdoso").value);
+    var dataOk = validaDataNascimento(document.getElementById("nascIdoso").value);
+
+    if (!cpfOk) {
+        e.preventDefault();
+        abrirFeedback('CPF inválido', 'O CPF do idoso não é válido. Corrija antes de cadastrar.', 'cpfIdoso');
+        return;
+    }
+    if (!dataOk) {
+        e.preventDefault();
+        abrirFeedback('Data inválida', 'A data de nascimento não pode ser futura.', 'nascIdoso');
+        return;
+    }
+    // Se tudo OK, envia
+});
 
 // Navegação entre abas (botões "Próximo" e "Voltar")
 $('.next-tab').click(function(e){
@@ -1336,11 +1334,11 @@ overlay.addEventListener('click', function() {
     overlay.classList.remove('visible');
 });
 
-// Upload foto
+// Upload foto (limite de 10MB)
 document.getElementById('inputFoto').addEventListener('change', function() {
     if (!this.files || this.files.length === 0) return;
     var tamanho = this.files[0].size / 1024 / 1024;
-    if (tamanho > 2) {
+    if (tamanho > 10) {
         document.getElementById('tamanho-arquivo').textContent = tamanho.toFixed(1);
         document.getElementById('modalErroFoto').classList.add('open');
         this.value = '';
@@ -1351,9 +1349,6 @@ document.getElementById('inputFoto').addEventListener('change', function() {
 function fecharErroFoto() {
     document.getElementById('modalErroFoto').classList.remove('open');
 }
-</script>
-
-
 </script>
 </body>
 </html>

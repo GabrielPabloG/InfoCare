@@ -206,11 +206,21 @@ $imgPerfil = $_SESSION['foto_perfil'] ?? '../upload/user.png';
         </div>
         <div class="confirm-body">
             A imagem escolhida tem <strong id="tamanho-arquivo"></strong>MB.<br>
-            <span class="confirm-note">Escolha uma imagem com no máximo <strong>2MB</strong>.</span>
+            <span class="confirm-note">Escolha uma imagem com no máximo <strong>10MB</strong>.</span>
         </div>
         <div class="confirm-ftr">
             <button class="btn-confirm-cancel" onclick="fecharErroFoto()">Entendi</button>
         </div>
+    </div>
+</div>
+
+<!-- Modal de feedback (validação) -->
+<div class="feedback-overlay" id="feedbackModal">
+    <div class="feedback-box">
+        <div class="icon">⚠️</div>
+        <h5 id="feedbackTitle">Atenção</h5>
+        <p id="feedbackMsg"></p>
+        <button class="btn btn-primary" id="feedbackClose">Entendi</button>
     </div>
 </div>
 
@@ -226,13 +236,42 @@ document.getElementById("cpf").addEventListener('input', function() {
     TestaCPF(this.value);
 });
 
-// Impede envio do formulário de CADASTRO se CPF for inválido
+// Fechar modal de feedback
+document.getElementById('feedbackClose').addEventListener('click', function() {
+    document.getElementById('feedbackModal').classList.remove('open');
+});
+document.getElementById('feedbackModal').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('open');
+});
+
+// Validação no envio do formulário
 document.getElementById("formCadastroGerente").addEventListener('submit', function(e) {
-    if (!TestaCPF(document.getElementById("cpf").value)) {
+    var cpfOk = TestaCPF(document.getElementById("cpf").value);
+    var cepOk = validaCEP(document.getElementById("cep").value);
+    var dataOk = validaDataNascimento(document.getElementById("nascimento").value);
+    var telOk = validaTelefone(document.getElementById("telefone1").value);
+
+    if (!cpfOk) {
         e.preventDefault();
-        alert("CPF inválido! Por favor, corrija.");
-        document.getElementById("cpf").focus();
+        abrirFeedback('CPF inválido', 'O CPF informado não é válido. Corrija antes de cadastrar.', 'cpf');
+        return;
     }
+    if (!cepOk) {
+        e.preventDefault();
+        abrirFeedback('CEP inválido', 'O CEP deve ter 8 dígitos.', 'cep');
+        return;
+    }
+    if (!dataOk) {
+        e.preventDefault();
+        abrirFeedback('Data inválida', 'A data de nascimento não pode ser futura.', 'nascimento');
+        return;
+    }
+    if (!telOk) {
+        e.preventDefault();
+        abrirFeedback('Telefone inválido', 'O telefone principal deve ter pelo menos 10 dígitos.', 'telefone1');
+        return;
+    }
+    // Se chegou aqui, tudo OK – o formulário é enviado.
 });
 
 // Busca CEP
@@ -246,7 +285,7 @@ function meu_callback(conteudo) {
         document.getElementById('bairro').value = conteudo.bairro;
     } else {
         limpa_formulario_cep();
-        alert("CEP não encontrado.");
+        abrirFeedback('CEP não encontrado', 'O CEP informado não foi encontrado. Corrija antes de cadastrar.', 'cep');
     }
 }
 function pesquisacep(valor) {
@@ -261,7 +300,7 @@ function pesquisacep(valor) {
             document.body.appendChild(script);
         } else {
             limpa_formulario_cep();
-            alert("Formato de CEP inválido.");
+            abrirFeedback('Formato de CEP inválido', 'Digite um CEP com 8 dígitos.', 'cep');
         }
     } else {
         limpa_formulario_cep();
@@ -310,5 +349,6 @@ function fecharErroFoto() {
     document.getElementById('modalErroFoto').classList.remove('open');
 }
 </script>
+
 </body>
 </html>

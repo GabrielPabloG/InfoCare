@@ -110,7 +110,7 @@ $imgPerfil = $_SESSION['foto_perfil'] ?? '../upload/user.png';
                 <a href="listarRes.php" class="btn btn-ghost btn-sm">← Voltar</a>
             </div>
             <div class="card-body">
-                <form method="POST" action="../Controller/processaRes.php">
+                <form id="formResponsavel" method="POST" action="../Controller/processaRes.php">
                     <h5>Dados do Responsável</h5>
                     <p class="text-muted small">* Preencha todos os campos obrigatórios</p>
                     <hr>
@@ -208,53 +208,67 @@ $imgPerfil = $_SESSION['foto_perfil'] ?? '../upload/user.png';
     </div>
 </div>
 
+<!-- Modal de feedback (validação) -->
+<div class="feedback-overlay" id="feedbackModal">
+    <div class="feedback-box">
+        <div class="icon">⚠️</div>
+        <h5 id="feedbackTitle">Atenção</h5>
+        <p id="feedbackMsg"></p>
+        <button class="btn btn-primary" id="feedbackClose">Entendi</button>
+    </div>
+</div>
+
 <!-- Scripts -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
-<script>
-// Validação de CPF
-// Validação de CPF (mantida a original, com ajuste)
-function TestaCPF(strCPF) {
-    var Soma, Resto;
-    Soma = 0;
-    var cpf = strCPF.replace(/\D/g, '');
-    if (cpf == "00000000000" || cpf.length !== 11) {
-        document.getElementById("cpf").setCustomValidity('CPF inválido');
-        return false;
-    }
-    for (i = 1; i <= 9; i++) Soma = Soma + parseInt(cpf.substring(i - 1, i)) * (11 - i);
-    Resto = (Soma * 10) % 11;
-    if ((Resto == 10) || (Resto == 11)) Resto = 0;
-    if (Resto != parseInt(cpf.substring(9, 10))) {
-        document.getElementById("cpf").setCustomValidity('CPF inválido');
-        return false;
-    }
-    Soma = 0;
-    for (i = 1; i <= 10; i++) Soma = Soma + parseInt(cpf.substring(i - 1, i)) * (12 - i);
-    Resto = (Soma * 10) % 11;
-    if ((Resto == 10) || (Resto == 11)) Resto = 0;
-    if (Resto != parseInt(cpf.substring(10, 11))) {
-        document.getElementById("cpf").setCustomValidity('CPF inválido');
-        return false;
-    }
-    document.getElementById("cpf").setCustomValidity('');
-    return true;
-}
 
-// Revalida quando o conteúdo do campo CPF muda (para limpar a mensagem)
+<script src="../js/validacoes.js?v=1.0.0"></script>
+
+<script>
+// Revalida CPF enquanto o usuário digita
 document.getElementById("cpf").addEventListener('input', function() {
     TestaCPF(this.value);
 });
 
-// Impede envio do formulário se CPF for inválido
-document.querySelector('form').addEventListener('submit', function(e) {
-    if (!TestaCPF(document.getElementById("cpf").value)) {
-        e.preventDefault();
-        // Opcional: alert("CPF inválido");
-    }
+// Fechar modal de feedback
+document.getElementById('feedbackClose').addEventListener('click', function() {
+    document.getElementById('feedbackModal').classList.remove('open');
+});
+document.getElementById('feedbackModal').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('open');
 });
 
-// Busca CEP
+// Validação no envio do formulário
+document.getElementById("formResponsavel").addEventListener('submit', function(e) {
+    var cpfOk = TestaCPF(document.getElementById("cpf").value);
+    var cepOk = validaCEP(document.getElementById("cep").value);
+    var dataOk = validaDataNascimento(document.getElementById("nascimento").value);
+    var telOk = validaTelefone(document.getElementById("telefone1").value);
+
+    if (!cpfOk) {
+        e.preventDefault();
+        abrirFeedback('CPF inválido', 'O CPF informado não é válido. Corrija antes de cadastrar.', 'cpf');
+        return;
+    }
+    if (!cepOk) {
+        e.preventDefault();
+        abrirFeedback('CEP inválido', 'O CEP deve ter 8 dígitos.', 'cep');
+        return;
+    }
+    if (!dataOk) {
+        e.preventDefault();
+        abrirFeedback('Data inválida', 'A data de nascimento não pode ser futura.', 'nascimento');
+        return;
+    }
+    if (!telOk) {
+        e.preventDefault();
+        abrirFeedback('Telefone inválido', 'O telefone principal deve ter pelo menos 10 dígitos.', 'telefone1');
+        return;
+    }
+    // Se tudo OK, envia
+});
+
+// Busca CEP (com feedback modal)
 function limpa_formulario_cep() {
     document.getElementById('rua').value = "";
     document.getElementById('bairro').value = "";
@@ -265,7 +279,7 @@ function meu_callback(conteudo) {
         document.getElementById('bairro').value = conteudo.bairro;
     } else {
         limpa_formulario_cep();
-        alert("CEP não encontrado.");
+        abrirFeedback('CEP não encontrado', 'O CEP informado não foi encontrado.', 'cep');
     }
 }
 function pesquisacep(valor) {
@@ -280,7 +294,7 @@ function pesquisacep(valor) {
             document.body.appendChild(script);
         } else {
             limpa_formulario_cep();
-            alert("Formato de CEP inválido.");
+            abrirFeedback('Formato de CEP inválido', 'Digite um CEP com 8 dígitos.', 'cep');
         }
     } else {
         limpa_formulario_cep();

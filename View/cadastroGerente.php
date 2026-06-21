@@ -109,7 +109,7 @@ $imgPerfil = $_SESSION['foto_perfil'] ?? '../upload/user.png';
                 <a href="homeAdm.php" class="btn btn-ghost btn-sm">← Voltar</a>
             </div>
             <div class="card-body">
-                <form method="POST" action="../Controller/processaGerente.php">
+                <form id="formCadastroGerente" method="POST" action="../Controller/processaGerente.php">
                     <h5>Dados do Gerente</h5>
                     <p class="text-muted small">* Preencha todos os campos obrigatórios</p>
                     <hr>
@@ -217,58 +217,21 @@ $imgPerfil = $_SESSION['foto_perfil'] ?? '../upload/user.png';
 <!-- Scripts -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+
+<script src="../js/validacoes.js"></script>
+
 <script>
-// Validação de CPF
-function TestaCPF(strCPF) {
-    var Soma, Resto;
-    Soma = 0;
-    var cpf = strCPF.replace(/\D/g, '');
-    if (cpf == "00000000000" || cpf.length !== 11) {
-        document.getElementById("cpf").setCustomValidity('CPF inválido');
-        return false;
-    }
-    for (i = 1; i <= 9; i++) Soma = Soma + parseInt(cpf.substring(i - 1, i)) * (11 - i);
-    Resto = (Soma * 10) % 11;
-    if ((Resto == 10) || (Resto == 11)) Resto = 0;
-    if (Resto != parseInt(cpf.substring(9, 10))) {
-        document.getElementById("cpf").setCustomValidity('CPF inválido');
-        return false;
-    }
-    Soma = 0;
-    for (i = 1; i <= 10; i++) Soma = Soma + parseInt(cpf.substring(i - 1, i)) * (12 - i);
-    Resto = (Soma * 10) % 11;
-    if ((Resto == 10) || (Resto == 11)) Resto = 0;
-    if (Resto != parseInt(cpf.substring(10, 11))) {
-        document.getElementById("cpf").setCustomValidity('CPF inválido');
-        return false;
-    }
-    document.getElementById("cpf").setCustomValidity('');
-    return true;
-}
-
-// Revalida quando o conteúdo do campo CPF muda (para limpar a mensagem)
+// Revalida enquanto o usuário digita
 document.getElementById("cpf").addEventListener('input', function() {
     TestaCPF(this.value);
 });
 
-// Impede envio do formulário se CPF for inválido
-document.querySelector('form').addEventListener('submit', function(e) {
+// Impede envio do formulário de CADASTRO se CPF for inválido
+document.getElementById("formCadastroGerente").addEventListener('submit', function(e) {
     if (!TestaCPF(document.getElementById("cpf").value)) {
         e.preventDefault();
-        // Opcional: alert("CPF inválido");
-    }
-});
-
-// Revalida quando o conteúdo do campo CPF muda (para limpar a mensagem)
-document.getElementById("cpf").addEventListener('input', function() {
-    TestaCPF(this.value);
-});
-
-// Impede envio do formulário se CPF for inválido
-document.querySelector('form').addEventListener('submit', function(e) {
-    if (!TestaCPF(document.getElementById("cpf").value)) {
-        e.preventDefault();
-        // Opcional: alert("CPF inválido");
+        alert("CPF inválido! Por favor, corrija.");
+        document.getElementById("cpf").focus();
     }
 });
 
@@ -331,7 +294,7 @@ overlay.addEventListener('click', function() {
     overlay.classList.remove('visible');
 });
 
-// Upload foto
+// Upload foto (limite de 10MB)
 document.getElementById('inputFoto').addEventListener('change', function() {
     if (!this.files || this.files.length === 0) return;
     var tamanho = this.files[0].size / 1024 / 1024;

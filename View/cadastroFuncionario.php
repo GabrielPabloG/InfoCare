@@ -165,11 +165,11 @@ $imgPerfil = $_SESSION['foto_perfil'] ?? '../upload/user.png';
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label class="form-label">Rua *</label>
-                            <input type="text" name="rua" id="rua" class="form-control" required placeholder="Rua">
+                            <input type="text" name="rua" id="rua" class="form-control" required placeholder="Rua" readonly>
                         </div>
                         <div class="form-group col-md-3">
                             <label class="form-label">Bairro *</label>
-                            <input type="text" name="bairro" id="bairro" class="form-control" required placeholder="Bairro">
+                            <input type="text" name="bairro" id="bairro" class="form-control" required placeholder="Bairro" readonly>
                         </div>
                         <div class="form-group col-md-3">
                             <label class="form-label">Nº *</label>

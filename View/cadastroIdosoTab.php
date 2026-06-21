@@ -18,6 +18,13 @@ if ($_SESSION['user_tipo'] !== 'admin' && $_SESSION['user_tipo'] !== 'gerente') 
     exit;
 }
 
+// Se a URL contiver ?novo=1, limpa a sessão do responsável e recomeça a busca
+if (isset($_GET['novo'])) {
+    unset($_SESSION['cpfResponsavel'], $_SESSION['direto']);
+    header('Location: cadastroIdosoTab.php');
+    exit;
+}
+
 $imgPerfil = $_SESSION['foto_perfil'] ?? '../upload/user.png';
 $conn = Conexao::getConexao();
 
@@ -1235,7 +1242,7 @@ if (!$responsavelEncontrado && !empty($cpfResp)) {
 </div>
                         </div>
                         <div class="mt-4 d-flex justify-content-end gap-2">
-                            <a href="cadastroIdosoTab.php" class="btn btn-ghost">Outro Responsável</a>
+                            <a href="cadastroIdosoTab.php?novo=1"  class="btn btn-ghost">Outro Responsável</a>
                             <button type="submit" class="btn btn-primary">Cadastrar</button>
                         </div>
                     </form>

@@ -20,6 +20,7 @@
 * [Tecnologias Utilizadas](#-tecnologias-utilizadas)
 * [Estrutura do Projeto](#-estrutura-do-projeto)
 * [Pessoas Desenvolvedoras](#-pessoas-desenvolvedoras)
+* [Inteligência Artificial e Ferramentas](#-inteligência-artificial-e-ferramentas)
 * [Licença](#-licença)
 
 ---

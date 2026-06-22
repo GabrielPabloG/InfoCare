@@ -192,7 +192,7 @@ E-mail real enviado via PHPMailer, com token único válido por 1 hora.
 **1. Clone o repositório** ou extraia os arquivos na pasta do servidor (`htdocs`, `www`):
 
 ```bash
-git clone https://github.com/seuusuario/InfoCare.git
+git clone https://github.com/GabrielPabloG/InfoCare.git
 ```
 
 **2. Instale as dependências com o Composer:**
@@ -286,6 +286,17 @@ InfocareMain9/
     </td>
   </tr>
 </table>
+
+---
+
+## 🤖 Inteligência Artificial e Ferramentas
+
+Durante o desenvolvimento e a refatoração do InfoCare, foram utilizadas ferramentas de inteligência artificial para acelerar a escrita de código, a depuração e a elaboração da documentação. Especificamente:
+
+- **DeepSeek**, **Claude** e **Gemini**: auxiliaram na refatoração do sistema legado, na criação de novas funcionalidades, na validação de scripts PHP/JavaScript e na elaboração deste `README.md`.
+- **GitHub Copilot**, **Crush (Harness)**: Em Dev Container, contribuiu para a análise inicial do código legado, gerando o primeiro relatório técnico com os pontos que precisavam ser refatorados.
+
+Todas as decisões finais de arquitetura e implementação foram revisadas e validadas pelo autor do projeto.
 
 ---
 

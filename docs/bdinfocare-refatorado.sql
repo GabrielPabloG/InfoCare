@@ -323,9 +323,8 @@ CREATE TABLE prescricao_enfermagem (
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------
--- Reset de Senha (para recuperação de senha)
+-- Reset de Senha (corrigido)
 -- ---------------------------------------------------
-
 CREATE TABLE password_resets (
     id INT AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(255) NOT NULL,
@@ -334,11 +333,11 @@ CREATE TABLE password_resets (
     expira_em DATETIME NOT NULL,
     usado TINYINT(1) DEFAULT 0,
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-); ENGINE=InnoDB;
+) ENGINE=InnoDB;
 
 DELIMITER //
 
--- 1. Trigger para limpar telefones de Funcionários
+-- Trigger para limpar telefones de Funcionários (OK)
 CREATE TRIGGER trg_cascade_telefone_funcionario
 AFTER DELETE ON funcionario
 FOR EACH ROW
@@ -348,17 +347,7 @@ BEGIN
     AND entidade_tipo = 'funcionario';
 END; //
 
--- 2. Trigger para limpar telefones de Idosos
-CREATE TRIGGER trg_cascade_telefone_idoso
-AFTER DELETE ON idoso
-FOR EACH ROW
-BEGIN
-    DELETE FROM telefone 
-    WHERE entidade_id = OLD.id 
-    AND entidade_tipo = 'idoso';
-END; //
-
--- 3. Trigger para limpar telefones de Responsáveis
+-- Trigger para limpar telefones de Responsáveis (OK)
 CREATE TRIGGER trg_cascade_telefone_responsavel
 AFTER DELETE ON responsavel
 FOR EACH ROW

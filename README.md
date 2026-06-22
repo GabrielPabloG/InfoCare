@@ -108,73 +108,37 @@ Upload de foto para cada tipo de usuário (admin, gerente, funcionário, respons
 
 ## 🖥️ Demonstração
 
-Acesso ao sistema
+<details>
+  <summary><b>🔑 Acesso e Recuperação de Senha</b></summary>
+  <br>
+  <p>Tela de login com layout split-screen, validação de credenciais e link de recuperação de senha.</p>
+  <img src="img/prints/login-tela.png" alt="Tela de login" width="800">
+  <br>
+  <p>Fluxo de recuperação com e-mail real via PHPMailer e token único.</p>
+  <img src="img/prints/redefinirSenha-tela.png" width="400">
+  <img src="img/prints/email-enviado.png" width="400">
+  <img src="img/prints/redefinirSenha-Tela-Final.png" width="800">
+</details>
 
-<p align="center">
-  <img src="img/prints/login-tela.png" alt="Tela de login split-screen do InfoCare" width="800">
-</p>
-Tela de login com layout split-screen, validação de credenciais e link de recuperação de senha.
+<details>
+  <summary><b>📊 Painéis de Gestão (Admin e Gerente)</b></summary>
+  <br>
+  <p>Painel do Administrador com cards de KPI e Painel do Gerente com visão da equipe e residentes.</p>
+  <img src="img/prints/adm-tela.png" width="800">
+  <br><br>
+  <img src="img/prints/tela-gerente.png" width="800">
+</details>
 
-Painéis por tipo de usuário
-
-<p align="center">
-  <img src="img/prints/adm-tela.png" alt="Painel administrativo com listagem de gerentes" width="800">
-</p>
-Painel do Administrador, com cards de KPI (gerentes, idosos, funcionários) e ações de visualizar, editar e apagar.
-
-<p align="center">
-  <img src="img/prints/tela-gerente.png" alt="Painel do gerente com listagem de idosos" width="800">
-</p>
-Painel do Gerente, com visão dos idosos e funcionários sob sua gestão.
-
-<p align="center">
-  <img src="img/prints/modal-tela.png" alt="Modal de detalhes de um responsável cadastrado" width="800">
-</p>
-Modal de visualização com os dados completos de um responsável, incluindo endereço obtido via CEP.
-
-Cadastro de idoso com prontuário completo
-
-<p align="center">
-  <img src="img/infocare.gif" alt="Demonstração do cadastro e prontuário do idoso" width="800">
-</p>
-<p align="center"><em>Navegação pelas abas de cadastro, finalizando com a visualização do prontuário completo em PDF.</em></p>
-
-
-<p align="center">
-  <img src="img/prints/cadastroIdoso-Tela1.png" alt="Aba Dados Pessoais do cadastro de idoso" width="800">
-</p>
-Aba Dados Pessoais, vinculada automaticamente ao responsável selecionado.
-
-<p align="center">
-  <img src="img/prints/cadastroIdoso-Tela2.png" alt="Aba Anamnese do cadastro de idoso" width="800">
-</p>
-Aba Anamnese, parte das 10 abas de avaliação clínica do prontuário.
-
-<p align="center">
-  <img src="img/prints/cadastroIdoso-Tela3.png" alt="Campo de tipo de câncer com lista de opções" width="800">
-</p>
-Campos condicionais com listas pré-definidas, como os tipos de câncer na aba de Anamnese.
-
-Recuperação de senha por e-mail
-
-<p align="center">
-  <img src="img/prints/redefinirSenha-tela.png" alt="Tela de solicitação de redefinição de senha" width="800">
-</p>
-Solicitação do link de redefinição, informando apenas o e-mail cadastrado.
-
-<p align="center">
-  <img src="img/prints/redefinirSenha-tela-Sucesso.png" alt="Confirmação de envio do link de redefinição" width="800">
-</p>
-Confirmação visual de que o link foi enviado.
-
-<p align="center">
-  <img src="img/prints/email-enviado.png" alt="E-mail de redefinição de senha recebido" width="800">
-</p>
-E-mail real enviado via PHPMailer, com token único válido por 1 hora.
-
-<p align="center">
-  <img src="img/prints/redefinirSenha-Tela-Final.png" alt="Tela de criação de nova senha" width="800">
-</p>
+<details>
+  <summary><b>📋 Cadastro e Prontuário do Idoso</b></summary>
+  <br>
+  <p>Navegação pelas abas de cadastro, campos condicionais de anamnese e exportação de prontuário em PDF.</p>
+  <img src="img/infocare.gif" width="800">
+  <br><br>
+  <img src="img/prints/cadastroIdoso-Tela1.png" width="800">
+  <br><br>
+  <img src="img/prints/cadastroIdoso-Tela2.png" width="800">
+</details>
 
 ---
 

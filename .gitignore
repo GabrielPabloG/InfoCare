@@ -30,3 +30,7 @@ setup.php
 
 # Arquivo de configuração do PHPMailer
 configEmail.php
+
+# Arquivo de configuração
+/setup.php
+/setup.example.php

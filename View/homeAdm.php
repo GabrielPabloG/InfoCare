@@ -112,6 +112,9 @@ try {
         </a>
 
         <span class="sidebar-section-label">Conta</span>
+            <a href="atualizarAdmin.php" class="sidebar-link">
+                <i class="icon">👤</i> Meus dados
+            </a>
             <form action="../Controller/atualizarFoto.php" method="post" enctype="multipart/form-data" id="formFoto">
                 
                 <input type="file" name="foto" id="inputFoto" style="display: none;" accept="image/*">
